@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="compositors">
+      <UniqueIdentifier>{3f8d72c6-868f-4929-b250-9844a2811eb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="energy-calculators">
+      <UniqueIdentifier>{1a6f7976-e16e-4f6e-828a-18b92f796bca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="../api">
+      <UniqueIdentifier>{7f6a75d9-4ab4-4851-ac5c-3410dcd9f6cd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="compositors\CompositorUtils.cpp">
+      <Filter>compositors</Filter>
+    </ClCompile>
+    <ClCompile Include="energy-calculators\EnergyCalculatorFft.cpp">
+      <Filter>energy-calculators</Filter>
+    </ClCompile>
+    <ClCompile Include="energy-calculators\EnergyCalculatorFftUtils.cpp">
+      <Filter>energy-calculators</Filter>
+    </ClCompile>
+    <ClCompile Include="energy-calculators\EnergyCalculatorPerPixel.cpp">
+      <Filter>energy-calculators</Filter>
+    </ClCompile>
+    <ClCompile Include="energy-calculators\EnergyWsst.cpp">
+      <Filter>energy-calculators</Filter>
+    </ClCompile>
+    <ClCompile Include="Compositor.cpp" />
+    <ClCompile Include="ConstNodeLabels.cpp" />
+    <ClCompile Include="Label.cpp" />
+    <ClCompile Include="Mask.cpp" />
+    <ClCompile Include="NeighborEdge.cpp" />
+    <ClCompile Include="Node.cpp" />
+    <ClCompile Include="NodeSet.cpp" />
+    <ClCompile Include="Pch.cpp" />
+    <ClCompile Include="PriorityBp.cpp" />
+    <ClCompile Include="PriorityBpRunner.cpp" />
+    <ClCompile Include="EnergyCalculatorContainer.cpp" />
+    <ClCompile Include="Image.cpp" />
+    <ClCompile Include="Settings.cpp" />
+    <ClCompile Include="compositors\PoissonSolver.cpp">
+      <Filter>compositors</Filter>
+    </ClCompile>
+    <ClCompile Include="compositors\TaucsMatrix.cpp">
+      <Filter>compositors</Filter>
+    </ClCompile>
+    <ClCompile Include="HostImageLocal.cpp" />
+    <ClCompile Include="compositors\ImageFloat.cpp">
+      <Filter>compositors</Filter>
+    </ClCompile>
+    <ClCompile Include="MaskWritable.cpp" />
+    <ClCompile Include="compositors\CompositorRoot.cpp">
+      <Filter>compositors</Filter>
+    </ClCompile>
+    <ClCompile Include="compositors\OutputBlenderSoftMask.cpp">
+      <Filter>compositors</Filter>
+    </ClCompile>
+    <ClCompile Include="compositors\OutputBlenderDebugSoftMaskIntensity.cpp">
+      <Filter>compositors</Filter>
+    </ClCompile>
+    <ClCompile Include="compositors\PatchBlenderPriority.cpp">
+      <Filter>compositors</Filter>
+    </ClCompile>
+    <ClCompile Include="ScalableDebugging.cpp" />
+    <ClCompile Include="compositors\PatchBlenderNone.cpp">
+      <Filter>compositors</Filter>
+    </ClCompile>
+    <ClCompile Include="compositors\PatchTypeNormal.cpp">
+      <Filter>compositors</Filter>
+    </ClCompile>
+    <ClCompile Include="compositors\PatchTypePoisson.cpp">
+      <Filter>compositors</Filter>
+    </ClCompile>
+    <ClCompile Include="compositors\PatchTypeDebugPatchOrder.cpp">
+      <Filter>compositors</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="compositors\CompositorUtils.h">
+      <Filter>compositors</Filter>
+    </ClInclude>
+    <ClInclude Include="energy-calculators\EnergyCalculatorFft.h">
+      <Filter>energy-calculators</Filter>
+    </ClInclude>
+    <ClInclude Include="energy-calculators\EnergyCalculatorFftUtils.h">
+      <Filter>energy-calculators</Filter>
+    </ClInclude>
+    <ClInclude Include="energy-calculators\EnergyCalculatorPerPixel.h">
+      <Filter>energy-calculators</Filter>
+    </ClInclude>
+    <ClInclude Include="energy-calculators\EnergyCalculatorUtils.h">
+      <Filter>energy-calculators</Filter>
+    </ClInclude>
+    <ClInclude Include="energy-calculators\EnergyWsst.h">
+      <Filter>energy-calculators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\PriorityBp.h">
+      <Filter>../api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\PriorityBpHost.h">
+      <Filter>../api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\PriorityBpSettings.h">
+      <Filter>../api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\PriorityBpTypes.h">
+      <Filter>../api</Filter>
+    </ClInclude>
+    <ClInclude Include="Compositor.h" />
+    <ClInclude Include="ConstNodeLabels.h" />
+    <ClInclude Include="EnergyCalculator.h" />
+    <ClInclude Include="Label.h" />
+    <ClInclude Include="Mask.h" />
+    <ClInclude Include="NeighborEdge.h" />
+    <ClInclude Include="Node.h" />
+    <ClInclude Include="NodeSet.h" />
+    <ClInclude Include="Patch.h" />
+    <ClInclude Include="Pch.h" />
+    <ClInclude Include="PriorityBpRunner.h" />
+    <ClInclude Include="ScopedNodeEnergyBatch.h" />
+    <ClInclude Include="EnergyCalculatorContainer.h" />
+    <ClInclude Include="Scalable.h" />
+    <ClInclude Include="Image.h" />
+    <ClInclude Include="Settings.h" />
+    <ClInclude Include="compositors\PoissonSolver.h">
+      <Filter>compositors</Filter>
+    </ClInclude>
+    <ClInclude Include="compositors\TaucsGuarded.h">
+      <Filter>compositors</Filter>
+    </ClInclude>
+    <ClInclude Include="compositors\TaucsMatrix.h">
+      <Filter>compositors</Filter>
+    </ClInclude>
+    <ClInclude Include="HostImageLocal.h" />
+    <ClInclude Include="compositors\ImageFloat.h">
+      <Filter>compositors</Filter>
+    </ClInclude>
+    <ClInclude Include="energy-calculators\EnergyCalculatorFftConfig.h">
+      <Filter>energy-calculators</Filter>
+    </ClInclude>
+    <ClInclude Include="MaskWritable.h" />
+    <ClInclude Include="compositors\CompositorRoot.h">
+      <Filter>compositors</Filter>
+    </ClInclude>
+    <ClInclude Include="compositors\OutputBlenderSoftMask.h">
+      <Filter>compositors</Filter>
+    </ClInclude>
+    <ClInclude Include="compositors\OutputBlenderDebugSoftMaskIntensity.h">
+      <Filter>compositors</Filter>
+    </ClInclude>
+    <ClInclude Include="compositors\PatchBlenderPriority.h">
+      <Filter>compositors</Filter>
+    </ClInclude>
+    <ClInclude Include="ScalableDebugging.h" />
+    <ClInclude Include="compositors\PatchBlenderNone.h">
+      <Filter>compositors</Filter>
+    </ClInclude>
+    <ClInclude Include="compositors\PatchTypeDebugPatchOrder.h">
+      <Filter>compositors</Filter>
+    </ClInclude>
+    <ClInclude Include="compositors\PatchTypeNormal.h">
+      <Filter>compositors</Filter>
+    </ClInclude>
+    <ClInclude Include="compositors\PatchTypePoisson.h">
+      <Filter>compositors</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="energy-calculators\EnergyCalculatorUtils.inl">
+      <Filter>energy-calculators</Filter>
+    </None>
+    <None Include="EnergyCalculator.inl" />
+    <None Include="ScopedNodeEnergyBatch.inl" />
+    <None Include="compositors\ImageFloat.inl">
+      <Filter>compositors</Filter>
+    </None>
+  </ItemGroup>
+</Project>

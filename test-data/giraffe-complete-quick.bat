@@ -1,0 +1,1 @@
+..\bin\Release\image-completer-cmd.exe -ii ..\test-data\giraffe-input.png -im ..\test-data\giraffe-mask.png -io ..\test-data\giraffe-output.png -sp auto

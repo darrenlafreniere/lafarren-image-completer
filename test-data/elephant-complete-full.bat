@@ -1,0 +1,1 @@
+..\bin\Release\image-completer-cmd.exe -ii ..\test-data\elephant-input.png -im ..\test-data\elephant-mask.png -io ..\test-data\elephant-output.png

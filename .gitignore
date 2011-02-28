@@ -1,0 +1,14 @@
+bin
+lib/tech
+_intermediate
+ipch
+*.ncb
+*.suo
+*.user
+*.obj
+*.idb
+*.pdb
+*.pch
+*.log
+*.sdf
+*.opensdf

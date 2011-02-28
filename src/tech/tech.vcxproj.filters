@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="tech">
+      <UniqueIdentifier>{5972ef07-51f4-4a37-82fe-cf484f9d1660}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="tech\Core.h">
+      <Filter>tech</Filter>
+    </ClInclude>
+    <ClInclude Include="tech\DbgMem.h">
+      <Filter>tech</Filter>
+    </ClInclude>
+    <ClInclude Include="tech\ImageUtils.h">
+      <Filter>tech</Filter>
+    </ClInclude>
+    <ClInclude Include="tech\MathUtils.h">
+      <Filter>tech</Filter>
+    </ClInclude>
+    <ClInclude Include="tech\UnDbgMem.h">
+      <Filter>tech</Filter>
+    </ClInclude>
+    <ClInclude Include="Pch.h" />
+    <ClInclude Include="tech\Atomic.h">
+      <Filter>tech</Filter>
+    </ClInclude>
+    <ClInclude Include="tech\Profile.h">
+      <Filter>tech</Filter>
+    </ClInclude>
+    <ClInclude Include="tech\Time.h">
+      <Filter>tech</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="tech\ImageUtils.cpp">
+      <Filter>tech</Filter>
+    </ClCompile>
+    <ClCompile Include="Pch.cpp" />
+    <ClCompile Include="tech\Profile.cpp">
+      <Filter>tech</Filter>
+    </ClCompile>
+    <ClCompile Include="tech\Time.cpp">
+      <Filter>tech</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="tech\ImageUtils.inl">
+      <Filter>tech</Filter>
+    </None>
+    <None Include="tech\MathUtils.inl">
+      <Filter>tech</Filter>
+    </None>
+    <None Include="tech\Atomic.inl">
+      <Filter>tech</Filter>
+    </None>
+  </ItemGroup>
+</Project>

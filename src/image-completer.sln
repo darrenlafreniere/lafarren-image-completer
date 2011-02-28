@@ -1,0 +1,31 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C++ Express 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "image-completer-cmd", "image-completer-cmd\image-completer-cmd.vcxproj", "{B2E82FB7-9483-46F9-8DB8-15AAB500657B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "priority-bp", "priority-bp\impl\priority-bp.vcxproj", "{5703CA3A-7F67-4D86-B854-1A45BE6D86AD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tech", "tech\tech.vcxproj", "{1608DC9C-2779-4C22-A0D7-B48085C524F4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B2E82FB7-9483-46F9-8DB8-15AAB500657B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B2E82FB7-9483-46F9-8DB8-15AAB500657B}.Debug|Win32.Build.0 = Debug|Win32
+		{B2E82FB7-9483-46F9-8DB8-15AAB500657B}.Release|Win32.ActiveCfg = Release|Win32
+		{B2E82FB7-9483-46F9-8DB8-15AAB500657B}.Release|Win32.Build.0 = Release|Win32
+		{5703CA3A-7F67-4D86-B854-1A45BE6D86AD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5703CA3A-7F67-4D86-B854-1A45BE6D86AD}.Debug|Win32.Build.0 = Debug|Win32
+		{5703CA3A-7F67-4D86-B854-1A45BE6D86AD}.Release|Win32.ActiveCfg = Release|Win32
+		{5703CA3A-7F67-4D86-B854-1A45BE6D86AD}.Release|Win32.Build.0 = Release|Win32
+		{1608DC9C-2779-4C22-A0D7-B48085C524F4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1608DC9C-2779-4C22-A0D7-B48085C524F4}.Debug|Win32.Build.0 = Debug|Win32
+		{1608DC9C-2779-4C22-A0D7-B48085C524F4}.Release|Win32.ActiveCfg = Release|Win32
+		{1608DC9C-2779-4C22-A0D7-B48085C524F4}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

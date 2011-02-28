@@ -1,0 +1,1 @@
+..\bin\Release\image-completer-cmd.exe -ii ..\test-data\ship-input.png -im ..\test-data\ship-mask.png -io ..\test-data\ship-output.png
