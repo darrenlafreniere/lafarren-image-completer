@@ -32,7 +32,7 @@
 // The following code implements:
 // Exercise 1, Advanced Computer Graphics Course (Spring 2005)
 // Tel-Aviv University, Israel
-// http://www.cs.tau.ac.il/~tommer/adv-graphics/ex1.htm
+// http://leyvand.com/research/adv-graphics/ex1.htm
 //
 // * Based on "Poisson Image Editing" paper, Pe'rez et. al. [SIGGRAPH/2003].
 // * The code uses TAUCS, A sparse linear solver library by Sivan Toledo
