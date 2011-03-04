@@ -1,1 +1,1 @@
-..\bin\Release\image-completer-cmd.exe -ii ..\test-data\bridge-input.png -im ..\test-data\bridge-mask.png -io ..\test-data\bridge-output.png -sct poisson -sp auto
+..\bin\Release\image-completer-cmd.exe -ii bridge-input.png -im bridge-mask.png -io bridge-output.png -sct poisson -sp auto
