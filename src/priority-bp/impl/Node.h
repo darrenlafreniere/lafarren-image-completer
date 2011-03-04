@@ -56,7 +56,6 @@ namespace PriorityBp
 		//
 		Node(Context& context, const MaskLod& mask, int x, int y);
 		Node(const Node& other);
-		Node& operator=(const Node& other);
 
 		int GetX() const;
 		int GetY() const;
@@ -138,7 +137,7 @@ namespace PriorityBp
 		//
 		// Data
 		//
-		Context& m_context;
+		Context* m_context;
 
 		std::vector<Resolution> m_resolutions;
 		int m_depth;

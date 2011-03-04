@@ -32,7 +32,7 @@
 //
 ConstNodeLabels::ConstNodeLabels(const Node& node) :
 m_node(node),
-m_globalLabelSet((node.m_labelInfoSet.size() == 0) ? &node.m_context.labelSet : NULL)
+m_globalLabelSet((node.m_labelInfoSet.size() == 0) ? &node.m_context->labelSet : NULL)
 {
 }
 

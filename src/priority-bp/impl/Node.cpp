@@ -65,7 +65,7 @@ energyCalculatorContainer(energyCalculatorContainer)
 }
 
 Node::Node(Context& context, const MaskLod& mask, int x, int y) :
-m_context(context),
+m_context(&context),
 m_overlapsKnownRegion(false),
 m_hasPrunedOnce(false),
 m_depth(0)
@@ -92,8 +92,8 @@ m_depth(0)
 
 		// Set the number of rows and columns by the patch width and height,
 		// and clamp to prevent overflow.
-		const int colsNum = std::min(m_context.settings.patchWidth, maskData.width - left);
-		const int rowsNum = std::min(m_context.settings.patchHeight, maskData.height - top);
+		const int colsNum = std::min(m_context->settings.patchWidth, maskData.width - left);
+		const int rowsNum = std::min(m_context->settings.patchHeight, maskData.height - top);
 
 		for (int row = rowStart, y = top; row < rowsNum; ++row, ++y)
 		{
@@ -120,15 +120,6 @@ m_depth(other.m_depth)
 	memcpy(m_neighbors, other.m_neighbors, sizeof(m_neighbors));
 }
 
-#include "tech/UnDbgMem.h"
-Node& Node::operator=(const Node& other)
-{
-	this->~Node();
-	new(this) Node(other);
-	return *this;
-}
-#include "tech/DbgMem.h"
-
 int Node::GetX() const
 {
 	return GetCurrentResolution().x;
@@ -149,8 +140,8 @@ bool Node::AddNeighbor(Node& neighbor, NeighborEdge edge)
 	int edgeDirectionY = 0;
 	GetNeighborEdgeDirection(edge, edgeDirectionX, edgeDirectionY);
 	wxASSERT(
-		(neighbor.GetCurrentResolution().x - GetCurrentResolution().x) == (m_context.settings.latticeGapX * edgeDirectionX) &&
-		(neighbor.GetCurrentResolution().y - GetCurrentResolution().y) == (m_context.settings.latticeGapY * edgeDirectionY));
+		(neighbor.GetCurrentResolution().x - GetCurrentResolution().x) == (m_context->settings.latticeGapX * edgeDirectionX) &&
+		(neighbor.GetCurrentResolution().y - GetCurrentResolution().y) == (m_context->settings.latticeGapY * edgeDirectionY));
 
 	for (int i = 0; i < NumNeighborEdges; ++i)
 	{
@@ -188,7 +179,7 @@ void Node::SendMessages(Node& neighbor) const
 	wxASSERT(m_labelInfoSet.size() > 0);
 
 	// And we expect that it has been pruned.
-	wxASSERT(int(m_labelInfoSet.size()) <= m_context.settings.postPruneLabelsMax);
+	wxASSERT(int(m_labelInfoSet.size()) <= m_context->settings.postPruneLabelsMax);
 
 	// Make sure the neighbor has its own label info set to store this node's messages to it.
 	neighbor.PopulateLabelInfoSetIfNeeded();
@@ -203,8 +194,8 @@ void Node::SendMessages(Node& neighbor) const
 	wxASSERT(qEdgeInP != InvalidNeighborEdge);
 
 	// Figure out overlapping region (pre-compute the result of this per neighbor?)
-	const int patchWidth = m_context.settings.patchWidth;
-	const int patchHeight = m_context.settings.patchHeight;
+	const int patchWidth = m_context->settings.patchWidth;
+	const int patchHeight = m_context->settings.patchHeight;
 
 	const int pLeft = GetLeft();
 	const int pTop = GetTop();
@@ -234,8 +225,8 @@ void Node::SendMessages(Node& neighbor) const
 	{
 		ScopedNodeEnergyBatchQueued energyBatch(
 			*this,
-			m_context.energyCalculatorContainer.Get(pLabelNum),
-			EnergyCalculator::BatchParams(pLabelNum, m_context.settings.patchWidth, m_context.settings.patchHeight, GetLeft(), GetTop(), true));
+			m_context->energyCalculatorContainer.Get(pLabelNum),
+			EnergyCalculator::BatchParams(pLabelNum, m_context->settings.patchWidth, m_context->settings.patchHeight, GetLeft(), GetTop(), true));
 
 		// Queue energy calculations
 		for (int pi = 0; pi < pLabelNum; ++pi)
@@ -278,7 +269,7 @@ void Node::SendMessages(Node& neighbor) const
 		const int pOverlapTop = pLabelInfo.label.top + pOverlapTopOffset;
 
 		const EnergyCalculator::BatchParams energyBatchParams(qLabelNum, overlapWidth, overlapHeight, pOverlapLeft, pOverlapTop, false);
-		EnergyCalculator::BatchQueued energyBatch(m_context.energyCalculatorContainer.Get(qLabelNum).BatchOpenQueued(energyBatchParams));
+		EnergyCalculator::BatchQueued energyBatch(m_context->energyCalculatorContainer.Get(qLabelNum).BatchOpenQueued(energyBatchParams));
 		
 		// Queue energy calculations
 		for (int qi = 0; qi < qLabelNum; ++qi)
@@ -353,8 +344,8 @@ void Node::PruneLabels()
 
 	{
 		ScopedNodeEnergyBatchQueued energyBatch(
-			*this, m_context.energyCalculatorContainer.Get(labelNum),
-			EnergyCalculator::BatchParams(labelNum, m_context.settings.patchWidth, m_context.settings.patchHeight, GetLeft(), GetTop(), true));
+			*this, m_context->energyCalculatorContainer.Get(labelNum),
+			EnergyCalculator::BatchParams(labelNum, m_context->settings.patchWidth, m_context->settings.patchHeight, GetLeft(), GetTop(), true));
 
 		// Queue energy calculations
 		for (int i = 0; i < labelNum; ++i)
@@ -379,12 +370,12 @@ void Node::PruneLabels()
 
 	// Perform the pruning
 	{
-		const int patchWidth = m_context.settings.patchWidth;
-		const int patchHeight = m_context.settings.patchHeight;
-		const int pruneEnergySimilarThreshold = m_context.settings.pruneEnergySimilarThreshold;
-		const int pruneBeliefThreshold = m_context.settings.pruneBeliefThreshold;
-		const int postPruneLabelsMin = m_context.settings.postPruneLabelsMin;
-		const int postPruneLabelsMax = m_context.settings.postPruneLabelsMax;
+		const int patchWidth = m_context->settings.patchWidth;
+		const int patchHeight = m_context->settings.patchHeight;
+		const int pruneEnergySimilarThreshold = m_context->settings.pruneEnergySimilarThreshold;
+		const int pruneBeliefThreshold = m_context->settings.pruneBeliefThreshold;
+		const int postPruneLabelsMin = m_context->settings.postPruneLabelsMin;
+		const int postPruneLabelsMax = m_context->settings.postPruneLabelsMax;
 		LabelInfoSet labelInfoSetKept;
 
 		for (int pruneInfoIdx = 0, postPruneLabelNum = 0; pruneInfoIdx < labelNum && postPruneLabelNum < postPruneLabelsMax; ++pruneInfoIdx)
@@ -418,7 +409,7 @@ void Node::PruneLabels()
 						// many calculations, and the upper bound is unknown.
 						// TODO: run some tests to verify this assumption.
 						const EnergyCalculator::BatchParams energyBatchParams(keptNum, patchWidth, patchHeight, label.left, label.top, false);
-						EnergyCalculator::BatchImmediate energyBatch(m_context.energyCalculatorContainer.Get(keptNum).BatchOpenImmediate(energyBatchParams));
+						EnergyCalculator::BatchImmediate energyBatch(m_context->energyCalculatorContainer.Get(keptNum).BatchOpenImmediate(energyBatchParams));
 
 						for (int keptIdx = 0; !isSimilarToAlreadyKeptLabel && keptIdx < keptNum; ++keptIdx)
 						{
@@ -468,8 +459,8 @@ Priority Node::CalculatePriority() const
 	Belief beliefMax = BELIEF_MIN;
 
 	ScopedNodeEnergyBatchQueued energyBatch(
-		*this, m_context.energyCalculatorContainer.Get(labelNum),
-		EnergyCalculator::BatchParams(labelNum, m_context.settings.patchWidth, m_context.settings.patchHeight, GetLeft(), GetTop(), true));
+		*this, m_context->energyCalculatorContainer.Get(labelNum),
+		EnergyCalculator::BatchParams(labelNum, m_context->settings.patchWidth, m_context->settings.patchHeight, GetLeft(), GetTop(), true));
 
 	// Queue energy calculations
 	for (int i = 0; i < labelNum; ++i)
@@ -491,7 +482,7 @@ Priority Node::CalculatePriority() const
 		}
 	}
 
-	const Belief beliefConf = Belief(m_context.settings.confidenceBeliefThreshold);
+	const Belief beliefConf = Belief(m_context->settings.confidenceBeliefThreshold);
 	int confusionSetNum = 0;
 	for (int i = 0; i < labelNum; ++i)
 	{
@@ -530,8 +521,8 @@ Belief Node::CalculateBelief(const Label& label, const Energy messages[NumNeighb
 	{
 		// Single energy calculation; use an immediate batch.
 		ScopedNodeEnergyBatchImmediate energyBatch(
-			*this, m_context.energyCalculatorContainer.Get(1),
-			EnergyCalculator::BatchParams(1, m_context.settings.patchWidth, m_context.settings.patchHeight, GetLeft(), GetTop(), true));
+			*this, m_context->energyCalculatorContainer.Get(1),
+			EnergyCalculator::BatchParams(1, m_context->settings.patchWidth, m_context->settings.patchHeight, GetLeft(), GetTop(), true));
 
 		e = energyBatch.Calculate(label.left, label.top);
 	}
@@ -550,26 +541,26 @@ void Node::PopulateLabelInfoSetIfNeeded()
 #endif
 	if (m_labelInfoSet.size() == 0)
 	{
-		const int labelNum = m_context.labelSet.size();
+		const int labelNum = m_context->labelSet.size();
 
 		// We'll have exactly with many labels. Resize now and fill in data.
 		m_labelInfoSet.resize(labelNum);
 
 		for (int i = 0; i < labelNum; ++i)
 		{
-			m_labelInfoSet[i].SetLabelAndClearMessages(m_context.labelSet[i]);
+			m_labelInfoSet[i].SetLabelAndClearMessages(m_context->labelSet[i]);
 		}
 	}
 }
 
 int Node::GetLeft() const
 {
-	return GetCurrentResolution().x - (m_context.settings.patchWidth / 2);
+	return GetCurrentResolution().x - (m_context->settings.patchWidth / 2);
 }
 
 int Node::GetTop() const
 {
-	return GetCurrentResolution().y - (m_context.settings.patchHeight / 2);
+	return GetCurrentResolution().y - (m_context->settings.patchHeight / 2);
 }
 
 bool Node::OverlapsKnownRegion() const
@@ -588,7 +579,7 @@ void Node::ScaleUp()
 
 	// Scale up the label info set.
 	{
-		const LabelSet& labelSet = m_context.labelSet;
+		const LabelSet& labelSet = m_context->labelSet;
 		LabelSet::LowToCurrentResolutionMapping labelMapping;
 
 #if NODE_SCALE_UP_PICK_RANDOM_MAPPED_LABEL
