@@ -50,14 +50,14 @@ class AppCmdHostImage : public PriorityBp::HostImage
 {
 public:
 	// AppCmdHostImage interface
-	void SetFilePath(const wxString& filePath);
+	void SetFilePath(const std::string& filePath);
 	wxImage& GetwxImage();
 	const wxImage& GetwxImage() const;
 
 	// PriorityBp::HostImage interface
 	virtual bool Init(int width, int height);
 	virtual bool IsValid() const;
-	virtual const wxString& GetFilePath() const;
+	virtual const std::string& GetFilePath() const;
 	virtual Rgb* GetRgb();
 	virtual const Rgb* GetRgb() const;
 	virtual int GetWidth() const;
@@ -65,7 +65,7 @@ public:
 
 private:
 	// Internal data
-	wxString m_filePath;
+	std::string m_filePath;
 	wxImage m_wxImage;
 };
 
@@ -106,7 +106,7 @@ private:
 
 // Trues true if the images are valid for image completion. Otherwise, logs an
 // error and returns false.
-static bool LoadAndValidateImage(const char* imageTypeName, const wxString& imagePath, AppCmdHostImage& image)
+static bool LoadAndValidateImage(const char* imageTypeName, const std::string& imagePath, AppCmdHostImage& image)
 {
 	bool result = false;
 	wxMessageOutput& msgOut = *wxMessageOutput::Get();
@@ -276,7 +276,7 @@ void AppCmdHost::ApplyCommandLineOptionsToSettings(const CommandLineOptions& opt
 	}
 }
 
-void AppCmdHostImage::SetFilePath(const wxString& filePath)
+void AppCmdHostImage::SetFilePath(const std::string& filePath)
 {
 	m_filePath = filePath;
 }
@@ -296,7 +296,7 @@ bool AppCmdHostImage::IsValid() const
 	return m_wxImage.Ok();
 }
 
-const wxString& AppCmdHostImage::GetFilePath() const
+const std::string& AppCmdHostImage::GetFilePath() const
 {
 	return m_filePath;
 }

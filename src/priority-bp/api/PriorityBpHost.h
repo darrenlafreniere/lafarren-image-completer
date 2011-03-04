@@ -91,7 +91,7 @@ namespace PriorityBp
 		virtual bool IsValid() const = 0;
 
 		// Returns the image's file path, if any.
-		virtual const wxString& GetFilePath() const = 0;
+		virtual const std::string& GetFilePath() const = 0;
 
 		// Non-const and const access to the image's Rgb buffer. The
 		// result points to the upperleft-most pixel and the buffer is

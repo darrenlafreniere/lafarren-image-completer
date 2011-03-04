@@ -118,7 +118,7 @@ void PriorityBpRunner::Run()
 	for (int i = 0; i < m_settings.numIterations; ++i)
 	{
 		PRIORITY_BP_TIME_PROFILE("PriorityBpRunner::Run - iteration");
-		PRIORITY_BP_MEM_PROFILE(wxString::Format("PriorityBpRunner::Run - iteration %d", i));
+		PRIORITY_BP_MEM_PROFILE(Str::Format("PriorityBpRunner::Run - iteration %d", i));
 
 		ForwardPass();
 		BackwardPass();

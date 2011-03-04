@@ -15,7 +15,7 @@ namespace PriorityBp
 			SettingsScalable& settingsScalable,
 			ImageScalable& imageScalable,
 			MaskScalable& maskScalable,
-			const wxString& highResOutputFilePath,
+			const std::string& highResOutputFilePath,
 			int depth);
 	}
 }

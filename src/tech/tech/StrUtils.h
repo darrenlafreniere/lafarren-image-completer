@@ -20,40 +20,20 @@
 //
 
 //
-// Header to be precompiled
+// Contains image related utilities.
 //
+#ifndef TECH_STR_UTILS_H
+#define TECH_STR_UTILS_H
 
-#ifndef PCH_H
-#define PCH_H
-
-namespace Lafarren {}
-namespace PriorityBp {}
-using namespace Lafarren;
-using namespace PriorityBp;
-
-// Compile time switches:
-#define TECH_PROFILE 1
-#define TECH_PROFILE_MACROS 1
-
-#ifdef _DEBUG
-	#include <crtdbg.h>
-	#define DEBUG_NEW new(_NORMAL_BLOCK ,__FILE__, __LINE__)
-#else
-	#define DEBUG_NEW new
-#endif
-
-#include <algorithm>
-#include <fstream>
-#include <iostream>
-#include <map>
-#include <math.h>
-#include <memory>
-#include <set>
 #include <string>
-#include <vector>
 
-// wxWidgets. Define HAVE_SSIZE_T so it doesn't conflict with taucs.h's ssize_t.
-#define HAVE_SSIZE_T
-#include "wx/wx.h"
+namespace Lafarren
+{
+	namespace Str
+	{
+		std::string Format(const char* format, ...);
+		std::string Replace(const std::string& s, char replace, const char* with);
+	}
+}
 
 #endif

@@ -22,6 +22,8 @@
 #include "Pch.h"
 #include "SettingsUi.h"
 
+#include "tech/StrUtils.h"
+
 #include "tech/DbgMem.h"
 
 //
@@ -32,35 +34,35 @@ void SettingsUi::Print(const PriorityBp::Settings& settings)
 	wxASSERT(settings.IsValid());
 	wxMessageOutput& msgOut = *wxMessageOutput::Get();
 
-	wxString lowResolutionPassesMaxString;
+	std::string lowResolutionPassesMaxString;
 	if (settings.lowResolutionPassesMax == PriorityBp::Settings::LOW_RESOLUTION_PASSES_AUTO)
 	{
 		lowResolutionPassesMaxString = GetLowResolutionPassesAutoDescription();
 	}
 	else
 	{
-		lowResolutionPassesMaxString = wxString::Format("%d", settings.lowResolutionPassesMax);
+		lowResolutionPassesMaxString = Lafarren::Str::Format("%d", settings.lowResolutionPassesMax);
 	}
 
 	// Gather member descriptions and values before printing them, so we can
 	// size the desc column to an ideal width.
 	struct Member
 	{
-		wxString desc;
-		wxString value;
+		std::string desc;
+		std::string value;
 
-		Member(const wxString& desc, const wxString& value) : desc(desc), value(value) {}
+		Member(const std::string& desc, const std::string& value) : desc(desc), value(value) {}
 
 		void Print(wxMessageOutput& msgOut, int descWidth) const
 		{
-			const wxString descSpacing(' ', descWidth - desc.Len());
+			const std::string descSpacing(' ', descWidth - desc.length());
 			msgOut.Printf("\t%s:%s %s\n", desc.c_str(), descSpacing.c_str(), value.c_str());
 		}
 	};
 
 #define DESC(member) GetMemberDescription(offsetof(PriorityBp::Settings, member))
 #define VAL_W "17" /* TODO: auto-size this as well? */
-#define VAL_X(fmt, x) wxString::Format("%" VAL_W fmt, x)
+#define VAL_X(fmt, x) Lafarren::Str::Format("%" VAL_W fmt, x)
 #define VAL_S(s) VAL_X("s", s)
 #define VAL_I(i) VAL_X("d", i)
 
@@ -89,7 +91,7 @@ void SettingsUi::Print(const PriorityBp::Settings& settings)
 			const std::vector<Member>& members = *memberVectors[memberVectorIdx];
 			for (int i = 0, n = members.size(); i < n; ++i)
 			{
-				const int len = members[i].desc.Len();
+				const int len = members[i].desc.length();
 				if (descWidth < len)
 				{
 					descWidth = len;
@@ -117,9 +119,9 @@ void SettingsUi::Print(const PriorityBp::Settings& settings)
 // Returns a user friendly string describing the specified settings
 // member. settingsMemberOffset is the offset in byte of the settings
 // member (e.g., offsetof(PriorityBp::Settings, latticeGapX))
-wxString SettingsUi::GetMemberDescription(int settingsMemberOffset)
+std::string SettingsUi::GetMemberDescription(int settingsMemberOffset)
 {
-	wxString desc;
+	std::string desc;
 
 	if (settingsMemberOffset == offsetof(PriorityBp::Settings, lowResolutionPassesMax))
 	{
@@ -181,14 +183,14 @@ wxString SettingsUi::GetMemberDescription(int settingsMemberOffset)
 	return desc;
 }
 
-wxString SettingsUi::GetLowResolutionPassesAutoDescription()
+std::string SettingsUi::GetLowResolutionPassesAutoDescription()
 {
 	return "auto";
 }
 
-wxString SettingsUi::GetEnumDescription(PriorityBp::CompositorPatchType e)
+std::string SettingsUi::GetEnumDescription(PriorityBp::CompositorPatchType e)
 {
-	wxString desc;
+	std::string desc;
 	switch (e)
 	{
 	case PriorityBp::CompositorPatchTypeNormal:        desc = "normal"; break;
@@ -200,9 +202,9 @@ wxString SettingsUi::GetEnumDescription(PriorityBp::CompositorPatchType e)
 	return desc;
 }
 
-wxString SettingsUi::GetEnumDescription(PriorityBp::CompositorPatchBlender e)
+std::string SettingsUi::GetEnumDescription(PriorityBp::CompositorPatchBlender e)
 {
-	wxString desc;
+	std::string desc;
 	switch (e)
 	{
 	case PriorityBp::CompositorPatchBlenderPriority:   desc = "priority"; break;
@@ -230,6 +232,6 @@ void SettingsUi::PrintInvalidMembers::OnInvalidMemberDetected(int memberOffset, 
 		m_hasPrintedHeader = true;
 	}
 
-	const wxString member(SettingsUi::GetMemberDescription(memberOffset));
+	const std::string member(SettingsUi::GetMemberDescription(memberOffset));
 	m_msgOut.Printf("\t- %s %s\n", member.c_str(), message);
 }

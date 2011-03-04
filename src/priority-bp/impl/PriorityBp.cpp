@@ -92,7 +92,7 @@ namespace PriorityBp
 		LabelSet& labelSet,
 		NodeSet& nodeSet,
 		PriorityBpRunner& priorityBpRunner,
-		const wxString& highResOutputFilePath,
+		const std::string& highResOutputFilePath,
 		int pass)
 	{
 		// Patch and image side dimensions are reduced by half at each lower

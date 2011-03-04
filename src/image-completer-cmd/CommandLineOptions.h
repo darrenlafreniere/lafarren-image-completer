@@ -46,16 +46,16 @@ public:
 	inline bool HasMaskImagePath() const { return m_maskImagePath.isSet; }
 	inline bool HasOutputImagePath() const { return m_outputImagePath.isSet; }
 
-	inline const wxString& GetInputImagePath() const { return m_inputImagePath.value; }
-	inline const wxString& GetMaskImagePath() const { return m_maskImagePath.value; }
-	inline const wxString& GetOutputImagePath() const { return m_outputImagePath.value; }
+	inline const std::string& GetInputImagePath() const { return m_inputImagePath.value; }
+	inline const std::string& GetMaskImagePath() const { return m_maskImagePath.value; }
+	inline const std::string& GetOutputImagePath() const { return m_outputImagePath.value; }
 
 #if ENABLE_PATCHES_INPUT_OUTPUT
 	inline bool HasInputPatchesPath() const { return m_inputPatchesPath.isSet; }
 	inline bool HasOutputPatchesPath() const { return m_outputPatchesPath.isSet; }
 
-	inline const wxString& GetInputPatchesPath() const { return m_inputPatchesPath.value; }
-	inline const wxString& GetOutputPatchesPath() const { return m_outputPatchesPath.value; }
+	inline const std::string& GetInputPatchesPath() const { return m_inputPatchesPath.value; }
+	inline const std::string& GetOutputPatchesPath() const { return m_outputPatchesPath.value; }
 #endif // ENABLE_PATCHES_INPUT_OUTPUT
 
 	inline bool ShouldShowSettings() const { return m_shouldShowSettings.isSet; }
@@ -97,9 +97,9 @@ private:
 	};
 
 	Lafarren::CmdLine::ParamSwitch m_shouldDisplayUsage;
-	Lafarren::CmdLine::ParamOption<wxString> m_inputImagePath;
-	Lafarren::CmdLine::ParamOption<wxString> m_maskImagePath;
-	Lafarren::CmdLine::ParamOption<wxString> m_outputImagePath;
+	Lafarren::CmdLine::ParamOption<std::string> m_inputImagePath;
+	Lafarren::CmdLine::ParamOption<std::string> m_maskImagePath;
+	Lafarren::CmdLine::ParamOption<std::string> m_outputImagePath;
 	Lafarren::CmdLine::ParamSwitch m_shouldShowSettings;
 	Lafarren::CmdLine::ParamSwitch m_debugLowResolutionPasses;
 	Lafarren::CmdLine::ParamOption<LowResolutionPassesMax> m_lowResolutionPassesMax;
@@ -111,8 +111,8 @@ private:
 	Lafarren::CmdLine::ParamOption<PriorityBp::CompositorPatchType> m_compositorPatchType;
 	Lafarren::CmdLine::ParamOption<PriorityBp::CompositorPatchBlender> m_compositorPatchBlender;
 #if ENABLE_PATCHES_INPUT_OUTPUT
-	Lafarren::CmdLine::ParamOption<wxString> m_inputPatchesPath;
-	Lafarren::CmdLine::ParamOption<wxString> m_outputPatchesPath;
+	Lafarren::CmdLine::ParamOption<std::string> m_inputPatchesPath;
+	Lafarren::CmdLine::ParamOption<std::string> m_outputPatchesPath;
 #endif // ENABLE_PATCHES_INPUT_OUTPUT
 
 	bool m_shouldRunImageCompletion;

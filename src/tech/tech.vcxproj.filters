@@ -34,6 +34,9 @@
     <ClInclude Include="tech\CmdLine.h">
       <Filter>tech</Filter>
     </ClInclude>
+    <ClInclude Include="tech\StrUtils.h">
+      <Filter>tech</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="tech\ImageUtils.cpp">
@@ -47,6 +50,9 @@
       <Filter>tech</Filter>
     </ClCompile>
     <ClCompile Include="tech\CmdLine.cpp">
+      <Filter>tech</Filter>
+    </ClCompile>
+    <ClCompile Include="tech\StrUtils.cpp">
       <Filter>tech</Filter>
     </ClCompile>
   </ItemGroup>

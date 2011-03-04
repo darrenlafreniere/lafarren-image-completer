@@ -441,7 +441,7 @@ void Node::PruneLabels()
 		}
 
 #if PROFILE_MEM
-		OutputDebugString(wxString::Format("PruneLabels, before: %d, after %d\n", labelNum, labelInfoSetKept.size()));
+		OutputDebugString(Str::Format("PruneLabels, before: %d, after %d\n", labelNum, labelInfoSetKept.size()));
 #endif
 
 		m_labelInfoSet.swap(labelInfoSetKept);

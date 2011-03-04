@@ -22,11 +22,13 @@
 #include "Pch.h"
 #include "tech/CmdLine.h"
 
+#include "tech/StrUtils.h"
+
 #include "tech/DbgMem.h"
 
 using namespace Lafarren;
 
-CmdLine::Param::Param(const wxString& shortName, const wxString& longName, const wxString description)
+CmdLine::Param::Param(const std::string& shortName, const std::string& longName, const std::string description)
 	: shortName(shortName)
 	, longName(longName)
 	, description(description)
@@ -59,9 +61,9 @@ void CmdLine::AddParam(Param& param)
 	}
 }
 
-bool CmdLine::Read(int argc, char** argv, wxString& outError) const
+bool CmdLine::Read(int argc, char** argv, std::string& outError) const
 {
-	outError.Empty();
+	outError.clear();
 
 	for (int i = 1; i < argc; ++i)
 	{
@@ -70,7 +72,7 @@ bool CmdLine::Read(int argc, char** argv, wxString& outError) const
 
 		if (!param)
 		{
-			outError = wxString::Format("Invalid argument: %s\n", arg);
+			outError = Str::Format("Invalid argument: %s\n", arg);
 			break;
 		}
 		else
@@ -82,7 +84,7 @@ bool CmdLine::Read(int argc, char** argv, wxString& outError) const
 				wxASSERT(i <= argc);
 				if (i == argc)
 				{
-					outError = wxString::Format("Argument was missing value: %s\n", arg);
+					outError = Str::Format("Argument was missing value: %s\n", arg);
 					break;
 				}
 				else
@@ -93,18 +95,19 @@ bool CmdLine::Read(int argc, char** argv, wxString& outError) const
 		}
 	}
 
-	return outError.IsEmpty();
+	return outError.empty();
 }
 
-wxString CmdLine::GetUsageString() const
+std::string CmdLine::GetUsageString() const
 {
-	wxString usage("\nOptions:\n\n");
+	std::string usage("\nOptions:\n\n");
 	
-	const wxString indent("  ");
+	const char* indent = "  ";
 	for (int i = 0, n = m_params.size(); i < n; ++i)
 	{
 		const Param& param = *m_params[i];
-		usage += indent + param.shortName + ", " + param.longName;
+		usage += indent;
+		usage += param.shortName + ", " + param.longName;
 		if (param.IsOption())
 		{
 			usage += " <value>";
@@ -113,9 +116,7 @@ wxString CmdLine::GetUsageString() const
 		usage += "\n";
 		usage += indent;
 
-		wxString description(param.description);
-		description.Replace("\t", indent);
-		usage += description;
+		usage += Str::Replace(param.description, '\t', indent);
 		usage += "\n\n";
 	}
 

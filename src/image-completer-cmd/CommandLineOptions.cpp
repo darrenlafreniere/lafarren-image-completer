@@ -22,7 +22,7 @@
 #include "Pch.h"
 #include "CommandLineOptions.h"
 
-#include <wx/cmdline.h>
+#include "tech/StrUtils.h"
 #include "SettingsUi.h"
 
 #include "tech/DbgMem.h"
@@ -31,14 +31,13 @@
 template<>
 void Lafarren::CmdLine::ParamOption<CommandLineOptions::LowResolutionPassesMax>::ReadOption(const char* option)
 {
-	const wxString stringValue(option);
-	if (stringValue.CmpNoCase(SettingsUi::GetLowResolutionPassesAutoDescription()) == 0)
+	if (_stricmp(option, SettingsUi::GetLowResolutionPassesAutoDescription().c_str()) == 0)
 	{
 		this->value = PriorityBp::Settings::LOW_RESOLUTION_PASSES_AUTO;
 	}
 	else
 	{
-		this->value = atoi(stringValue);
+		this->value = atoi(option);
 	}
 }
 
@@ -46,12 +45,11 @@ void Lafarren::CmdLine::ParamOption<CommandLineOptions::LowResolutionPassesMax>:
 template<>
 void Lafarren::CmdLine::ParamOption<PriorityBp::CompositorPatchType>::ReadOption(const char* option)
 {
-	const wxString stringValue(option);
 	for (int e = PriorityBp::CompositorPatchTypeInvalid + 1; e < PriorityBp::CompositorPatchTypeNum; ++e)
 	{
 		const PriorityBp::CompositorPatchType compositorPatchType = PriorityBp::CompositorPatchType(e);
-		const wxString desc(SettingsUi::GetEnumDescription(compositorPatchType));
-		if (stringValue.CmpNoCase(desc) == 0)
+		const std::string desc(SettingsUi::GetEnumDescription(compositorPatchType));
+		if (_stricmp(option, desc.c_str()) == 0)
 		{
 			this->value = compositorPatchType;
 			break;
@@ -63,12 +61,11 @@ void Lafarren::CmdLine::ParamOption<PriorityBp::CompositorPatchType>::ReadOption
 template<>
 void Lafarren::CmdLine::ParamOption<PriorityBp::CompositorPatchBlender>::ReadOption(const char* option)
 {
-	const wxString stringValue(option);
 	for (int e = PriorityBp::CompositorPatchBlenderInvalid + 1; e < PriorityBp::CompositorPatchBlenderNum; ++e)
 	{
 		const PriorityBp::CompositorPatchBlender compositorPatchBlender = PriorityBp::CompositorPatchBlender(e);
-		const wxString desc(SettingsUi::GetEnumDescription(compositorPatchBlender));
-		if (stringValue.CmpNoCase(desc) == 0)
+		const std::string desc(SettingsUi::GetEnumDescription(compositorPatchBlender));
+		if (_stricmp(option, desc.c_str()) == 0)
 		{
 			this->value = compositorPatchBlender;
 			break;
@@ -80,20 +77,20 @@ void Lafarren::CmdLine::ParamOption<PriorityBp::CompositorPatchBlender>::ReadOpt
 // CommandLineOptions
 //
 CommandLineOptions::CommandLineOptions(int argc, char** argv)
-	: m_shouldDisplayUsage("-h", "-help", "Display this help text.")
+	: m_shouldDisplayUsage("-h", "--help", "Display this help text.")
 	, m_inputImagePath("-ii", "--image-input", "The input image file path.")
 	, m_maskImagePath("-im", "--image-mask", "The mask image file path.")
 	, m_outputImagePath("-io", "--image-output", "The output image file path.")
 	, m_shouldShowSettings("-ss", "--settings-show", "Show the settings for the input image and exit.")
 	, m_debugLowResolutionPasses("-sd", "--settings-debug-low-res-passes", "Output separate images for each low resolution pass.")
-	, m_lowResolutionPassesMax("-sp", "--settings-low-res-passes", wxString("Max low resolution passes to perform.\n\t(") + SettingsUi::GetLowResolutionPassesAutoDescription() + ", or any integer value greater than 0)")
+	, m_lowResolutionPassesMax("-sp", "--settings-low-res-passes", std::string("Max low resolution passes to perform.\n\t(") + SettingsUi::GetLowResolutionPassesAutoDescription() + ", or any integer value greater than 0)")
 	, m_numIterations("-si", "--settings-num-iterations", "Number of Priority-BP iterations per pass.")
 	, m_latticeGapX("-sw", "--settings-lattice-width", "Width of each gap in the lattice.")
 	, m_latticeGapY("-sh", "--settings-lattice-height", "Height of each gap in the lattice.")
 	, m_postPruneLabelsMin("-smn", "--settings-patches-min", "Min patches after pruning.")
 	, m_postPruneLabelsMax("-smx", "--settings-patches-max", "Max patches after pruning.")
-	, m_compositorPatchType("-sct", "--settings-compositor-patch-type", wxString("Compositor patch source type.\n\t(") + SettingsUi::JoinEnumDescriptions<PriorityBp::CompositorPatchType>() + ")")
-	, m_compositorPatchBlender("-scb", "--settings-compositor-patch-blender", wxString("Compositor patch blender style.\n\t(") + SettingsUi::JoinEnumDescriptions<PriorityBp::CompositorPatchBlender>() + ")")
+	, m_compositorPatchType("-sct", "--settings-compositor-patch-type", std::string("Compositor patch source type.\n\t(") + SettingsUi::JoinEnumDescriptions<PriorityBp::CompositorPatchType>() + ")")
+	, m_compositorPatchBlender("-scb", "--settings-compositor-patch-blender", std::string("Compositor patch blender style.\n\t(") + SettingsUi::JoinEnumDescriptions<PriorityBp::CompositorPatchBlender>() + ")")
 #if ENABLE_PATCHES_INPUT_OUTPUT
 	, m_inputPatchesPath("-pi", "--patches-input", "The input patches file path.")
 	, m_outputPatchesPath("-po", "--patches-output", "The output patches file path.")
@@ -121,7 +118,7 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 	cmdLine.AddParam(m_outputPatchesPath);
 #endif // ENABLE_PATCHES_INPUT_OUTPUT
 
-	wxString error;
+	std::string error;
 	m_isValid = cmdLine.Read(argc, argv, error);
 
 	// If the args were valid and the user isn't asking for the help text,
@@ -130,7 +127,7 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 	{
 		if (!m_inputImagePath.isSet)
 		{
-			error += wxString::Format("Missing input image path.\n");
+			error += Lafarren::Str::Format("Missing input image path.\n");
 			m_isValid = false;
 		}
 
@@ -140,12 +137,12 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 		{
 			if (!m_maskImagePath.isSet)
 			{
-				error += wxString::Format("Missing mask image path.\n");
+				error += Lafarren::Str::Format("Missing mask image path.\n");
 				m_isValid = false;
 			}
 			if (!m_outputImagePath.isSet)
 			{
-				error += wxString::Format("Missing output image path.\n");
+				error += Lafarren::Str::Format("Missing output image path.\n");
 				m_isValid = false;
 			}
 

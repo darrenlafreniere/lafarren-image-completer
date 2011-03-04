@@ -33,23 +33,23 @@ public:
 	// Returns a user friendly string describing the specified settings
 	// member. settingsMemberOffset is the offset in byte of the settings
 	// member (e.g., offsetof(PriorityBp::Settings, latticeGapX))
-	static wxString GetMemberDescription(int settingsMemberOffset);
+	static std::string GetMemberDescription(int settingsMemberOffset);
 
 	// Returns the command line option used to indicate
 	// PriorityBp::Settings::LOW_RESOLUTION_PASSES_AUTO.
-	static wxString GetLowResolutionPassesAutoDescription();
+	static std::string GetLowResolutionPassesAutoDescription();
 
 	// Returns a description string for an enum value.
-	static wxString GetEnumDescription(PriorityBp::CompositorPatchType e);
-	static wxString GetEnumDescription(PriorityBp::CompositorPatchBlender e);
+	static std::string GetEnumDescription(PriorityBp::CompositorPatchType e);
+	static std::string GetEnumDescription(PriorityBp::CompositorPatchBlender e);
 
 	template<typename T>
-	static wxString JoinEnumDescriptions()
+	static std::string JoinEnumDescriptions()
 	{
-		wxString joined;
+		std::string joined;
 		for (int e = TypeInfo<T>::First; e <= TypeInfo<T>::Last; ++e)
 		{
-			if (!joined.IsEmpty())
+			if (!joined.empty())
 			{
 				joined += ", ";
 			}

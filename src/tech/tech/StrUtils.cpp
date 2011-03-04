@@ -19,41 +19,38 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-//
-// Header to be precompiled
-//
+#include "Pch.h"
+#include "tech/StrUtils.h"
 
-#ifndef PCH_H
-#define PCH_H
+#include "tech/DbgMem.h"
 
-namespace Lafarren {}
-namespace PriorityBp {}
 using namespace Lafarren;
-using namespace PriorityBp;
 
-// Compile time switches:
-#define TECH_PROFILE 1
-#define TECH_PROFILE_MACROS 1
+std::string Str::Format(const char* format, ...)
+{
+	static char buffer[1024 * 16];
+	va_list argptr;
+	va_start(argptr, format);
+	vsnprintf(buffer, sizeof(buffer), format, argptr);
+	va_end(argptr);
+	return buffer;
+}
 
-#ifdef _DEBUG
-	#include <crtdbg.h>
-	#define DEBUG_NEW new(_NORMAL_BLOCK ,__FILE__, __LINE__)
-#else
-	#define DEBUG_NEW new
-#endif
+std::string Str::Replace(const std::string& s, char replace, const char* with)
+{
+	std::string replaced;
+	for (int i = 0, n = s.length(); i < n; ++i)
+	{
+		const char ch = s[i];
+		if (ch == replace)
+		{
+			replaced += with;
+		}
+		else
+		{
+			replaced += ch;
+		}
+	}
 
-#include <algorithm>
-#include <fstream>
-#include <iostream>
-#include <map>
-#include <math.h>
-#include <memory>
-#include <set>
-#include <string>
-#include <vector>
-
-// wxWidgets. Define HAVE_SSIZE_T so it doesn't conflict with taucs.h's ssize_t.
-#define HAVE_SSIZE_T
-#include "wx/wx.h"
-
-#endif
+	return replaced;
+}

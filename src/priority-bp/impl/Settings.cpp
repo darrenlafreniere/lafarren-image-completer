@@ -23,6 +23,7 @@
 #include "PriorityBpSettings.h"
 
 #include "tech/MathUtils.h"
+#include "tech/StrUtils.h"
 
 #include "PriorityBpHost.h"
 #include "Settings.h"
@@ -149,14 +150,14 @@ bool Settings::IsValid(InvalidMemberHandler* invalidMemberHandler) const
 	if (!(member >= min)) \
 	{ \
 		valid = false; \
-		handler.OnInvalidMemberDetected(offsetof(Settings, member), wxString::Format("(%I64d) is less than %I64d", int64(member), int64(min))); \
+		handler.OnInvalidMemberDetected(offsetof(Settings, member), Str::Format("(%I64d) is less than %I64d", int64(member), int64(min)).c_str()); \
 	}
 
 #define VALIDATE_NOT_GREATER_THAN(member, max) \
 	if (!(member <= max)) \
 	{ \
 		valid = false; \
-		handler.OnInvalidMemberDetected(offsetof(Settings, member), wxString::Format("(%I64d) is less than %I64d", int64(member), int64(max))); \
+		handler.OnInvalidMemberDetected(offsetof(Settings, member), Str::Format("(%I64d) is less than %I64d", int64(member), int64(max)).c_str()); \
 	}
 
 #define VALIDATE_IN_RANGE(member, min, max) \
@@ -176,7 +177,7 @@ bool Settings::IsValid(InvalidMemberHandler* invalidMemberHandler) const
 	{
 		valid = false;
 		const int memberOffset = (patchWidth > patchHeight) ? offsetof(Settings, patchWidth) : offsetof(Settings, patchHeight);
-		handler.OnInvalidMemberDetected(memberOffset, wxString::Format("is yielding too large of a patch (%d * %d > %I64d)", patchWidth, patchHeight, PATCH_PIXELS_MAX));
+		handler.OnInvalidMemberDetected(memberOffset, Str::Format("is yielding too large of a patch (%d * %d > %I64d)", patchWidth, patchHeight, PATCH_PIXELS_MAX).c_str());
 	}
 
 	VALIDATE_IN_RANGE(confidenceBeliefThreshold, CONFIDENCE_BELIEF_THRESHOLD_MIN, CONFIDENCE_BELIEF_THRESHOLD_MAX);

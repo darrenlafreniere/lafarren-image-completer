@@ -31,9 +31,9 @@
 
 namespace Lafarren
 {
-	// CmdLine::ParamOption<wxString> partial specialization.
+	// CmdLine::ParamOption<std::string> partial specialization.
 	template<>
-	void CmdLine::ParamOption<wxString>::ReadOption(const char* option)
+	void CmdLine::ParamOption<std::string>::ReadOption(const char* option)
 	{
 		value = option;
 	}

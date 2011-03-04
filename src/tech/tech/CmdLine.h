@@ -25,8 +25,6 @@
 #ifndef TECH_CMD_LINE_H
 #define TECH_CMD_LINE_H
 
-#include <wx/string.h>
-
 namespace Lafarren
 {
 	//
@@ -39,12 +37,12 @@ namespace Lafarren
 		// Abstract base parameter class.
 		struct Param
 		{
-			const wxString shortName;
-			const wxString longName;
-			const wxString description;
+			const std::string shortName;
+			const std::string longName;
+			const std::string description;
 			bool isSet;
 
-			Param(const wxString& shortName, const wxString& longName, const wxString description);
+			Param(const std::string& shortName, const std::string& longName, const std::string description);
 			void Set();
 
 			virtual bool IsOption() const = 0;
@@ -54,7 +52,7 @@ namespace Lafarren
 		// True/false switch parameters. True if arg is present.
 		struct ParamSwitch : public Param
 		{
-			ParamSwitch(const wxString& shortName, const wxString& longName, const wxString description) : Param(shortName, longName, description) {}
+			ParamSwitch(const std::string& shortName, const std::string& longName, const std::string description) : Param(shortName, longName, description) {}
 			virtual bool IsOption() const { return false; }
 			virtual void ReadOption(const char* option) {}
 		};
@@ -65,7 +63,7 @@ namespace Lafarren
 		{
 			T value;
 
-			ParamOption(const wxString& shortName, const wxString& longName, const wxString description) : Param(shortName, longName, description) {}
+			ParamOption(const std::string& shortName, const std::string& longName, const std::string description) : Param(shortName, longName, description) {}
 			virtual bool IsOption() const { return true; }
 			// Implement ReadOptions in a partial template specialization.
 			virtual void ReadOption(const char* option) {}
@@ -83,10 +81,10 @@ namespace Lafarren
 		//
 		// If an unknown option was passed, or an expected option argv element
 		// isn't present, the method stops reading and returns false.
-		bool Read(int argc, char** argv, wxString& outError) const;
+		bool Read(int argc, char** argv, std::string& outError) const;
 
 		// Generates a usage string based on the contained Param instances.
-		wxString GetUsageString() const;
+		std::string GetUsageString() const;
 		inline void PrintfUsage() const { printf(GetUsageString().c_str()); }
 
 	private:
