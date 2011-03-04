@@ -22,9 +22,8 @@
 #ifndef COMMAND_LINE_OPTIONS_H
 #define COMMAND_LINE_OPTIONS_H
 
+#include "tech/CmdLine.h"
 #include "PriorityBpTypes.h"
-
-class wxCmdLineParser;
 
 // Reading/writing a patches file is a development-only thing when doing
 // compositor work. Enable this, and use -po patches.filename on the command
@@ -43,87 +42,80 @@ public:
 
 	inline bool IsValid() const { return m_isValid; }
 
-	inline bool HasInputImagePath() const { return !m_inputImagePath.IsEmpty(); }
-	inline bool HasMaskImagePath() const { return !m_maskImagePath.IsEmpty(); }
-	inline bool HasOutputImagePath() const { return !m_outputImagePath.IsEmpty(); }
+	inline bool HasInputImagePath() const { return m_inputImagePath.isSet; }
+	inline bool HasMaskImagePath() const { return m_maskImagePath.isSet; }
+	inline bool HasOutputImagePath() const { return m_outputImagePath.isSet; }
 
-	inline const wxString& GetInputImagePath() const { return m_inputImagePath; }
-	inline const wxString& GetMaskImagePath() const { return m_maskImagePath; }
-	inline const wxString& GetOutputImagePath() const { return m_outputImagePath; }
+	inline const wxString& GetInputImagePath() const { return m_inputImagePath.value; }
+	inline const wxString& GetMaskImagePath() const { return m_maskImagePath.value; }
+	inline const wxString& GetOutputImagePath() const { return m_outputImagePath.value; }
 
 #if ENABLE_PATCHES_INPUT_OUTPUT
-	inline bool HasInputPatchesPath() const { return !m_inputPatchesPath.IsEmpty(); }
-	inline bool HasOutputPatchesPath() const { return !m_outputPatchesPath.IsEmpty(); }
+	inline bool HasInputPatchesPath() const { return m_inputPatchesPath.isSet; }
+	inline bool HasOutputPatchesPath() const { return m_outputPatchesPath.isSet; }
 
-	inline const wxString& GetInputPatchesPath() const { return m_inputPatchesPath; }
-	inline const wxString& GetOutputPatchesPath() const { return m_outputPatchesPath; }
+	inline const wxString& GetInputPatchesPath() const { return m_inputPatchesPath.value; }
+	inline const wxString& GetOutputPatchesPath() const { return m_outputPatchesPath.value; }
 #endif // ENABLE_PATCHES_INPUT_OUTPUT
 
-	inline bool ShouldShowSettings() const { return m_shouldShowSettings; }
+	inline bool ShouldShowSettings() const { return m_shouldShowSettings.isSet; }
 	inline bool ShouldRunImageCompletion() const { return m_shouldRunImageCompletion; }
 
-	inline bool DebugLowResolutionPasses() const { return m_debugLowResolutionPasses; }
+	inline bool DebugLowResolutionPasses() const { return m_debugLowResolutionPasses.isSet; }
 
-	inline bool HasLowResolutionPassesMax() const { return m_lowResolutionPassesMax.wasFound; }
+	inline bool HasLowResolutionPassesMax() const { return m_lowResolutionPassesMax.isSet; }
 	inline int GetLowResolutionPassesMax() const { return m_lowResolutionPassesMax.value; }
 
-	inline bool HasNumIterations() const { return m_numIterations.wasFound; }
+	inline bool HasNumIterations() const { return m_numIterations.isSet; }
 	inline int GetNumIterations() const { return m_numIterations.value; }
 
-	inline bool HasLatticeGapX() const { return m_latticeGapX.wasFound; }
+	inline bool HasLatticeGapX() const { return m_latticeGapX.isSet; }
 	inline int GetLatticeGapX() const { return m_latticeGapX.value; }
 
-	inline bool HasLatticeGapY() const { return m_latticeGapY.wasFound; }
+	inline bool HasLatticeGapY() const { return m_latticeGapY.isSet; }
 	inline int GetLatticeGapY() const { return m_latticeGapY.value; }
 
-	inline bool HasPostPruneLabelsMin() const { return m_postPruneLabelsMin.wasFound; }
+	inline bool HasPostPruneLabelsMin() const { return m_postPruneLabelsMin.isSet; }
 	inline int GetPostPruneLabelsMin() const { return m_postPruneLabelsMin.value; }
 
-	inline bool HasPostPruneLabelsMax() const { return m_postPruneLabelsMax.wasFound; }
+	inline bool HasPostPruneLabelsMax() const { return m_postPruneLabelsMax.isSet; }
 	inline int GetPostPruneLabelsMax() const { return m_postPruneLabelsMax.value; }
 
-	inline bool HasCompositorPatchType() const { return m_compositorPatchType.wasFound; }
+	inline bool HasCompositorPatchType() const { return m_compositorPatchType.isSet; }
 	inline PriorityBp::CompositorPatchType GetCompositorPatchType() const { return m_compositorPatchType.value; }
 
-	inline bool HasCompositorPatchBlender() const { return m_compositorPatchBlender.wasFound; }
+	inline bool HasCompositorPatchBlender() const { return m_compositorPatchBlender.isSet; }
 	inline PriorityBp::CompositorPatchBlender GetCompositorPatchBlender() const { return m_compositorPatchBlender.value; }
 
 private:
-	wxString m_inputImagePath;
-	wxString m_maskImagePath;
-	wxString m_outputImagePath;
-#if ENABLE_PATCHES_INPUT_OUTPUT
-	wxString m_inputPatchesPath;
-	wxString m_outputPatchesPath;
-#endif // ENABLE_PATCHES_INPUT_OUTPUT
-
-	template<typename T>
-	struct ValueFinder
+	// Solely for specialization.
+	struct LowResolutionPassesMax
 	{
-		bool wasFound;
-		T value;
-
-		ValueFinder() : wasFound(false) {}
-		void Find(const wxCmdLineParser& parser, const wxString& name);
+		int value;
+		LowResolutionPassesMax& operator=(int value) { this->value = value; return *this; }
+		operator int() const { return value; }
 	};
 
-	// Solely for specialization.
-	typedef int LowResolutionPassesMax;
+	Lafarren::CmdLine::ParamSwitch m_shouldDisplayUsage;
+	Lafarren::CmdLine::ParamOption<wxString> m_inputImagePath;
+	Lafarren::CmdLine::ParamOption<wxString> m_maskImagePath;
+	Lafarren::CmdLine::ParamOption<wxString> m_outputImagePath;
+	Lafarren::CmdLine::ParamSwitch m_shouldShowSettings;
+	Lafarren::CmdLine::ParamSwitch m_debugLowResolutionPasses;
+	Lafarren::CmdLine::ParamOption<LowResolutionPassesMax> m_lowResolutionPassesMax;
+	Lafarren::CmdLine::ParamOption<int> m_numIterations;
+	Lafarren::CmdLine::ParamOption<int> m_latticeGapX;
+	Lafarren::CmdLine::ParamOption<int> m_latticeGapY;
+	Lafarren::CmdLine::ParamOption<int> m_postPruneLabelsMin;
+	Lafarren::CmdLine::ParamOption<int> m_postPruneLabelsMax;
+	Lafarren::CmdLine::ParamOption<PriorityBp::CompositorPatchType> m_compositorPatchType;
+	Lafarren::CmdLine::ParamOption<PriorityBp::CompositorPatchBlender> m_compositorPatchBlender;
+#if ENABLE_PATCHES_INPUT_OUTPUT
+	Lafarren::CmdLine::ParamOption<wxString> m_inputPatchesPath;
+	Lafarren::CmdLine::ParamOption<wxString> m_outputPatchesPath;
+#endif // ENABLE_PATCHES_INPUT_OUTPUT
 
-	// Some of these are longs instead of ints because of
-	// wxCmdLineParser::Found(const wxString&, long*)
-	ValueFinder<LowResolutionPassesMax> m_lowResolutionPassesMax;
-	ValueFinder<long> m_numIterations;
-	ValueFinder<long> m_latticeGapX;
-	ValueFinder<long> m_latticeGapY;
-	ValueFinder<long> m_postPruneLabelsMin;
-	ValueFinder<long> m_postPruneLabelsMax;
-	ValueFinder<PriorityBp::CompositorPatchType> m_compositorPatchType;
-	ValueFinder<PriorityBp::CompositorPatchBlender> m_compositorPatchBlender;
-
-	bool m_shouldShowSettings;
 	bool m_shouldRunImageCompletion;
-	bool m_debugLowResolutionPasses;
 	bool m_isValid;
 };
 

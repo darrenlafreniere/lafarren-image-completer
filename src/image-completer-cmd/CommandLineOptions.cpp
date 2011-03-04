@@ -27,125 +27,51 @@
 
 #include "tech/DbgMem.h"
 
-//
-// Constants
-//
-static const wxString CMD_IMAGE_INPUT                               = "ii";
-static const wxString CMD_IMAGE_MASK                                = "im";
-static const wxString CMD_IMAGE_OUTPUT                              = "io";
-
-static const wxString CMD_SETTINGS_SHOW                             = "ss";
-static const wxString CMD_SETTINGS_LOW_RESOLUTION_PASSES_MAX        = "sp";
-static const wxString CMD_SETTINGS_DEBUG_LOW_RESOLUTION_PASSES      = "sd";
-static const wxString CMD_SETTINGS_NUM_ITERATIONS                   = "si";
-static const wxString CMD_SETTINGS_LATTICE_GAP_WIDTH                = "sw";
-static const wxString CMD_SETTINGS_LATTICE_GAP_HEIGHT               = "sh";
-static const wxString CMD_SETTINGS_POST_PRUNE_PATCHES_MIN           = "smn";
-static const wxString CMD_SETTINGS_POST_PRUNE_PATCHES_MAX           = "smx";
-static const wxString CMD_SETTINGS_COMPOSITOR_PATCH_TYPE            = "sct";
-static const wxString CMD_SETTINGS_COMPOSITOR_PATCH_BLENDER         = "scb";
-
-#if ENABLE_PATCHES_INPUT_OUTPUT
-static const wxString CMD_PATCHES_INPUT                             = "pi";
-static const wxString CMD_PATCHES_OUTPUT                            = "po";
-#endif // ENABLE_PATCHES_INPUT_OUTPUT
-
-// Lets our wxCmdLineEntryDesc descriptions reference the char* buffer of an
-// inline constructed wxString, without worrying about the scope of that
-// wxString. Also provides some pre and post formatting for consistency.
-class Desc
+// CmdLine::ParamOption<CommandLineOptions::LowResolutionPassesMax> partial specialization.
+template<>
+void Lafarren::CmdLine::ParamOption<CommandLineOptions::LowResolutionPassesMax>::ReadOption(const char* option)
 {
-public:
-	Desc(const wxString& desc)
+	const wxString stringValue(option);
+	if (stringValue.CmpNoCase(SettingsUi::GetLowResolutionPassesAutoDescription()) == 0)
 	{
-		wxASSERT(m_staticStringsSize < MAX);
-		m_index = m_staticStringsSize++;
-		m_staticStrings[m_index] = wxString::Format("\n%s%s\n", Indent(), desc.c_str());
+		this->value = PriorityBp::Settings::LOW_RESOLUTION_PASSES_AUTO;
 	}
-
-	operator const char*() const
+	else
 	{
-		return m_staticStrings[m_index].c_str();
+		this->value = atoi(stringValue);
 	}
-
-	inline static const char* Indent() { return "   "; }
-
-private:
-	static const int MAX = 256;
-	static wxString m_staticStrings[MAX];
-	static int m_staticStringsSize;
-	int m_index;
-};
-wxString Desc::m_staticStrings[MAX];
-int Desc::m_staticStringsSize;
-
-//
-// CommandLineOptions::ValueFinder and partial specializations.
-//
-template<typename T>
-void CommandLineOptions::ValueFinder<T>::Find(const wxCmdLineParser& parser, const wxString& name)
-{
-	wasFound = parser.Found(name, &value);
 }
 
+// CmdLine::ParamOption<PriorityBp::CompositorPatchType> partial specialization.
 template<>
-void CommandLineOptions::ValueFinder<CommandLineOptions::LowResolutionPassesMax>::Find(const wxCmdLineParser& parser, const wxString& name)
+void Lafarren::CmdLine::ParamOption<PriorityBp::CompositorPatchType>::ReadOption(const char* option)
 {
-	wxString stringValue;
-	if (parser.Found(name, &stringValue))
+	const wxString stringValue(option);
+	for (int e = PriorityBp::CompositorPatchTypeInvalid + 1; e < PriorityBp::CompositorPatchTypeNum; ++e)
 	{
-		if (stringValue.CmpNoCase(SettingsUi::GetLowResolutionPassesAutoDescription()) == 0)
+		const PriorityBp::CompositorPatchType compositorPatchType = PriorityBp::CompositorPatchType(e);
+		const wxString desc(SettingsUi::GetEnumDescription(compositorPatchType));
+		if (stringValue.CmpNoCase(desc) == 0)
 		{
-			this->wasFound = true;
-			value = PriorityBp::Settings::LOW_RESOLUTION_PASSES_AUTO;
-		}
-		else if (stringValue.IsNumber())
-		{
-			long longValue = 0;
-			stringValue.ToLong(&longValue);
-
-			this->wasFound = true;
-			this->value = longValue;
+			this->value = compositorPatchType;
+			break;
 		}
 	}
 }
 
+// CmdLine::ParamOption<PriorityBp::CompositorPatchBlender> partial specialization.
 template<>
-void CommandLineOptions::ValueFinder<PriorityBp::CompositorPatchType>::Find(const wxCmdLineParser& parser, const wxString& name)
+void Lafarren::CmdLine::ParamOption<PriorityBp::CompositorPatchBlender>::ReadOption(const char* option)
 {
-	wxString stringValue;
-	if (parser.Found(name, &stringValue))
+	const wxString stringValue(option);
+	for (int e = PriorityBp::CompositorPatchBlenderInvalid + 1; e < PriorityBp::CompositorPatchBlenderNum; ++e)
 	{
-		for (int e = PriorityBp::CompositorPatchTypeInvalid + 1; e < PriorityBp::CompositorPatchTypeNum; ++e)
+		const PriorityBp::CompositorPatchBlender compositorPatchBlender = PriorityBp::CompositorPatchBlender(e);
+		const wxString desc(SettingsUi::GetEnumDescription(compositorPatchBlender));
+		if (stringValue.CmpNoCase(desc) == 0)
 		{
-			const PriorityBp::CompositorPatchType compositorPatchType = PriorityBp::CompositorPatchType(e);
-			const wxString desc(SettingsUi::GetEnumDescription(compositorPatchType));
-			if (stringValue.CmpNoCase(desc) == 0)
-			{
-				this->wasFound = true;
-				this->value = compositorPatchType;
-				break;
-			}
-		}
-	}
-}
-
-template<>
-void CommandLineOptions::ValueFinder<PriorityBp::CompositorPatchBlender>::Find(const wxCmdLineParser& parser, const wxString& name)
-{
-	wxString stringValue;
-	if (parser.Found(name, &stringValue))
-	{
-		for (int e = PriorityBp::CompositorPatchBlenderInvalid + 1; e < PriorityBp::CompositorPatchBlenderNum; ++e)
-		{
-			const PriorityBp::CompositorPatchBlender compositorPatchBlender = PriorityBp::CompositorPatchBlender(e);
-			const wxString desc(SettingsUi::GetEnumDescription(compositorPatchBlender));
-			if (stringValue.CmpNoCase(desc) == 0)
-			{
-				this->wasFound = true;
-				this->value = compositorPatchBlender;
-				break;
-			}
+			this->value = compositorPatchBlender;
+			break;
 		}
 	}
 }
@@ -154,136 +80,91 @@ void CommandLineOptions::ValueFinder<PriorityBp::CompositorPatchBlender>::Find(c
 // CommandLineOptions
 //
 CommandLineOptions::CommandLineOptions(int argc, char** argv)
-	: m_isValid(false)
-	, m_shouldShowSettings(false)
+	: m_shouldDisplayUsage("-h", "-help", "Display this help text.")
+	, m_inputImagePath("-ii", "--image-input", "The input image file path.")
+	, m_maskImagePath("-im", "--image-mask", "The mask image file path.")
+	, m_outputImagePath("-io", "--image-output", "The output image file path.")
+	, m_shouldShowSettings("-ss", "--settings-show", "Show the settings for the input image and exit.")
+	, m_debugLowResolutionPasses("-sd", "--settings-debug-low-res-passes", "Output separate images for each low resolution pass.")
+	, m_lowResolutionPassesMax("-sp", "--settings-low-res-passes", wxString("Max low resolution passes to perform.\n\t(") + SettingsUi::GetLowResolutionPassesAutoDescription() + ", or any integer value greater than 0)")
+	, m_numIterations("-si", "--settings-num-iterations", "Number of Priority-BP iterations per pass.")
+	, m_latticeGapX("-sw", "--settings-lattice-width", "Width of each gap in the lattice.")
+	, m_latticeGapY("-sh", "--settings-lattice-height", "Height of each gap in the lattice.")
+	, m_postPruneLabelsMin("-smn", "--settings-patches-min", "Min patches after pruning.")
+	, m_postPruneLabelsMax("-smx", "--settings-patches-max", "Max patches after pruning.")
+	, m_compositorPatchType("-sct", "--settings-compositor-patch-type", wxString("Compositor patch source type.\n\t(") + SettingsUi::JoinEnumDescriptions<PriorityBp::CompositorPatchType>() + ")")
+	, m_compositorPatchBlender("-scb", "--settings-compositor-patch-blender", wxString("Compositor patch blender style.\n\t(") + SettingsUi::JoinEnumDescriptions<PriorityBp::CompositorPatchBlender>() + ")")
+#if ENABLE_PATCHES_INPUT_OUTPUT
+	, m_inputPatchesPath("-pi", "--patches-input", "The input patches file path.")
+	, m_outputPatchesPath("-po", "--patches-output", "The output patches file path.")
+#endif // ENABLE_PATCHES_INPUT_OUTPUT
 	, m_shouldRunImageCompletion(false)
-	, m_debugLowResolutionPasses(false)
+	, m_isValid(false)
 {
-	// Create lists of PriorityBp::CompositorPatchType and
-	// PriorityBp::CompositorPatchBlender options
-	wxString compositorPatchTypeOptions;
-	wxString compositorPatchBlenderOptions;
+	Lafarren::CmdLine cmdLine;
+	cmdLine.AddParam(m_shouldDisplayUsage);
+	cmdLine.AddParam(m_inputImagePath);
+	cmdLine.AddParam(m_maskImagePath);
+	cmdLine.AddParam(m_outputImagePath);
+	cmdLine.AddParam(m_shouldShowSettings);
+	cmdLine.AddParam(m_debugLowResolutionPasses);
+	cmdLine.AddParam(m_lowResolutionPassesMax);
+	cmdLine.AddParam(m_numIterations);
+	cmdLine.AddParam(m_latticeGapX);
+	cmdLine.AddParam(m_latticeGapY);
+	cmdLine.AddParam(m_postPruneLabelsMin);
+	cmdLine.AddParam(m_postPruneLabelsMax);
+	cmdLine.AddParam(m_compositorPatchType);
+	cmdLine.AddParam(m_compositorPatchBlender);
+#if ENABLE_PATCHES_INPUT_OUTPUT
+	cmdLine.AddParam(m_inputPatchesPath);
+	cmdLine.AddParam(m_outputPatchesPath);
+#endif // ENABLE_PATCHES_INPUT_OUTPUT
+
+	wxString error;
+	m_isValid = cmdLine.Read(argc, argv, error);
+
+	// If the args were valid and the user isn't asking for the help text,
+	// validate the mandatory options.
+	if (m_isValid && !m_shouldDisplayUsage.isSet)
 	{
-		for (int e = PriorityBp::CompositorPatchTypeInvalid + 1; e < PriorityBp::CompositorPatchTypeNum; ++e)
+		if (!m_inputImagePath.isSet)
 		{
-			if (!compositorPatchTypeOptions.IsEmpty())
-			{
-				compositorPatchTypeOptions += ", ";
-			}
-			compositorPatchTypeOptions += SettingsUi::GetEnumDescription(PriorityBp::CompositorPatchType(e));
+			error += wxString::Format("Missing input image path.\n");
+			m_isValid = false;
 		}
 
-		for (int e = PriorityBp::CompositorPatchBlenderInvalid + 1; e < PriorityBp::CompositorPatchBlenderNum; ++e)
+		// If the user isn't asking to display the auto-settings for the input
+		// image, validate the other mandatory options.
+		if (!m_shouldShowSettings.isSet)
 		{
-			if (!compositorPatchBlenderOptions.IsEmpty())
+			if (!m_maskImagePath.isSet)
 			{
-				compositorPatchBlenderOptions += ", ";
+				error += wxString::Format("Missing mask image path.\n");
+				m_isValid = false;
 			}
-			compositorPatchBlenderOptions += SettingsUi::GetEnumDescription(PriorityBp::CompositorPatchBlender(e));
+			if (!m_outputImagePath.isSet)
+			{
+				error += wxString::Format("Missing output image path.\n");
+				m_isValid = false;
+			}
+
+			m_shouldRunImageCompletion = m_isValid;
 		}
 	}
 
-	const wxCmdLineEntryDesc CMD_LINE_DESC[] =
+	if (!m_isValid)
 	{
-		{ wxCMD_LINE_OPTION, CMD_IMAGE_INPUT, "image-input", Desc("The input image file path."), wxCMD_LINE_VAL_STRING, wxCMD_LINE_OPTION_MANDATORY },
-		{ wxCMD_LINE_OPTION, CMD_IMAGE_MASK, "image-mask", Desc("The mask image file path."), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
-		{ wxCMD_LINE_OPTION, CMD_IMAGE_OUTPUT, "image-output", Desc("The output image file path."), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
+		printf("\n");
+		printf(error.c_str());
+		m_shouldDisplayUsage.isSet = true;
+	}
 
-		{ wxCMD_LINE_SWITCH, CMD_SETTINGS_SHOW, "settings-show", Desc("Show the settings and exit.") },
-
-		{ wxCMD_LINE_SWITCH, CMD_SETTINGS_DEBUG_LOW_RESOLUTION_PASSES, "settings-debug-low-res-passes", Desc("Output separate images for each low resolution pass.") },
-		{ wxCMD_LINE_OPTION, CMD_SETTINGS_LOW_RESOLUTION_PASSES_MAX, "settings-low-res-passes", Desc(wxString("Max low resolution passes to perform.\n") + Desc::Indent() + "(" + SettingsUi::GetLowResolutionPassesAutoDescription() + ", or any integer value greater than 0)"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
-		{ wxCMD_LINE_OPTION, CMD_SETTINGS_NUM_ITERATIONS, "settings-num-iterations", Desc("Number of Priority-BP iterations per pass."), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL },
-		{ wxCMD_LINE_OPTION, CMD_SETTINGS_LATTICE_GAP_WIDTH, "settings-lattice-width", Desc("Width of each gap in the lattice."), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL },
-		{ wxCMD_LINE_OPTION, CMD_SETTINGS_LATTICE_GAP_HEIGHT, "settings-lattice-height", Desc("Height of each gap in the lattice."), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL },
-		{ wxCMD_LINE_OPTION, CMD_SETTINGS_POST_PRUNE_PATCHES_MIN, "settings-patches-min", Desc("Min patches after pruning."), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL },
-		{ wxCMD_LINE_OPTION, CMD_SETTINGS_POST_PRUNE_PATCHES_MAX, "settings-patches-max", Desc("Max patches after pruning."), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL },
-		{ wxCMD_LINE_OPTION, CMD_SETTINGS_COMPOSITOR_PATCH_TYPE, "settings-compositor-patch-type", Desc(wxString("Compositor patch source type.\n") + Desc::Indent() + "(" + compositorPatchTypeOptions + ")"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
-		{ wxCMD_LINE_OPTION, CMD_SETTINGS_COMPOSITOR_PATCH_BLENDER, "settings-compositor-patch-blender", Desc(wxString("Compositor patch blender style.\n") + Desc::Indent() + "(" + compositorPatchBlenderOptions + ")"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
-
-#if ENABLE_PATCHES_INPUT_OUTPUT
-		{ wxCMD_LINE_OPTION, CMD_PATCHES_INPUT, "patches-input", Desc("The input patches file path."), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
-		{ wxCMD_LINE_OPTION, CMD_PATCHES_OUTPUT, "patches-output", Desc("The output patches file path."), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
-#endif // ENABLE_PATCHES_INPUT_OUTPUT
-
-		{ wxCMD_LINE_NONE }
-	};
-
-	wxCmdLineParser parser(argc, argv);
-	parser.SetLogo("\nlafarren.com\nImage Completion Using Efficient Belief Propagation\n");
-	parser.SetSwitchChars("-");
-	parser.SetDesc(CMD_LINE_DESC);
-	if (parser.Parse() == 0)
+	if (m_shouldDisplayUsage.isSet)
 	{
-		parser.Found(CMD_IMAGE_INPUT, &m_inputImagePath);
-		parser.Found(CMD_IMAGE_MASK, &m_maskImagePath);
-		parser.Found(CMD_IMAGE_OUTPUT, &m_outputImagePath);
+		cmdLine.PrintfUsage();
 
-#if ENABLE_PATCHES_INPUT_OUTPUT
-		parser.Found(CMD_PATCHES_INPUT, &m_inputPatchesPath);
-		parser.Found(CMD_PATCHES_OUTPUT, &m_outputPatchesPath);
-#endif // ENABLE_PATCHES_INPUT_OUTPUT
-
-		m_shouldShowSettings = parser.Found(CMD_SETTINGS_SHOW);
-
-		// As of now, don't run image completion if the user wanted the
-		// settings displayed. Maybe change this later.
-		m_shouldRunImageCompletion = !m_shouldShowSettings;
-
-		m_isValid = true;
-
-		// Invalidate if something is missing.
-		{
-			wxString errorMessage;
-
-			// wxparser::Parse() should've failed if the input image
-			// wasn't present, since it's set to wxCMD_LINE_OPTION_MANDATORY.
-			wxASSERT(HasInputImagePath());
-
-			if (m_shouldShowSettings)
-			{
-				// Nothing besides the input image is needed to display the settings.
-			}
-
-			if (m_shouldRunImageCompletion)
-			{
-				// Running image completion requires mask and output images.
-				if (!HasMaskImagePath() && !HasOutputImagePath())
-				{
-					errorMessage = wxString::Format("\nMissing mask and output image paths. Please specify:\n\n\t-%s path/to/maskimage.ext -%s path/to/outputimage.ext\n", CMD_IMAGE_MASK.c_str(), CMD_IMAGE_OUTPUT.c_str());
-					m_isValid = false;
-				}
-				else if (!HasMaskImagePath())
-				{
-					errorMessage = wxString::Format("\nMissing mask image path. Please specify:\n\n\t-%s path/to/maskimage.ext\n", CMD_IMAGE_MASK.c_str());
-					m_isValid = false;
-				}
-				else if (!HasOutputImagePath())
-				{
-					errorMessage = wxString::Format("\nMissing output image path. Please specify:\n\n\t-%s path/to/outputimage.ext\n", CMD_IMAGE_OUTPUT.c_str());
-					m_isValid = false;
-				}
-			}
-
-			if (!m_isValid)
-			{
-				parser.Usage();
-				wxMessageOutput::Get()->Printf(errorMessage);
-			}
-			else
-			{
-				// These options are optional. If anything is invalid,
-				// Priority::Settings::IsValid() will catch it later.
-				m_debugLowResolutionPasses = parser.Found(CMD_SETTINGS_DEBUG_LOW_RESOLUTION_PASSES);
-				m_lowResolutionPassesMax.Find(parser, CMD_SETTINGS_LOW_RESOLUTION_PASSES_MAX);
-				m_numIterations.Find(parser, CMD_SETTINGS_NUM_ITERATIONS);
-				m_latticeGapX.Find(parser, CMD_SETTINGS_LATTICE_GAP_WIDTH);
-				m_latticeGapY.Find(parser, CMD_SETTINGS_LATTICE_GAP_HEIGHT);
-				m_postPruneLabelsMin.Find(parser, CMD_SETTINGS_POST_PRUNE_PATCHES_MIN);
-				m_postPruneLabelsMax.Find(parser, CMD_SETTINGS_POST_PRUNE_PATCHES_MAX);
-				m_compositorPatchType.Find(parser, CMD_SETTINGS_COMPOSITOR_PATCH_TYPE);
-				m_compositorPatchBlender.Find(parser, CMD_SETTINGS_COMPOSITOR_PATCH_BLENDER);
-			}
-		}
+		// If the usage is printed for whatever reason, don't allow the process to continue.
+		m_isValid = false;
 	}
 }

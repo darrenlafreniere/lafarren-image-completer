@@ -89,4 +89,18 @@ namespace PriorityBp
 	};
 }
 
+// Full TypeInfo specialization for PriorityBp::CompositorPatchType.
+template<> struct TypeInfo<PriorityBp::CompositorPatchType>
+{
+	static const int First = PriorityBp::CompositorPatchTypeInvalid + 1;
+	static const int Last = PriorityBp::CompositorPatchTypeNum - 1;
+};
+
+// Full TypeInfo specialization for PriorityBp::CompositorPatchBlender.
+template<> struct TypeInfo<PriorityBp::CompositorPatchBlender>
+{
+	static const int First = PriorityBp::CompositorPatchBlenderInvalid + 1;
+	static const int Last = PriorityBp::CompositorPatchBlenderNum - 1;
+};
+
 #endif

@@ -43,6 +43,22 @@ public:
 	static wxString GetEnumDescription(PriorityBp::CompositorPatchType e);
 	static wxString GetEnumDescription(PriorityBp::CompositorPatchBlender e);
 
+	template<typename T>
+	static wxString JoinEnumDescriptions()
+	{
+		wxString joined;
+		for (int e = TypeInfo<T>::First; e <= TypeInfo<T>::Last; ++e)
+		{
+			if (!joined.IsEmpty())
+			{
+				joined += ", ";
+			}
+			joined += SettingsUi::GetEnumDescription(T(e));
+		}
+
+		return joined;
+	}
+
 	// An instance of this class can be passed to PriorityBp::Settings::IsValid.
 	// It'll display info for an invalid settings member(s).
 	class PrintInvalidMembers : public PriorityBp::Settings::InvalidMemberHandler

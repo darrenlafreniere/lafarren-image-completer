@@ -332,6 +332,7 @@ int AppCmdHostImage::GetHeight() const
 int main(int argc, char** argv)
 {
 	bool succeeded = false;
+	printf("\nlafarren.com\nImage Completion Using Efficient Belief Propagation\n");
 
 	TECH_MEM_PROFILE("main");
 	TECH_TIME_PROFILE("main");

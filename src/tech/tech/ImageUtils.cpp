@@ -19,9 +19,6 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-//
-// Contains inline implementations of ImageUtils.h definitions.
-//
 #include "Pch.h"
 #include "tech/ImageUtils.h"
 

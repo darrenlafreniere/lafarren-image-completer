@@ -74,6 +74,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="tech\Atomic.h" />
+    <ClInclude Include="tech\CmdLine.h" />
     <ClInclude Include="tech\Core.h" />
     <ClInclude Include="tech\DbgMem.h" />
     <ClInclude Include="tech\ImageUtils.h" />
@@ -84,6 +85,7 @@
     <ClInclude Include="Pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="tech\CmdLine.cpp" />
     <ClCompile Include="tech\ImageUtils.cpp" />
     <ClCompile Include="Pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -94,6 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="tech\Atomic.inl" />
+    <None Include="tech\CmdLine.inl" />
     <None Include="tech\ImageUtils.inl" />
     <None Include="tech\MathUtils.inl" />
   </ItemGroup>

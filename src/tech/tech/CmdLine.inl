@@ -20,40 +20,30 @@
 //
 
 //
-// tech base, platform/compiler independent definitions
+// Contains inline implementations of CmdLine.h definitions.
 //
-#ifndef TECH_CORE_H
-#define TECH_CORE_H
+#ifndef TECH_CMD_LINE_INL
+#define TECH_CMD_LINE_INL
 
-//
-// Native typedefs.
-// NOTE: these are in the global namespace.
-//
-typedef unsigned char uchar;
-typedef unsigned short ushort;
-typedef unsigned int uint;
-typedef unsigned long ulong;
-
-// Can be fully specialized for type specific information.
-template<typename T> struct TypeInfo {};
-
-#ifdef _MSC_VER
-// Only implemented for 32 bit builds at the moment.
-// Use these only where size actually matters.
-typedef char int8;
-typedef unsigned char uint8;
-typedef unsigned char byte;
-typedef short int16;
-typedef unsigned short uint16;
-typedef int int32;
-typedef unsigned int uint32;
-typedef __int64 int64;
-typedef unsigned __int64 uint64;
-
-#define FORCE_INLINE __forceinline
-
-#else
-#error "Implement tech/Core.h for this platform!"
+#ifndef INCLUDING_TECH_CMD_LINE_INL
+#error "CmdLine.inl must only be included by CmdLine.h"
 #endif
+
+namespace Lafarren
+{
+	// CmdLine::ParamOption<wxString> partial specialization.
+	template<>
+	void CmdLine::ParamOption<wxString>::ReadOption(const char* option)
+	{
+		value = option;
+	}
+
+	// CmdLine::ParamOption<int> partial specialization.
+	template<>
+	void CmdLine::ParamOption<int>::ReadOption(const char* option)
+	{
+		value = atoi(option);
+	}
+}
 
 #endif
