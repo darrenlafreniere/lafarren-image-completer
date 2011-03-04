@@ -12,7 +12,7 @@
 
 #include "tech/DbgMem.h"
 
-namespace PriorityBp { namespace ScalableDebugging
+namespace PriorityBp
 {
 	class OutputHostImage : public PriorityBp::HostImage
 	{
@@ -61,7 +61,10 @@ namespace PriorityBp { namespace ScalableDebugging
 		std::string m_filePath;
 		wxImage m_wxImage;
 	};
+}
 
+namespace PriorityBp { namespace ScalableDebugging
+{
 	void RunPriorityBp(
 		PriorityBpRunner& priorityBpRunner,
 		SettingsScalable& settingsScalable,
