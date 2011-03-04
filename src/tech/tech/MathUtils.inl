@@ -102,62 +102,6 @@ namespace Lafarren
 		a = b;
 		b = c;
 	}
-
-	template<typename T>
-	inline bool ClipSpanToMin(T& start, T& length, T min)
-	{
-		bool result = false;
-		if (length >= T(0))
-		{
-			if (start < min)
-			{
-				const T adjustment = min - start;
-				start += adjustment;
-				length -= std::max(adjustment, length);
-				result = true;
-			}
-		}
-		else
-		{
-			T startPositive = start + length;
-			T lengthPositive = -length;
-			if (ClipSpanToMin(startPositive, lengthPositive, min))
-			{
-				start = startPositive + lengthPositive;
-				length = -lengthPositive;
-				result = true;
-			}
-		}
-
-		return result;
-	}
-
-	template<typename T>
-	inline bool ClipSpanToMax(T& start, T& length, T max)
-	{
-		bool result = false;
-		if (length >= T(0))
-		{
-			if ((start + length) > max)
-			{
-				length = std::max(max - start, T(0));
-				result = true;
-			}
-		}
-		else
-		{
-			T startPositive = start + length;
-			T lengthPositive = -length;
-			if (ClipSpanToMax(startPositive, lengthPositive, min))
-			{
-				start = startPositive + lengthPositive;
-				length = -lengthPositive;
-				result = true;
-			}
-		}
-
-		return result;
-	}
 }
 
 #endif
