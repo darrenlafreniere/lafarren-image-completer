@@ -120,6 +120,15 @@ m_depth(other.m_depth)
 	memcpy(m_neighbors, other.m_neighbors, sizeof(m_neighbors));
 }
 
+#include "tech/UnDbgMem.h"
+Node& Node::operator=(const Node& other)
+{
+	this->~Node();
+	new(this) Node(other);
+	return *this;
+}
+#include "tech/DbgMem.h"
+
 int Node::GetX() const
 {
 	return GetCurrentResolution().x;
