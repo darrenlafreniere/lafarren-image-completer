@@ -51,6 +51,7 @@ typedef __int64 int64;
 typedef unsigned __int64 uint64;
 
 #define FORCE_INLINE __forceinline
+#define EXPORT __declspec(dllexport)
 
 #else
 #error "Implement tech/Core.h for this platform!"

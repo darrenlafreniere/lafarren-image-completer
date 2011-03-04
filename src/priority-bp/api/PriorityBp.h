@@ -26,6 +26,8 @@
 #ifndef PRIORITY_BP_H
 #define PRIORITY_BP_H
 
+#include "tech/Core.h"
+
 namespace PriorityBp
 {
 	// Forward declarations
@@ -42,7 +44,7 @@ namespace PriorityBp
 	// If a valid patches ostream is provided, then the patches will be written
 	// to that stream.
 	//
-	extern __declspec(dllexport) bool Complete(Host& host);
+	extern EXPORT bool Complete(Host& host);
 }
 
 #endif

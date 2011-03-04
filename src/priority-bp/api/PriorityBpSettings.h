@@ -138,13 +138,13 @@ namespace PriorityBp
 		//
 
 		// Constructs appropriate default settings given a variety of inputs
-		__declspec(dllexport) Settings();
-		__declspec(dllexport) Settings(const HostImage& inputImage);
-		__declspec(dllexport) Settings(int latticeGapX, int latticeGapY);
+		EXPORT Settings();
+		EXPORT Settings(const HostImage& inputImage);
+		EXPORT Settings(int latticeGapX, int latticeGapY);
 
 		// Validity tests; if invalid and a InvalidMemberHandler instance is
 		// supplied, OnError will be called for each invalid member.
-		__declspec(dllexport) bool IsValid(InvalidMemberHandler* invalidMemberHandler = NULL) const;
+		EXPORT bool IsValid(InvalidMemberHandler* invalidMemberHandler = NULL) const;
 	};
 }
 
