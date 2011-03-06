@@ -34,9 +34,8 @@ namespace PriorityBp
 	// Image completion settings; provided by the client code that is using
 	// the image completer.
 	//
-	class Settings
+	struct Settings
 	{
-	public:
 		//
 		// Constants
 		//
@@ -63,21 +62,6 @@ namespace PriorityBp
 
 		static const int POST_PRUNE_LABEL_MIN;
 		static const int POST_PRUNE_LABEL_MAX;
-
-		// Can be implemented and passed to IsValid() to catch individual
-		// member errors.
-		class InvalidMemberHandler
-		{
-		public:
-			// memberOffset:
-			// Offset of a member variable that was considered invalid. E.g.,
-			// if latticeGapX was invalid, then memberOffset will ==
-			// offsetof(PriorityBp::Settings, latticeGapX).
-			//
-			// message:
-			// Why it was considered invalid.
-			virtual void OnInvalidMemberDetected(int memberOffset, const char* message) = 0;
-		};
 
 		//
 		// Public data
@@ -132,20 +116,31 @@ namespace PriorityBp
 		// Compositor settings. See these enums for more info.
 		CompositorPatchType compositorPatchType;
 		CompositorPatchBlender compositorPatchBlender;
-
-		//
-		// Methods
-		//
-
-		// Constructs appropriate default settings given a variety of inputs
-		EXPORT Settings();
-		EXPORT Settings(const HostImage& inputImage);
-		EXPORT Settings(int latticeGapX, int latticeGapY);
-
-		// Validity tests; if invalid and a InvalidMemberHandler instance is
-		// supplied, OnError will be called for each invalid member.
-		EXPORT bool IsValid(InvalidMemberHandler* invalidMemberHandler = NULL) const;
 	};
+
+	// Constructs appropriate default settings given a variety of inputs
+	EXPORT void SettingsConstruct(Settings& out);
+	EXPORT void SettingsConstruct(Settings& out, const HostImage& inputImage);
+	EXPORT void SettingsConstruct(Settings& out, int latticeGapX, int latticeGapY);
+
+	// Validity tests; if invalid and a InvalidMemberHandler instance is
+	// supplied, OnError will be called for each invalid member.
+	// Can be implemented and passed to IsValid() to catch individual
+	// member errors.
+	class SettingsInvalidMemberHandler
+	{
+	public:
+		// memberOffset:
+		// Offset of a member variable that was considered invalid. E.g.,
+		// if latticeGapX was invalid, then memberOffset will ==
+		// offsetof(PriorityBp::Settings, latticeGapX).
+		//
+		// message:
+		// Why it was considered invalid.
+		virtual void OnInvalidMemberDetected(const Settings& settings, int memberOffset, const char* message) = 0;
+	};
+
+	EXPORT bool AreSettingsValid(const Settings& settings, SettingsInvalidMemberHandler* handlerPtr = NULL);
 }
 
 #endif

@@ -61,11 +61,11 @@ public:
 
 	// An instance of this class can be passed to PriorityBp::Settings::IsValid.
 	// It'll display info for an invalid settings member(s).
-	class PrintInvalidMembers : public PriorityBp::Settings::InvalidMemberHandler
+	class PrintInvalidMembers : public PriorityBp::SettingsInvalidMemberHandler
 	{
 	public:
 		PrintInvalidMembers();
-		virtual void OnInvalidMemberDetected(int memberOffset, const char* message);
+		virtual void OnInvalidMemberDetected(const PriorityBp::Settings& settings, int memberOffset, const char* message);
 
 	private:
 		wxMessageOutput& m_msgOut;

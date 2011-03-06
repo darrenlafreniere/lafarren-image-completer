@@ -48,7 +48,7 @@ struct Member
 //
 void SettingsUi::Print(const PriorityBp::Settings& settings)
 {
-	wxASSERT(settings.IsValid());
+	wxASSERT(PriorityBp::AreSettingsValid(settings));
 	wxMessageOutput& msgOut = *wxMessageOutput::Get();
 
 	std::string lowResolutionPassesMaxString;
@@ -225,7 +225,7 @@ SettingsUi::PrintInvalidMembers::PrintInvalidMembers()
 {
 }
 
-void SettingsUi::PrintInvalidMembers::OnInvalidMemberDetected(int memberOffset, const char* message)
+void SettingsUi::PrintInvalidMembers::OnInvalidMemberDetected(const PriorityBp::Settings& settings, int memberOffset, const char* message)
 {
 	if (!m_hasPrintedHeader)
 	{

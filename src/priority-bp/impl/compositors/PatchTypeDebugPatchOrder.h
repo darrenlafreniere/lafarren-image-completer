@@ -27,7 +27,7 @@
 
 namespace PriorityBp
 {
-	class Settings;
+	struct Settings;
 
 	class PatchTypeDebugPatchOrder : public CompositorRoot::PatchType
 	{

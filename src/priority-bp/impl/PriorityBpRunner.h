@@ -28,7 +28,7 @@ namespace PriorityBp
 {
 	class Node;
 	class NodeSet;
-	class Settings;
+	struct Settings;
 
 	//
 	// Encapsulates the state and execution of the Priority-BP (believe

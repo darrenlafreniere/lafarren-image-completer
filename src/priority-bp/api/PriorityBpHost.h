@@ -29,7 +29,7 @@ namespace PriorityBp
 	// Forward declarations
 	class Host;
 	class HostImage;
-	class Settings;
+	struct Settings;
 
 	//
 	// Host interface, to be implemented by the host and passed to

@@ -31,7 +31,7 @@ namespace PriorityBp
 	// Forward declarations
 	class Image;
 	class MaskLod;
-	class Settings;
+	struct Settings;
 
 	//
 	// The Markov Random Field's labels correspond to fixed size patches

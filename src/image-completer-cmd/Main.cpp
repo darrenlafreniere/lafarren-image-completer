@@ -96,7 +96,7 @@ private:
 	AppCmdHostImage m_maskImage;
 	AppCmdHostImage m_outputImage;
 
-	std::auto_ptr<PriorityBp::Settings> m_settings;
+	PriorityBp::Settings m_settings;
 
 	std::auto_ptr<std::ifstream> m_patchesIstream;
 	std::auto_ptr<std::ofstream> m_patchesOstream;
@@ -136,10 +136,10 @@ AppCmdHost::AppCmdHost(const CommandLineOptions& options)
 {
 	if (LoadAndValidateImage("input", options.GetInputImagePath(), m_inputImage))
 	{
-		m_settings.reset(new PriorityBp::Settings(m_inputImage));
+		PriorityBp::SettingsConstruct(m_settings, m_inputImage);
 
 		ApplyCommandLineOptionsToSettings(options);
-		if (m_settings->IsValid(&SettingsUi::PrintInvalidMembers()))
+		if (PriorityBp::AreSettingsValid(m_settings, &SettingsUi::PrintInvalidMembers()))
 		{
 			m_isValid = true;
 
@@ -200,8 +200,7 @@ AppCmdHostImage& AppCmdHost::GetOutputImageImpl()
 
 const PriorityBp::Settings& AppCmdHost::GetSettings()
 {
-	static const PriorityBp::Settings settingsDefault;
-	return m_settings.get() ? *m_settings.get() : settingsDefault;
+	return m_settings;
 }
 
 const PriorityBp::HostImage& AppCmdHost::GetInputImage()
@@ -236,43 +235,41 @@ std::ostream* AppCmdHost::GetPatchesOstream()
 
 void AppCmdHost::ApplyCommandLineOptionsToSettings(const CommandLineOptions& options)
 {
-	PriorityBp::Settings& settings = *m_settings;
-
 	if (options.DebugLowResolutionPasses())
 	{
-		settings.debugLowResolutionPasses = true;
+		m_settings.debugLowResolutionPasses = true;
 	}
 	if (options.HasLowResolutionPassesMax())
 	{
-		settings.lowResolutionPassesMax = options.GetLowResolutionPassesMax();
+		m_settings.lowResolutionPassesMax = options.GetLowResolutionPassesMax();
 	}
 	if (options.HasNumIterations())
 	{
-		settings.numIterations = options.GetNumIterations();
+		m_settings.numIterations = options.GetNumIterations();
 	}
 	if (options.HasLatticeGapX())
 	{
-		settings.latticeGapX = options.GetLatticeGapX();
+		m_settings.latticeGapX = options.GetLatticeGapX();
 	}
 	if (options.HasLatticeGapY())
 	{
-		settings.latticeGapY = options.GetLatticeGapY();
+		m_settings.latticeGapY = options.GetLatticeGapY();
 	}
 	if (options.HasPostPruneLabelsMin())
 	{
-		settings.postPruneLabelsMin = options.GetPostPruneLabelsMin();
+		m_settings.postPruneLabelsMin = options.GetPostPruneLabelsMin();
 	}
 	if (options.HasPostPruneLabelsMax())
 	{
-		settings.postPruneLabelsMax = options.GetPostPruneLabelsMax();
+		m_settings.postPruneLabelsMax = options.GetPostPruneLabelsMax();
 	}
 	if (options.HasCompositorPatchType())
 	{
-		settings.compositorPatchType = options.GetCompositorPatchType();
+		m_settings.compositorPatchType = options.GetCompositorPatchType();
 	}
 	if (options.HasCompositorPatchBlender())
 	{
-		settings.compositorPatchBlender = options.GetCompositorPatchBlender();
+		m_settings.compositorPatchBlender = options.GetCompositorPatchBlender();
 	}
 }
 

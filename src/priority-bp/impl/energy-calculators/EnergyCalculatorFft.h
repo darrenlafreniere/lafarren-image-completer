@@ -40,7 +40,7 @@ namespace PriorityBp
 #endif
 	class Image;
 	class MaskLod;
-	class Settings;
+	struct Settings;
 
 	// Calculates the energy between two regions of the input image by doing
 	// straight per-pixel calculations on the CPU.

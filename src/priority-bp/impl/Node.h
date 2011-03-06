@@ -33,7 +33,7 @@ namespace PriorityBp
 	class ConstNodeLabels;
 	class EnergyCalculatorContainer;
 	class MaskLod;
-	class Settings;
+	struct Settings;
 
 	//
 	// A single Markov Random Field node.

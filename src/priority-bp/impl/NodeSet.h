@@ -33,7 +33,7 @@ namespace PriorityBp
 	class LabelSet;
 	class MaskLod;
 	class Node;
-	class Settings;
+	struct Settings;
 
 	//
 	// Contains the Markov Random Field lattice nodes that intersect with the

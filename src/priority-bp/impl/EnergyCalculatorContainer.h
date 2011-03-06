@@ -33,7 +33,7 @@ namespace PriorityBp
 {
 	class Image;
 	class MaskLod;
-	class Settings;
+	struct Settings;
 
 	class EnergyCalculatorContainer
 	{

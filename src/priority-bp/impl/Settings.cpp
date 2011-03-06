@@ -50,7 +50,8 @@ const Energy Settings::PRUNE_ENERGY_SIMILAR_THRESHOLD_MAX = ENERGY_MAX;
 const int Settings::POST_PRUNE_LABEL_MIN = 3;
 const int Settings::POST_PRUNE_LABEL_MAX = INT_MAX;
 
-static void Construct(Settings& settings, int latticeGapX, int latticeGapY)
+// Internal construct helper
+static void SettingsConstructHelper(Settings& out, int latticeGapX, int latticeGapY)
 {
 #if _DEBUG
 	const Energy maxRgbComponentEnergy = 255;
@@ -62,14 +63,14 @@ static void Construct(Settings& settings, int latticeGapX, int latticeGapY)
 	wxASSERT(Settings::PATCH_PIXELS_MAX < maxPatchPixels);
 #endif
 
-	settings.debugLowResolutionPasses = false;
-	settings.lowResolutionPassesMax = 0;
-	settings.numIterations = Settings::NUM_ITERATIONS_DEFAULT;
+	out.debugLowResolutionPasses = false;
+	out.lowResolutionPassesMax = 0;
+	out.numIterations = Settings::NUM_ITERATIONS_DEFAULT;
 
-	settings.latticeGapX = latticeGapX;
-	settings.latticeGapY = latticeGapY;
-	settings.patchWidth  = settings.latticeGapX * Settings::PATCH_TO_LATTICE_RATIO;
-	settings.patchHeight = settings.latticeGapY * Settings::PATCH_TO_LATTICE_RATIO;
+	out.latticeGapX = latticeGapX;
+	out.latticeGapY = latticeGapY;
+	out.patchWidth  = out.latticeGapX * Settings::PATCH_TO_LATTICE_RATIO;
+	out.patchHeight = out.latticeGapY * Settings::PATCH_TO_LATTICE_RATIO;
 
 	// Based on the patch size, 3 components (rgb), and an
 	// acceptable component difference (between 0.0 and 1.0),
@@ -79,30 +80,30 @@ static void Construct(Settings& settings, int latticeGapX, int latticeGapY)
 	const Energy ssd0ComponentDiff = Energy(ssd0ComponentAcceptableDiff * 255.0f);
 	const Energy ssd0ComponentDiffSq = ssd0ComponentDiff * ssd0ComponentDiff;
 	const Energy ssd0RgbDiffSq = 3 * ssd0ComponentDiffSq;
-	const Energy ssd0 = settings.patchWidth * settings.patchHeight * ssd0RgbDiffSq;
+	const Energy ssd0 = out.patchWidth * out.patchHeight * ssd0RgbDiffSq;
 
-	settings.confidenceBeliefThreshold = -ssd0;
-	settings.pruneBeliefThreshold = -ssd0 * Energy(2);
-	settings.pruneEnergySimilarThreshold = ssd0 / Energy(2);
-	settings.postPruneLabelsMin = Settings::POST_PRUNE_LABEL_MIN;
-	settings.postPruneLabelsMax = Settings::POST_PRUNE_LABEL_MIN * 4;
-	settings.compositorPatchType = CompositorPatchTypeDefault;
-	settings.compositorPatchBlender = CompositorPatchBlenderDefault;
+	out.confidenceBeliefThreshold = -ssd0;
+	out.pruneBeliefThreshold = -ssd0 * Energy(2);
+	out.pruneEnergySimilarThreshold = ssd0 / Energy(2);
+	out.postPruneLabelsMin = Settings::POST_PRUNE_LABEL_MIN;
+	out.postPruneLabelsMax = Settings::POST_PRUNE_LABEL_MIN * 4;
+	out.compositorPatchType = CompositorPatchTypeDefault;
+	out.compositorPatchBlender = CompositorPatchBlenderDefault;
 }
 
-Settings::Settings()
+void PriorityBp::SettingsConstruct(Settings& out)
 {
-	Construct(*this, LATTICE_GAP_MIN, LATTICE_GAP_MIN);
+	SettingsConstructHelper(out, Settings::LATTICE_GAP_MIN, Settings::LATTICE_GAP_MIN);
 }
 
-Settings::Settings(const HostImage& inputImage)
+void PriorityBp::SettingsConstruct(Settings& out, const HostImage& inputImage)
 {
 	// Calculate a suggested lattice gap x and y
 	const int imageSizeAtGapMin = 100;
 	const float widthScale = float(inputImage.GetWidth()) / float(imageSizeAtGapMin);
 	const float heightScale = float(inputImage.GetHeight()) / float(imageSizeAtGapMin);
-	int latticeGapX = std::max(Lerp(0, LATTICE_GAP_MIN, widthScale), LATTICE_GAP_MIN);
-	int latticeGapY = std::max(Lerp(0, LATTICE_GAP_MIN, heightScale), LATTICE_GAP_MIN);
+	int latticeGapX = std::max(Lerp(0, Settings::LATTICE_GAP_MIN, widthScale), Settings::LATTICE_GAP_MIN);
+	int latticeGapY = std::max(Lerp(0, Settings::LATTICE_GAP_MIN, heightScale), Settings::LATTICE_GAP_MIN);
 
 	// If calculated gaps violate the maximum gap ratio, shink one of the
 	// components.
@@ -117,86 +118,86 @@ Settings::Settings(const HostImage& inputImage)
 		latticeGapY = latticeGapX * gapRatioMax;
 	}
 
-	wxASSERT(latticeGapX >= LATTICE_GAP_MIN);
-	wxASSERT(latticeGapY >= LATTICE_GAP_MIN);
-	wxASSERT(latticeGapX * latticeGapY <= PATCH_PIXELS_MAX);
+	wxASSERT(latticeGapX >= Settings::LATTICE_GAP_MIN);
+	wxASSERT(latticeGapY >= Settings::LATTICE_GAP_MIN);
+	wxASSERT(latticeGapX * latticeGapY <= Settings::PATCH_PIXELS_MAX);
 
-	Construct(*this, latticeGapX, latticeGapY);
+	SettingsConstructHelper(out, latticeGapX, latticeGapY);
 }
 
-Settings::Settings(int latticeGapX, int latticeGapY)
+void PriorityBp::SettingsConstruct(Settings& out, int latticeGapX, int latticeGapY)
 {
-	Construct(*this, latticeGapX, latticeGapY);
+	SettingsConstructHelper(out, latticeGapX, latticeGapY);
 }
 
-bool Settings::IsValid(InvalidMemberHandler* invalidMemberHandler) const
+bool PriorityBp::AreSettingsValid(const Settings& settings, SettingsInvalidMemberHandler* handlerPtr)
 {
 	// Implement a "null" InvalidMemberHandler, and use it if the passed in
 	// handler is NULL in order to avoid checking the handler pointer for each
 	// member.
-	class InvalidMemberHandlerNull : public InvalidMemberHandler
+	class SettingsInvalidMemberHandlerNull : public SettingsInvalidMemberHandler
 	{
 	public:
-		virtual void OnInvalidMemberDetected(int memberOffset, const char* message) {}
+		virtual void OnInvalidMemberDetected(const Settings& settings, int memberOffset, const char* message) {}
 	};
 
-	InvalidMemberHandlerNull invalidMemberHandlerNull;
-	InvalidMemberHandler& handler = invalidMemberHandler ? *invalidMemberHandler : invalidMemberHandlerNull;
+	SettingsInvalidMemberHandlerNull handlerNull;
+	SettingsInvalidMemberHandler& handler = handlerPtr ? *handlerPtr : handlerNull;
 
 	bool valid = true;
 
 	// Helper macros:
 #define VALIDATE_NOT_LESS_THAN(member, min) \
-	if (!(member >= min)) \
+	if (!(settings.member >= min)) \
 	{ \
 		valid = false; \
-		handler.OnInvalidMemberDetected(offsetof(Settings, member), Str::Format("(%I64d) is less than %I64d", int64(member), int64(min)).c_str()); \
+		handler.OnInvalidMemberDetected(settings, offsetof(Settings, member), Str::Format("(%I64d) is less than %I64d", int64(settings.member), int64(min)).c_str()); \
 	}
 
 #define VALIDATE_NOT_GREATER_THAN(member, max) \
-	if (!(member <= max)) \
+	if (!(settings.member <= max)) \
 	{ \
 		valid = false; \
-		handler.OnInvalidMemberDetected(offsetof(Settings, member), Str::Format("(%I64d) is less than %I64d", int64(member), int64(max)).c_str()); \
+		handler.OnInvalidMemberDetected(settings, offsetof(Settings, member), Str::Format("(%I64d) is less than %I64d", int64(settings.member), int64(max)).c_str()); \
 	}
 
 #define VALIDATE_IN_RANGE(member, min, max) \
 	VALIDATE_NOT_LESS_THAN(member, min) else VALIDATE_NOT_GREATER_THAN(member, max)
 
 	// Perform the validation:
-	VALIDATE_NOT_LESS_THAN(lowResolutionPassesMax, LOW_RESOLUTION_PASSES_AUTO);
+	VALIDATE_NOT_LESS_THAN(lowResolutionPassesMax, Settings::LOW_RESOLUTION_PASSES_AUTO);
 	VALIDATE_NOT_LESS_THAN(numIterations, 1);
 
-	VALIDATE_NOT_LESS_THAN(latticeGapX, LATTICE_GAP_MIN);
-	VALIDATE_NOT_LESS_THAN(latticeGapY, LATTICE_GAP_MIN);
+	VALIDATE_NOT_LESS_THAN(latticeGapX, Settings::LATTICE_GAP_MIN);
+	VALIDATE_NOT_LESS_THAN(latticeGapY, Settings::LATTICE_GAP_MIN);
 
-	VALIDATE_NOT_LESS_THAN(patchWidth, PATCH_SIDE_MIN);
-	VALIDATE_NOT_LESS_THAN(patchHeight, PATCH_SIDE_MIN);
+	VALIDATE_NOT_LESS_THAN(patchWidth, Settings::PATCH_SIDE_MIN);
+	VALIDATE_NOT_LESS_THAN(patchHeight, Settings::PATCH_SIDE_MIN);
 
-	if (!(patchWidth * patchHeight <= PATCH_PIXELS_MAX))
+	if (!(settings.patchWidth * settings.patchHeight <= Settings::PATCH_PIXELS_MAX))
 	{
 		valid = false;
-		const int memberOffset = (patchWidth > patchHeight) ? offsetof(Settings, patchWidth) : offsetof(Settings, patchHeight);
-		handler.OnInvalidMemberDetected(memberOffset, Str::Format("is yielding too large of a patch (%d * %d > %I64d)", patchWidth, patchHeight, PATCH_PIXELS_MAX).c_str());
+		const int memberOffset = (settings.patchWidth > settings.patchHeight) ? offsetof(Settings, patchWidth) : offsetof(Settings, patchHeight);
+		handler.OnInvalidMemberDetected(settings, memberOffset, Str::Format("is yielding too large of a patch (%d * %d > %I64d)", settings.patchWidth, settings.patchHeight, Settings::PATCH_PIXELS_MAX).c_str());
 	}
 
-	VALIDATE_IN_RANGE(confidenceBeliefThreshold, CONFIDENCE_BELIEF_THRESHOLD_MIN, CONFIDENCE_BELIEF_THRESHOLD_MAX);
-	VALIDATE_IN_RANGE(pruneBeliefThreshold, PRUNE_BELIEF_THRESHOLD_MIN, PRUNE_BELIEF_THRESHOLD_MAX);
-	VALIDATE_IN_RANGE(pruneEnergySimilarThreshold, PRUNE_ENERGY_SIMILAR_THRESHOLD_MIN, PRUNE_ENERGY_SIMILAR_THRESHOLD_MAX);
+	VALIDATE_IN_RANGE(confidenceBeliefThreshold, Settings::CONFIDENCE_BELIEF_THRESHOLD_MIN, Settings::CONFIDENCE_BELIEF_THRESHOLD_MAX);
+	VALIDATE_IN_RANGE(pruneBeliefThreshold, Settings::PRUNE_BELIEF_THRESHOLD_MIN, Settings::PRUNE_BELIEF_THRESHOLD_MAX);
+	VALIDATE_IN_RANGE(pruneEnergySimilarThreshold, Settings::PRUNE_ENERGY_SIMILAR_THRESHOLD_MIN, Settings::PRUNE_ENERGY_SIMILAR_THRESHOLD_MAX);
 
-	VALIDATE_IN_RANGE(postPruneLabelsMin, POST_PRUNE_LABEL_MIN, POST_PRUNE_LABEL_MAX);
-	VALIDATE_IN_RANGE(postPruneLabelsMax, POST_PRUNE_LABEL_MIN, POST_PRUNE_LABEL_MAX);
+	VALIDATE_IN_RANGE(postPruneLabelsMin, Settings::POST_PRUNE_LABEL_MIN, Settings::POST_PRUNE_LABEL_MAX);
+	VALIDATE_IN_RANGE(postPruneLabelsMax, Settings::POST_PRUNE_LABEL_MIN, Settings::POST_PRUNE_LABEL_MAX);
 
-	if (compositorPatchType <= CompositorPatchTypeInvalid || compositorPatchType >= CompositorPatchTypeNum)
+	if (settings.compositorPatchType <= CompositorPatchTypeInvalid || settings.compositorPatchType >= CompositorPatchTypeNum)
 	{
 		valid = false;
-		handler.OnInvalidMemberDetected(offsetof(Settings, compositorPatchType), "is invalid");
+		handler.OnInvalidMemberDetected(settings, offsetof(Settings, compositorPatchType), "is invalid");
 	}
 
-	if (compositorPatchBlender <= CompositorPatchBlenderInvalid || compositorPatchBlender >= CompositorPatchBlenderNum)
+	if (settings.compositorPatchBlender <= CompositorPatchBlenderInvalid || settings.compositorPatchBlender >= CompositorPatchBlenderNum)
 	{
 		valid = false;
-		handler.OnInvalidMemberDetected(offsetof(Settings, compositorPatchBlender), "is invalid");
+		handler.OnInvalidMemberDetected(settings, offsetof(Settings, compositorPatchBlender), "is invalid");
 	}
 
 	return valid;
