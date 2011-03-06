@@ -36,15 +36,26 @@
 //
 
 // Make sure that wxWidgets wxImage::RGBValue and PriorityBp::HostImage::Rgb
-// are of identical size and component offsets.
-wxCOMPILE_TIME_ASSERT
-(
-	sizeof(wxImage::RGBValue) == sizeof(PriorityBp::HostImage::Rgb) &&
-	offsetof(wxImage::RGBValue, red) == offsetof(PriorityBp::HostImage::Rgb, red) &&
-	offsetof(wxImage::RGBValue, green) == offsetof(PriorityBp::HostImage::Rgb, green) &&
-	offsetof(wxImage::RGBValue, blue) == offsetof(PriorityBp::HostImage::Rgb, blue),
-	INVALID_RGB_LAYOUT
-);
+// have identical size, since we perform no conversion.
+wxCOMPILE_TIME_ASSERT(sizeof(wxImage::RGBValue) == sizeof(PriorityBp::HostImage::Rgb), INVALID_RGB_SIZE);
+#if __WXDEBUG__
+class AssertIdenticalRgbLayout
+{
+public:
+	AssertIdenticalRgbLayout()
+	{
+		wxImage::RGBValue rgb1(0, 0, 0);
+		PriorityBp::HostImage::Rgb& rgb2 = reinterpret_cast<PriorityBp::HostImage::Rgb&>(rgb1);
+		rgb2.red = 1;
+		rgb2.green = 2;
+		rgb2.blue = 3;
+		wxASSERT(rgb1.red == 1);
+		wxASSERT(rgb1.green == 2);
+		wxASSERT(rgb1.blue == 3);
+	}
+};
+static const AssertIdenticalRgbLayout g_assertIdenticalRgbLayout;
+#endif
 
 class AppCmdHostImage : public PriorityBp::HostImage
 {
