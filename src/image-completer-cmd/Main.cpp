@@ -150,7 +150,8 @@ AppCmdHost::AppCmdHost(const CommandLineOptions& options)
 		PriorityBp::SettingsConstruct(m_settings, m_inputImage);
 
 		ApplyCommandLineOptionsToSettings(options);
-		if (PriorityBp::AreSettingsValid(m_settings, &SettingsUi::PrintInvalidMembers()))
+		SettingsUi::PrintInvalidMembers settingsUiPrintInvalidMembers;
+		if (PriorityBp::AreSettingsValid(m_settings, &settingsUiPrintInvalidMembers))
 		{
 			m_isValid = true;
 
