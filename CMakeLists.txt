@@ -53,8 +53,6 @@ ${prioritybp}/energy-calculators/EnergyCalculatorFftUtils.cpp
 ${prioritybp}/energy-calculators/EnergyCalculatorPerPixel.cpp
 
 ${tech}/Pch.cpp
-${tech}/tech/Atomic.cpp
-${tech}/tech/Core.cpp
 ${tech}/tech/CmdLine.cpp
 ${tech}/tech/ImageUtils.cpp
 ${tech}/tech/Profile.cpp
@@ -74,6 +72,5 @@ ENDIF(USE_POISSON)
 #####################################
 
 
-add_executable(ImageCompleterWX ${cmdsrc}/MainWX.cpp ${cmdsrc}/AppCmdHostImage.cpp ${cmdsrc}/AppCmdHost.cpp
- ${ImageCompleterSources})
-target_link_libraries(ImageCompleterWX ${wxWidgets_LIBRARIES})
+add_executable(ImageCompleter ${cmdsrc}/Main.cpp ${ImageCompleterSources})
+target_link_libraries(ImageCompleter ${wxWidgets_LIBRARIES})
