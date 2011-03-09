@@ -163,13 +163,13 @@ AppCmdHost::AppCmdHost(const CommandLineOptions& options)
 #if ENABLE_PATCHES_INPUT_OUTPUT
 					if (options.HasInputPatchesPath())
 					{
-						m_patchesIstream.reset(new std::ifstream(options.GetInputPatchesPath(), std::ios::binary));
+						m_patchesIstream.reset(new std::ifstream(options.GetInputPatchesPath().c_str(), std::ios::binary));
 					}
 
 					if (options.HasOutputPatchesPath())
 					{
 						m_patchesOstream.reset(new std::ofstream());
-						m_patchesOstream->open(options.GetOutputPatchesPath(), std::ios::binary);
+						m_patchesOstream->open(options.GetOutputPatchesPath().c_str(), std::ios::binary);
 					}
 #endif // ENABLE_PATCHES_INPUT_OUTPUT
 				}
