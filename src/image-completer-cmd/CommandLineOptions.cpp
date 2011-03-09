@@ -33,7 +33,7 @@ namespace Lafarren
 template<>
 void CmdLine::ParamOption<CommandLineOptions::LowResolutionPassesMax>::ReadOption(const char* option)
 {
-	if (_stricmp(option, SettingsUi::GetLowResolutionPassesAutoDescription().c_str()) == 0)
+	if (std::string(option).compare(SettingsUi::GetLowResolutionPassesAutoDescription().c_str()) == 0)
 	{
 		this->value = PriorityBp::Settings::LOW_RESOLUTION_PASSES_AUTO;
 	}
@@ -51,7 +51,7 @@ void CmdLine::ParamOption<PriorityBp::CompositorPatchType>::ReadOption(const cha
 	{
 		const PriorityBp::CompositorPatchType compositorPatchType = PriorityBp::CompositorPatchType(e);
 		const std::string desc(SettingsUi::GetEnumDescription(compositorPatchType));
-		if (_stricmp(option, desc.c_str()) == 0)
+		if (std::string(option).compare(desc.c_str()) == 0)
 		{
 			this->value = compositorPatchType;
 			break;
@@ -67,7 +67,7 @@ void CmdLine::ParamOption<PriorityBp::CompositorPatchBlender>::ReadOption(const 
 	{
 		const PriorityBp::CompositorPatchBlender compositorPatchBlender = PriorityBp::CompositorPatchBlender(e);
 		const std::string desc(SettingsUi::GetEnumDescription(compositorPatchBlender));
-		if (_stricmp(option, desc.c_str()) == 0)
+		if (std::string(option).compare(desc.c_str()) == 0)
 		{
 			this->value = compositorPatchBlender;
 			break;
