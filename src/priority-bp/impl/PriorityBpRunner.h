@@ -54,6 +54,13 @@ namespace PriorityBp
 		// the label set from each node.
 		void Run();
 
+
+    // Sort the patches in ascending order of priority, so that the more
+    // confident patches are laid atop the less confidence patches.
+    struct SortPatchesByPriority
+    {
+      bool operator()(const Patch& patchA, const Patch& patchB);
+    };
 	private:
 		//
 		// Internal definitions
