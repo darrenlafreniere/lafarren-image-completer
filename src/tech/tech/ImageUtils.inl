@@ -35,7 +35,7 @@
 namespace Lafarren
 {
 	template<typename T>
-	inline T* BlendInto<T>(T* destChannels, const T* srcChannels, float alpha, int numChannels)
+	inline T* BlendInto(T* destChannels, const T* srcChannels, float alpha, int numChannels)
 	{
 		if (alpha > 0.0f)
 		{
