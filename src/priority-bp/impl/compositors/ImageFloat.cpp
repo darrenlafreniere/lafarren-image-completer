@@ -28,7 +28,10 @@
 
 #include "tech/DbgMem.h"
 
-wxCOMPILE_TIME_ASSERT(Image::Rgb::NUM_CHANNELS == RgbFloat::NUM_CHANNELS, RgbNumChannelsMismatch);
+wxCOMPILE_TIME_ASSERT(PriorityBp::Image::Rgb::NUM_CHANNELS == PriorityBp::RgbFloat::NUM_CHANNELS, RgbNumChannelsMismatch);
+
+namespace PriorityBp
+{
 
 ImageFloat::ImageFloat()
 	: m_width(0)
@@ -92,24 +95,26 @@ void ImageFloat::CopyTo(HostImage& output) const
 		{
 			const RgbFloat& inRgb = m_data[i];
 			HostImage::Rgb& outRgb = outRgbData[i];
-			outRgb.r = (unsigned char)(Clamp0To1(inRgb.r) * 255);
-			outRgb.g = (unsigned char)(Clamp0To1(inRgb.g) * 255);
-			outRgb.b = (unsigned char)(Clamp0To1(inRgb.b) * 255);
+			outRgb.r = (unsigned char)(Lafarren::Clamp0To1(inRgb.r) * 255);
+			outRgb.g = (unsigned char)(Lafarren::Clamp0To1(inRgb.g) * 255);
+			outRgb.b = (unsigned char)(Lafarren::Clamp0To1(inRgb.b) * 255);
 		}
 	}
 }
 
 RgbFloat& ImageFloat::GetPixel(int x, int y)
 {
-	return m_data[GetRowMajorIndex(m_width, x, y)];
+	return m_data[Lafarren::GetRowMajorIndex(m_width, x, y)];
 }
 
 const RgbFloat& ImageFloat::GetPixel(int x, int y) const
 {
-	return m_data[GetRowMajorIndex(m_width, x, y)];
+	return m_data[Lafarren::GetRowMajorIndex(m_width, x, y)];
 }
 
 void ImageFloat::SetPixel(int x, int y, const RgbFloat& pixel)
 {
-	m_data[GetRowMajorIndex(m_width, x, y)] = pixel;
+	m_data[Lafarren::GetRowMajorIndex(m_width, x, y)] = pixel;
 }
+
+} // end PriorityBp namespace

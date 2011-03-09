@@ -27,6 +27,9 @@
 
 #include "tech/DbgMem.h"
 
+namespace PriorityBp
+{
+  
 // Given a 0.0-1.0 alpha, returns a color from red to purple.
 static RgbFloat GetRainbowColor(float alpha)
 {
@@ -104,3 +107,5 @@ const ImageFloat& PatchTypeDebugPatchOrder::Get(const Patch& patch) const
 
 	return m_patchImage;
 }
+
+} // end namespace PriorityBp

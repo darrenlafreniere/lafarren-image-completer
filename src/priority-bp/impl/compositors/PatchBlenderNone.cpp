@@ -29,6 +29,9 @@
 
 #include "tech/DbgMem.h"
 
+namespace PriorityBp
+{
+  
 CompositorRoot::PatchBlender* PatchBlenderNone::Factory::Create(const Compositor::Input& input, const ImageFloat& imageFloat, ImageFloat& outPatchesBlended) const
 {
 	return new PatchBlenderNone(input, imageFloat, outPatchesBlended);
@@ -57,10 +60,10 @@ void PatchBlenderNone::Blend(const Patch& patch, const ImageFloat& patchImage) c
 	const int rowsNum = std::min(patchHeight, imageHeight - patch.destTop);
 	for (int row = rowClipOffset, patchDestY = patch.destTop + rowClipOffset; row < rowsNum; ++row, ++patchDestY)
 	{
-		const int patchRowMajorIndex = GetRowMajorIndex(patchWidth, colClipOffset, row);
+		const int patchRowMajorIndex = Lafarren::GetRowMajorIndex(patchWidth, colClipOffset, row);
 		const RgbFloat* patchImagePtr = patchImageData + patchRowMajorIndex;
 
-		const int imageRowMajorIndex = GetRowMajorIndex(imageWidth, patch.destLeft + colClipOffset, patchDestY);
+		const int imageRowMajorIndex = Lafarren::GetRowMajorIndex(imageWidth, patch.destLeft + colClipOffset, patchDestY);
 		RgbFloat* destRgbPtr = destRgbData + imageRowMajorIndex;
 
 		const int colsNum = std::min(patchWidth, imageWidth - patch.destLeft);
@@ -72,3 +75,5 @@ void PatchBlenderNone::Blend(const Patch& patch, const ImageFloat& patchImage) c
 		}
 	}
 }
+
+}// end namespace PriorityBp

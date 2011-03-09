@@ -34,9 +34,9 @@
 const int BLEND_SIZE = 2;
 const int SOFT_MASK_NUM_SAMPLES = (BLEND_SIZE * 2) + 1;
 
-inline float MaskValueToAlpha(Mask::Value maskValue)
+inline float MaskValueToAlpha(PriorityBp::Mask::Value maskValue)
 {
-	return (maskValue == Mask::UNKNOWN) ? 0.0f : 1.0f;
+	return (maskValue == PriorityBp::Mask::UNKNOWN) ? 0.0f : 1.0f;
 }
 
 void PriorityBp::CreateSoftMask(const Compositor::Input& input, std::vector<float>& out)
@@ -101,7 +101,7 @@ void PriorityBp::CreateSoftMask(const Compositor::Input& input, std::vector<floa
 			const int x = sampleLeadEdge - BLEND_SIZE;
 			if (x >= 0)
 			{
-				wxASSERT(maskIdx == GetRowMajorIndex(imageWidth, x, y));
+				wxASSERT(maskIdx == Lafarren::GetRowMajorIndex(imageWidth, x, y));
 				const float hardAlpha = MaskValueToAlpha(mask.GetValue(x, y));
 				out[maskIdx++] = std::min(hardAlpha, samples.Blend());
 			}
@@ -115,14 +115,14 @@ void PriorityBp::CreateSoftMask(const Compositor::Input& input, std::vector<floa
 		for (int sampleLeadEdge = 0, sampleEnd = imageHeight + BLEND_SIZE; sampleLeadEdge < sampleEnd; ++sampleLeadEdge)
 		{
 			{
-				const int maskIdx = GetRowMajorIndex(imageWidth, x, std::min(sampleLeadEdge, imageHeight - 1));
+				const int maskIdx = Lafarren::GetRowMajorIndex(imageWidth, x, std::min(sampleLeadEdge, imageHeight - 1));
 				samples.AddSample(out[maskIdx]);
 			}
 
 			const int y = sampleLeadEdge - BLEND_SIZE;
 			if (y >= 0)
 			{
-				const int maskIdx = GetRowMajorIndex(imageWidth, x, y);
+				const int maskIdx = Lafarren::GetRowMajorIndex(imageWidth, x, y);
 				out[maskIdx] *= samples.Blend();
 			}
 		}

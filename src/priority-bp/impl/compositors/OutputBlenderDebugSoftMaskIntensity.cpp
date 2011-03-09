@@ -25,6 +25,9 @@
 #include "CompositorUtils.h"
 #include "ImageFloat.h"
 
+namespace PriorityBp
+{
+  
 void OutputBlenderDebugSoftMaskIntensity::Blend(const Compositor::Input& input, const ImageFloat& patchesBlended, ImageFloat& outputImageFloat) const
 {
 	std::vector<float> softMask;
@@ -43,3 +46,5 @@ void OutputBlenderDebugSoftMaskIntensity::Blend(const Compositor::Input& input, 
 		dest.r = dest.g = dest.b = intensity;
 	}
 }
+
+} // end namespace PriorityBp

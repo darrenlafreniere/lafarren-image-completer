@@ -35,6 +35,9 @@ const float FEATHER_SIDE_PERCENTAGE = 0.10f;
 const float ALPHA_OF_LOWEST_PRIORITY_PATCH  = 0.66f;
 const float ALPHA_OF_HIGHEST_PRIORITY_PATCH = 1.0f;
 
+namespace PriorityBp
+{
+  
 CompositorRoot::PatchBlender* PatchBlenderPriority::Factory::Create(const Compositor::Input& input, const ImageFloat& imageFloat, ImageFloat& outPatchesBlended) const
 {
 	return new PatchBlenderPriority(input, imageFloat, outPatchesBlended);
@@ -70,12 +73,12 @@ PatchBlenderPriority::PatchBlenderPriority(const Compositor::Input& input, const
 		for (int y = 0; y < patchHeight; ++y)
 		{
 			// Use -1.0 and patchWidth/patchHeight as the 0 alpha boundary.
-			const float topFeather = InverseLerp<float>(y, -1.0f, featherHeight);
-			const float bottomFeather = InverseLerp<float>(y, patchHeight, patchBottom - featherHeight);
+			const float topFeather = Lafarren::InverseLerp<float>(y, -1.0f, featherHeight);
+			const float bottomFeather = Lafarren::InverseLerp<float>(y, patchHeight, patchBottom - featherHeight);
 			for (int x = 0; x < patchWidth; ++x, ++patchFeatherAlphaPtr)
 			{
-				const float leftFeather = InverseLerp<float>(x, -1.0f, featherWidth);
-				const float rightFeather = InverseLerp<float>(x, patchWidth, patchRight - featherWidth);
+				const float leftFeather = Lafarren::InverseLerp<float>(x, -1.0f, featherWidth);
+				const float rightFeather = Lafarren::InverseLerp<float>(x, patchWidth, patchRight - featherWidth);
 				*patchFeatherAlphaPtr = topFeather * bottomFeather * leftFeather * rightFeather;
 				wxASSERT(*patchFeatherAlphaPtr > 0.0f && *patchFeatherAlphaPtr <= 1.0f);
 			}
@@ -113,8 +116,8 @@ void PatchBlenderPriority::Blend(const Patch& patch, const ImageFloat& patchImag
 	const int patchHeight = patchImage.GetHeight();
 	const int patchNumPixels = patchWidth * patchHeight;
 
-	const float patchWeight = InverseLerp(patch.priority, m_priorityLowest, m_priorityHighest);
-	const float patchAlpha = Lerp(ALPHA_OF_LOWEST_PRIORITY_PATCH, ALPHA_OF_HIGHEST_PRIORITY_PATCH, patchWeight);
+	const float patchWeight = Lafarren::InverseLerp(patch.priority, m_priorityLowest, m_priorityHighest);
+	const float patchAlpha = Lafarren::Lerp(ALPHA_OF_LOWEST_PRIORITY_PATCH, ALPHA_OF_HIGHEST_PRIORITY_PATCH, patchWeight);
 
 	const RgbFloat* const patchImageData = patchImage.GetRgb();
 	const float* const patchFeatherAlphaData = &m_patchFeatherAlpha[0];
@@ -127,11 +130,11 @@ void PatchBlenderPriority::Blend(const Patch& patch, const ImageFloat& patchImag
 	const int rowsNum = std::min(patchHeight, imageHeight - patch.destTop);
 	for (int row = rowClipOffset, patchDestY = patch.destTop + rowClipOffset; row < rowsNum; ++row, ++patchDestY)
 	{
-		const int patchRowMajorIndex = GetRowMajorIndex(patchWidth, colClipOffset, row);
+		const int patchRowMajorIndex = Lafarren::GetRowMajorIndex(patchWidth, colClipOffset, row);
 		const RgbFloat* patchImagePtr = patchImageData + patchRowMajorIndex;
 		const float* patchFeatherAlphaPtr = patchFeatherAlphaData + patchRowMajorIndex;
 
-		const int imageRowMajorIndex = GetRowMajorIndex(imageWidth, patch.destLeft + colClipOffset, patchDestY);
+		const int imageRowMajorIndex = Lafarren::GetRowMajorIndex(imageWidth, patch.destLeft + colClipOffset, patchDestY);
 		RgbFloat* destRgbPtr = destRgbData + imageRowMajorIndex;
 		float* destWeightSumPtr = destWeightSumData + imageRowMajorIndex;
 
@@ -151,3 +154,5 @@ void PatchBlenderPriority::Blend(const Patch& patch, const ImageFloat& patchImag
 		}
 	}
 }
+
+} // end namespace PriorityBp

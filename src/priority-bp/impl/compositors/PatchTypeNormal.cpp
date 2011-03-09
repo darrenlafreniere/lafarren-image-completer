@@ -29,6 +29,9 @@
 
 #include "tech/DbgMem.h"
 
+namespace PriorityBp
+{
+  
 CompositorRoot::PatchType* PatchTypeNormal::Factory::Create(const Compositor::Input& input, ImageFloat& imageFloat) const
 {
 	return new PatchTypeNormal(input, imageFloat);
@@ -54,7 +57,7 @@ const ImageFloat& PatchTypeNormal::Get(const Patch& patch) const
 		RgbFloat* patchImagePtr = m_patchImage.GetRgb();
 		for (int patchY = 0, patchSrcY = patch.srcTop; patchY < patchHeight; ++patchY, ++patchSrcY)
 		{
-			const RgbFloat* srcRgbPtr = srcRgbData + GetRowMajorIndex(imageWidth, patch.srcLeft, patchSrcY);
+			const RgbFloat* srcRgbPtr = srcRgbData + Lafarren::GetRowMajorIndex(imageWidth, patch.srcLeft, patchSrcY);
 			for (int patchX = 0; patchX < patchWidth; ++patchImagePtr, ++srcRgbPtr, ++patchX)
 			{
 				wxASSERT((srcRgbPtr - srcRgbData) < (imageWidth * imageHeight));
@@ -66,3 +69,5 @@ const ImageFloat& PatchTypeNormal::Get(const Patch& patch) const
 
 	return m_patchImage;
 }
+
+} // end namespace PriorityBp

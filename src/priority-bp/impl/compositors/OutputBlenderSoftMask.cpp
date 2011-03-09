@@ -27,6 +27,9 @@
 #include "CompositorUtils.h"
 #include "ImageFloat.h"
 
+namespace PriorityBp
+{
+  
 void OutputBlenderSoftMask::Blend(const Compositor::Input& input, const ImageFloat& patchesBlended, ImageFloat& outputImageFloat) const
 {
 	std::vector<float> softMask;
@@ -44,6 +47,8 @@ void OutputBlenderSoftMask::Blend(const Compositor::Input& input, const ImageFlo
 	{
 		// Blend s into d based on the inverse alpha
 		const float ia = 1.0f - *softMaskDataPtr;
-		BlendInto(destRgbDataPtr->channel, srcRgbDataPtr->channel, ia, HostImage::Rgb::NUM_CHANNELS);
+		Lafarren::BlendInto(destRgbDataPtr->channel, srcRgbDataPtr->channel, ia, HostImage::Rgb::NUM_CHANNELS);
 	}
 }
+
+}// end namespace PriorityBp
