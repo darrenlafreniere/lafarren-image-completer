@@ -32,6 +32,9 @@
 
 #define DEBUG_DRAW_MASK_INTENSITY 0
 
+namespace PriorityBp
+{
+  
 //
 // CompositorRoot implementation
 //
@@ -85,3 +88,5 @@ bool CompositorRoot::Compose(const Input& input, HostImage& outputImage) const
 	outputImageFloat.CopyTo(outputImage);
 	return result;
 }
+
+} // end namespace PriorityBp
