@@ -125,7 +125,7 @@ namespace PriorityBp
 			mutable long volatile m_state;
 		};
 
-		friend WorkerThread;
+		friend class WorkerThread;
 
 		//
 		// Internal methods

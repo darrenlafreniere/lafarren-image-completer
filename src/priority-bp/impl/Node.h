@@ -100,7 +100,7 @@ namespace PriorityBp
 		// Internal definitions
 		//
 
-		friend ConstNodeLabels;
+		friend class ConstNodeLabels;
 
 		// During the first pass, once a node is either pruned or receives
 		// messages, it store its own label set.

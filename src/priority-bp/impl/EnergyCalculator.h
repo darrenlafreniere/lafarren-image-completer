@@ -54,7 +54,7 @@ namespace PriorityBp
 			inline Energy Calculate(int bLeft, int bTop) const;
 
 		private:
-			friend EnergyCalculator;
+			friend class EnergyCalculator;
 			inline BatchImmediate(EnergyCalculator& energyCalculator);
 			EnergyCalculator& m_energyCalculator;
 		};
@@ -118,7 +118,7 @@ namespace PriorityBp
 			inline Energy GetResult(Handle handle) const;
 
 		private:
-			friend EnergyCalculator;
+			friend class EnergyCalculator;
 			inline BatchQueued(EnergyCalculator& energyCalculator);
 			EnergyCalculator& m_energyCalculator;
 		};
@@ -164,8 +164,8 @@ namespace PriorityBp
 
 	protected:
 		// Batch objects can call these internal methods.
-		friend BatchImmediate;
-		friend BatchQueued;
+		friend class BatchImmediate;
+		friend class BatchQueued;
 
 		// BatchImmediate and BatchQueued friend this base. Subclasses must
 		// use these methods to create new batch instances. The temporary will

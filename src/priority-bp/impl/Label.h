@@ -81,7 +81,7 @@ namespace PriorityBp
 			inline int size() const { return m_size; }
 
 		private:
-			friend LabelSet;
+			friend class LabelSet;
 			int m_size;
 
 			// At most one low resolution label can map to 9 high resolution
