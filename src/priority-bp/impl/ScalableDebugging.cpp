@@ -79,7 +79,8 @@ namespace PriorityBp { namespace ScalableDebugging
 		std::auto_ptr<Compositor> compositor(CompositorFactory::Create(settingsScalable.compositorPatchType, settingsScalable.compositorPatchBlender));
 		if (compositor.get())
 		{
-			compositor->Compose(compositorInput, OutputHostImage(highResOutputFilePath, depth));
+      OutputHostImage outputHostImage(highResOutputFilePath, depth);
+			compositor->Compose(compositorInput, outputHostImage);
 		}
 	}
 }}
