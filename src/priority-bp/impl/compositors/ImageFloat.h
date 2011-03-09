@@ -32,6 +32,7 @@ namespace PriorityBp
 	class RgbFloat
 	{
 	public:
+    static const int NUM_CHANNELS = 3;
 		union
 		{
 			struct
@@ -41,7 +42,6 @@ namespace PriorityBp
 				float b;
 			};
 
-			static const int NUM_CHANNELS = 3;
 			float channel[NUM_CHANNELS];
 		};
 
