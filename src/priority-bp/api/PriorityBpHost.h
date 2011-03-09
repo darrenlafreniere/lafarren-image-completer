@@ -113,6 +113,8 @@ namespace PriorityBp
 			inline Rgb() {}
 			inline Rgb(unsigned char r, unsigned char g, unsigned char b) : r(r), g(g), b(b) {}
 
+      static const int NUM_CHANNELS = 3;
+      
 			union
 			{
 				struct
@@ -134,7 +136,6 @@ namespace PriorityBp
 					};
 				};
 
-				static const int NUM_CHANNELS = 3;
 				unsigned char channel[NUM_CHANNELS];
 			};
 		};
