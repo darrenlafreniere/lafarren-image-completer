@@ -27,9 +27,11 @@
 
 #include "tech/DbgMem.h"
 
+namespace Lafarren
+{
 // CmdLine::ParamOption<CommandLineOptions::LowResolutionPassesMax> partial specialization.
 template<>
-void Lafarren::CmdLine::ParamOption<CommandLineOptions::LowResolutionPassesMax>::ReadOption(const char* option)
+void CmdLine::ParamOption<CommandLineOptions::LowResolutionPassesMax>::ReadOption(const char* option)
 {
 	if (_stricmp(option, SettingsUi::GetLowResolutionPassesAutoDescription().c_str()) == 0)
 	{
@@ -43,7 +45,7 @@ void Lafarren::CmdLine::ParamOption<CommandLineOptions::LowResolutionPassesMax>:
 
 // CmdLine::ParamOption<PriorityBp::CompositorPatchType> partial specialization.
 template<>
-void Lafarren::CmdLine::ParamOption<PriorityBp::CompositorPatchType>::ReadOption(const char* option)
+void CmdLine::ParamOption<PriorityBp::CompositorPatchType>::ReadOption(const char* option)
 {
 	for (int e = PriorityBp::CompositorPatchTypeInvalid + 1; e < PriorityBp::CompositorPatchTypeNum; ++e)
 	{
@@ -59,7 +61,7 @@ void Lafarren::CmdLine::ParamOption<PriorityBp::CompositorPatchType>::ReadOption
 
 // CmdLine::ParamOption<PriorityBp::CompositorPatchBlender> partial specialization.
 template<>
-void Lafarren::CmdLine::ParamOption<PriorityBp::CompositorPatchBlender>::ReadOption(const char* option)
+void CmdLine::ParamOption<PriorityBp::CompositorPatchBlender>::ReadOption(const char* option)
 {
 	for (int e = PriorityBp::CompositorPatchBlenderInvalid + 1; e < PriorityBp::CompositorPatchBlenderNum; ++e)
 	{
@@ -73,6 +75,7 @@ void Lafarren::CmdLine::ParamOption<PriorityBp::CompositorPatchBlender>::ReadOpt
 	}
 }
 
+} // end namespace Lafarren
 //
 // CommandLineOptions
 //
