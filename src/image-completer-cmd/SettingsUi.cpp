@@ -26,6 +26,23 @@
 
 #include "tech/DbgMem.h"
 
+
+// Gather member descriptions and values before printing them, so we can
+// size the desc column to an ideal width.
+struct Member
+{
+  std::string desc;
+  std::string value;
+
+  Member(const std::string& desc, const std::string& value) : desc(desc), value(value) {}
+
+  void Print(wxMessageOutput& msgOut, int descWidth) const
+  {
+    const std::string descSpacing(' ', descWidth - desc.length());
+    msgOut.Printf("\t%s:%s %s\n", desc.c_str(), descSpacing.c_str(), value.c_str());
+  }
+};
+
 //
 // SettingsUi
 //
@@ -43,22 +60,6 @@ void SettingsUi::Print(const PriorityBp::Settings& settings)
 	{
 		lowResolutionPassesMaxString = Lafarren::Str::Format("%d", settings.lowResolutionPassesMax);
 	}
-
-	// Gather member descriptions and values before printing them, so we can
-	// size the desc column to an ideal width.
-	struct Member
-	{
-		std::string desc;
-		std::string value;
-
-		Member(const std::string& desc, const std::string& value) : desc(desc), value(value) {}
-
-		void Print(wxMessageOutput& msgOut, int descWidth) const
-		{
-			const std::string descSpacing(' ', descWidth - desc.length());
-			msgOut.Printf("\t%s:%s %s\n", desc.c_str(), descSpacing.c_str(), value.c_str());
-		}
-	};
 
 #define DESC(member) GetMemberDescription(offsetof(PriorityBp::Settings, member))
 #define VAL_W "17" /* TODO: auto-size this as well? */
