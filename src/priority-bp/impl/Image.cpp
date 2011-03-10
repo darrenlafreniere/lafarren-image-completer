@@ -114,11 +114,12 @@ ImageScaledDown::ImageScaledDown(const Image& imageToScaleDown)
 	const int otherHeight = imageToScaleDown.GetHeight();
 	const Rgb* otherRgb = imageToScaleDown.GetRgb();
 
+	// Downsample otherRgb into m_rgb by averaging 2x2 pixel blocks into 1 pixel.
+	// The low resolution image is half that of the high resolution image.
 	m_width = otherWidth / 2;
 	m_height = otherHeight / 2;
 	wxASSERT(m_width > 0 && m_height > 0);
 
-	// Downsample otherRgb into m_rgb by averaging 2x2 pixel blocks into 1 pixel.
 	m_rgb = new Rgb[m_width * m_height];
 
 	const int stride = m_width * sizeof(Rgb);
@@ -144,18 +145,25 @@ ImageScaledDown::ImageScaledDown(const Image& imageToScaleDown)
 			float r = otherRgbCurrentUpper[0].r + otherRgbCurrentLower[0].r;
 			float g = otherRgbCurrentUpper[0].g + otherRgbCurrentLower[0].g;
 			float b = otherRgbCurrentUpper[0].b + otherRgbCurrentLower[0].b;
-			float num = 2.0f;
+
+			// numPixelsToAverage is the number of high resolution pixels we're
+			// collapsing/averaging into a single low resolution pixel. At most,
+			// this will be four. So far the left column's upper and lower pixels
+			// have been added. If we're not at the right edge of the high res
+			// image (checked just below), then the right upper and lower pixels
+			// will be added as well.
+			float numPixelsToAverage = 2.0f;
 			if ((otherX + 1) < otherWidth)
 			{
 				r += otherRgbCurrentUpper[1].r + otherRgbCurrentLower[1].r;
 				g += otherRgbCurrentUpper[1].g + otherRgbCurrentLower[1].g;
 				b += otherRgbCurrentUpper[1].b + otherRgbCurrentLower[1].b;
-				num = 4.0f;
+				numPixelsToAverage = 4.0f;
 			}
 
-			r /= num;
-			g /= num;
-			b /= num;
+			r /= numPixelsToAverage;
+			g /= numPixelsToAverage;
+			b /= numPixelsToAverage;
 
 			wxASSERT(r >= 0.0f && r <= 255.0f);
 			wxASSERT(g >= 0.0f && g <= 255.0f);
