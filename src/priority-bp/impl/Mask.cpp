@@ -34,7 +34,13 @@
 inline Mask::Value RgbToMaskValue(const Image::Rgb& rgb)
 {
 	// Convert to grayscale using whole integer percentages, then determine
-	// the closest intensity-to-mask-value.
+	// the closest intensity-to-mask-value. Uses the 30/59/11 rgb -> grayscale
+	// percentages found here:
+	// http://en.wikipedia.org/w/index.php?title=Grayscale&oldid=411295624#Converting_color_to_grayscale
+	//
+	// To avoid converting to floats for this percentage math, just scale
+	// everything by 100 before performing the grayscale intensity
+	// comparisons.
 	static const int rToGreyscale = 30;
 	static const int gToGreyscale = 59;
 	static const int bToGreyscale = 11;
