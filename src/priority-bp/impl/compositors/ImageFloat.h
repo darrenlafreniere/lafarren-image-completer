@@ -32,7 +32,7 @@ namespace PriorityBp
 	class RgbFloat
 	{
 	public:
-		static const int NUM_CHANNELS = 3;
+		static const int NUM_CHANNELS = HostImage::Rgb::NUM_CHANNELS;
 		union
 		{
 			struct
