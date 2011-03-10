@@ -40,11 +40,17 @@ using namespace Tech;
 #pragma init_seg(lib)
 
 #ifdef _MSC_VER
-
-#define USE_QUERY_PERFORMANCE_TIMER     0
-#define USE_MULTIMEDIA_TIMER            1
-
+#define USE_A_WINDOWS_TIMER 1
+#else
+#define USE_A_WINDOWS_TIMER 0
 #endif
+
+#define USE_QUERY_PERFORMANCE_TIMER     (0 && USE_A_WINDOWS_TIMER)
+#define USE_MULTIMEDIA_TIMER            (1 && USE_A_WINDOWS_TIMER)
+
+#define NUM_TIMERS_DEFINED              (USE_QUERY_PERFORMANCE_TIMER + USE_MULTIMEDIA_TIMER)
+#define IS_ANY_TIMER_DEFINED            (NUM_TIMERS_DEFINED > 0)
+wxCOMPILE_TIME_ASSERT(NUM_TIMERS_DEFINED <= 1, MultipleTimersAreDefined);
 
 #if USE_QUERY_PERFORMANCE_TIMER
 // Implements a Time class based on QueryPerformanceFrequency and
@@ -145,9 +151,19 @@ private:
 };
 #endif
 
+#if IS_ANY_TIMER_DEFINED
 Time Time::instance;
+#endif
 
-double Tech::CurrentTime()
+namespace Tech
 {
-	return Time::GetInstance().CurrentTime();
+	double CurrentTime()
+	{
+#if IS_ANY_TIMER_DEFINED
+		return Time::GetInstance().CurrentTime();
+#else
+#pragma message("Time.cpp hasn't been implemented for this platform. Profiling will not work.")
+		return 0.0;
+#endif
+	}
 }
