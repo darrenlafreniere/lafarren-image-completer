@@ -234,8 +234,9 @@ namespace PriorityBp
 					}
 
 					{
-						TECH_TIME_PROFILE("ImageCompleter::Complete - Compositing");
-
+                        #if defined(_MSC_VER)
+                          TECH_TIME_PROFILE("ImageCompleter::Complete - Compositing");
+                        #endif
 						std::auto_ptr<Compositor> compositor(CompositorFactory::Create(settingsScalable.compositorPatchType, settingsScalable.compositorPatchBlender));
 						if (compositor.get())
 						{
