@@ -55,6 +55,9 @@
     <ClCompile Include="tech\StrUtils.cpp">
       <Filter>tech</Filter>
     </ClCompile>
+    <ClCompile Include="tech\Core.cpp">
+      <Filter>tech</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="tech\ImageUtils.inl">
