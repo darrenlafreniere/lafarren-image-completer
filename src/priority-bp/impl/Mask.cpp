@@ -84,56 +84,54 @@ inline int GetLodBlockSize(int lod)
 // two methods of initialization: from input image data, or from halving the
 // resolution of an input Mask instance.
 //
-namespace PriorityBp
+
+class MaskInternal : public MaskLod
 {
-	class MaskInternal : public MaskLod
-	{
-	public:
-		MaskInternal(int inputImageWidth, int inputImageHeight, const HostImage& maskImage, int maskImageOffsetX, int maskImageOffsetY);
-		MaskInternal(const MaskLod& maskToScaleDown);
+public:
+    MaskInternal(int inputImageWidth, int inputImageHeight, const HostImage& maskImage, int maskImageOffsetX, int maskImageOffsetY);
+    MaskInternal(const MaskLod& maskToScaleDown);
 
-		virtual int GetLowestLod() const;
-		virtual Value GetValue(int x, int y) const;
-		virtual const LodData& GetLodData(int lod) const;
-		virtual const Mask::Value* GetLodBuffer(int lod) const;
-		virtual bool RegionXywhHasAny(int x, int y, int w, int h, Value value) const;
-		virtual bool RegionXywhHasAll(int x, int y, int w, int h, Value value) const;
+    virtual int GetLowestLod() const;
+    virtual Value GetValue(int x, int y) const;
+    virtual const LodData& GetLodData(int lod) const;
+    virtual const Mask::Value* GetLodBuffer(int lod) const;
+    virtual bool RegionXywhHasAny(int x, int y, int w, int h, Value value) const;
+    virtual bool RegionXywhHasAll(int x, int y, int w, int h, Value value) const;
 
-	private:
-		// Hide copy constructor.
-		MaskInternal(const MaskInternal&) {}
+private:
+    // Hide copy constructor.
+    MaskInternal(const MaskInternal&) {}
 
-		// The region is specified by an inclusive left,top and an inclusive
-		// right,bottom.
-		bool RegionLtrbHasAny(int left, int top, int right, int bottom, Value value) const;
-		bool RegionLtrbHasAll(int left, int top, int right, int bottom, Value value) const;
+    // The region is specified by an inclusive left,top and an inclusive
+    // right,bottom.
+    bool RegionLtrbHasAny(int left, int top, int right, int bottom, Value value) const;
+    bool RegionLtrbHasAll(int left, int top, int right, int bottom, Value value) const;
 
-		//
-		// Internal definitions
-		//
-		typedef std::vector<LodData> LodSet;
+    //
+    // Internal definitions
+    //
+    typedef std::vector<LodData> LodSet;
 
-		enum RegionSearchMode
-		{
-			REGION_SEARCH_ANY,
-			REGION_SEARCH_ALL,
-		};
+    enum RegionSearchMode
+    {
+        REGION_SEARCH_ANY,
+        REGION_SEARCH_ALL,
+    };
 
-		//
-		// Internal methods
-		//
-		void CreateLowerLodsFromHighest();
-		LodData& AddLod();
-		bool RegionLtrbSearch(int left, int top, int right, int bottom, Value value, RegionSearchMode mode) const;
+    //
+    // Internal methods
+    //
+    void CreateLowerLodsFromHighest();
+    LodData& AddLod();
+    bool RegionLtrbSearch(int left, int top, int right, int bottom, Value value, RegionSearchMode mode) const;
 
-		//
-		// Data
-		//
-		int m_width;
-		int m_height;
-		LodSet m_lodSet;
-	};
-} // end namespace PriorityBp
+    //
+    // Data
+    //
+    int m_width;
+    int m_height;
+    LodSet m_lodSet;
+};
 
 MaskInternal::MaskInternal(int inputImageWidth, int inputImageHeight, const HostImage& maskImage, int maskImageOffsetX, int maskImageOffsetY) :
 m_width(inputImageWidth),
