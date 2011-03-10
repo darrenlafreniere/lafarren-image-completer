@@ -53,6 +53,7 @@ ${prioritybp}/energy-calculators/EnergyCalculatorFftUtils.cpp
 ${prioritybp}/energy-calculators/EnergyCalculatorPerPixel.cpp
 
 ${tech}/Pch.cpp
+${tech}/tech/Atomic.cpp
 ${tech}/tech/CmdLine.cpp
 ${tech}/tech/Core.cpp
 ${tech}/tech/ImageUtils.cpp

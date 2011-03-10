@@ -31,7 +31,7 @@
 
 namespace Tech
 {
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(UNIX)
 	typedef long AtomicNativeType;
 #else
 #error "Implement tech/Atomic.h for this platform!"

@@ -31,17 +31,17 @@
 
 #ifdef _MSC_VER
 #include <windows.h>
-#else
-#error "Implement tech/Atomic.h for this platform!"
 #endif
 
 #define ASSERT_TECH_ATOMIC_SIZE(T) \
+	wxASSERT(Tech::AtomicForceLinkValidationTests()); \
 	wxCOMPILE_TIME_ASSERT(sizeof(T) == sizeof(AtomicNativeType), TypeMustBeSizeofAtomicNativeType)
 
 namespace Tech
 {
+	bool AtomicForceLinkValidationTests();
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER)
 	template<typename T>
 	inline T Atomic<T>::Increment(T volatile* addend)
 	{
@@ -80,8 +80,45 @@ namespace Tech
 			static_cast<LONG>(exchange),
 			static_cast<LONG>(comparand)));
 	}
+#elif defined(UNIX)
+	template<typename T>
+	inline T Atomic<T>::Increment(T volatile* addend)
+	{
+		ASSERT_TECH_ATOMIC_SIZE(T);
+		return __sync_add_and_fetch(
+			reinterpret_cast<AtomicNativeType volatile*>(addend),
+			1);
+	}
+
+	template<typename T>
+	inline T Atomic<T>::Decrement(T volatile* addend)
+	{
+		ASSERT_TECH_ATOMIC_SIZE(T);
+		return __sync_sub_and_fetch(
+			reinterpret_cast<AtomicNativeType volatile*>(addend),
+			1);
+	}
+
+	template<typename T>
+	inline T Atomic<T>::ExchangeAdd(T volatile* addend, T value)
+	{
+		ASSERT_TECH_ATOMIC_SIZE(T);
+		return __sync_fetch_and_add(
+			reinterpret_cast<AtomicNativeType volatile*>(addend),
+			value);
+	}
+
+	template<typename T>
+	inline T Atomic<T>::CompareExchange(T volatile* destination, T exchange, T comparand)
+	{
+		ASSERT_TECH_ATOMIC_SIZE(T);
+		return __sync_val_compare_and_swap(
+			reinterpret_cast<AtomicNativeType volatile*>(destination),
+			comparand,
+			exchange);
+	}
 #else
-#error "Implement tech/Atomic.h for this platform!"
+#error "Implement tech/Atomic.inl for this platform!"
 #endif
 }
 

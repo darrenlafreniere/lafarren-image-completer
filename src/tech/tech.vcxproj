@@ -86,6 +86,7 @@
     <ClInclude Include="Pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="tech\Atomic.cpp" />
     <ClCompile Include="tech\CmdLine.cpp" />
     <ClCompile Include="tech\Core.cpp" />
     <ClCompile Include="tech\ImageUtils.cpp" />
