@@ -31,6 +31,7 @@
 #define NOMINMAX
 #include <windows.h>
 #include <psapi.h>
+#define snprintf _snprintf
 #endif
 
 #include "tech/DbgMem.h"
@@ -136,8 +137,9 @@ void TimeProfiler::Report(ReportContext reportContext, int numBlocks, double tim
 		: "TIME PROFILE FINAL \'%s\' - total time: %g sec, blocks: %d, time per block: %g sec\n";
 
 	char buffer[2048];
-	sprintf_s(
+	snprintf(
 		buffer,
+		sizeof(buffer),
 		reportFormat,
 		GetName().c_str(),
 		time,
@@ -209,8 +211,9 @@ void MemProfiler::OnStop()
 	const char* reportFormat = "MEM PROFILE \'%s\' - start: %.2fM, end: %.2fM {peak start: %.2fM, end: %.2fM}\n";
 
 	char buffer[2048];
-	sprintf_s(
+	snprintf(
 		buffer,
+		sizeof(buffer),
 		reportFormat,
 		GetName().c_str(),
 		bytesToMegs * startUsage,
