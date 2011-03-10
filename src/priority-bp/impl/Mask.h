@@ -103,6 +103,9 @@ namespace PriorityBp
 		~MaskLod() {}
 	};
 
+	// Forward declaration. Defined in Mask.cpp.
+	class MaskInternal;
+
 	//
 	// Implements both the Mask and Scalable interfaces and provides an in
 	// place scalable mask. Initializes the mask from the input image data.
@@ -125,9 +128,9 @@ namespace PriorityBp
 		virtual int GetScaleDepth() const;
 
 	private:
-		inline class MaskInternal& GetCurrentResolution() const { return *m_resolutions[m_depth]; }
+		inline MaskInternal& GetCurrentResolution() const { return *m_resolutions[m_depth]; }
 
-		std::vector<class MaskInternal*> m_resolutions;
+		std::vector<MaskInternal*> m_resolutions;
 		int m_depth;
 	};
 }
