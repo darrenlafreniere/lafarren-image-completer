@@ -114,7 +114,8 @@ namespace Tech
 		//
 
 		// Platform-specific data allocated in Profile.cpp
-		void* m_data;
+		class MemProfilerData;
+		MemProfilerData* m_data;
 	};
 
 	//

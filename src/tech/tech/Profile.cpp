@@ -147,22 +147,64 @@ void TimeProfiler::Report(ReportContext reportContext, int numBlocks, double tim
 // MemProfiler
 //
 #ifdef _MSC_VER
-struct MemProfilerData
+class MemProfiler::MemProfilerData
 {
+public:
+	MemProfilerData()
+	{
+		memset(&startMem, 0, sizeof(startMem));
+	}
+
+	void OnStart()
+	{
+		GetProcessMemoryInfo(GetCurrentProcess(), &startMem, sizeof(startMem));
+	}
+
+	bool OnStop(
+		unsigned int& outStartUsage,
+		unsigned int& outStartUsagePeak,
+		unsigned int& outEndUsage,
+		unsigned int& outEndUsagePeak)
+	{
+		PROCESS_MEMORY_COUNTERS stopMem;
+		GetProcessMemoryInfo(GetCurrentProcess(), &stopMem, sizeof(stopMem));
+
+		outStartUsage     = (unsigned int)startMem.WorkingSetSize;
+		outStartUsagePeak = (unsigned int)startMem.PeakWorkingSetSize;
+		outEndUsage       = (unsigned int)stopMem.WorkingSetSize;
+		outEndUsagePeak   = (unsigned int)stopMem.PeakWorkingSetSize;
+		return true;
+	}
+
+private:
 	PROCESS_MEMORY_COUNTERS startMem;
+};
+#else
+#pragma message("Non-critical warning: MemProfiler::MemProfilerData is not implemented for this platform. Memory profiling is disabled.")
+class MemProfiler::MemProfilerData
+{
+public:
+	int dummyForNonZeroSizeof;
+
+	void OnStart()
+	{
+	}
+
+	bool OnStop(
+		unsigned int& outStartUsage,
+		unsigned int& outStartUsagePeak,
+		unsigned int& outEndUsage,
+		unsigned int& outEndUsagePeak)
+	{
+		return false;
+	}
 };
 #endif
 
 MemProfiler::MemProfiler(const char* name) :
 BaseProfiler(name),
-m_data(NULL)
+m_data(new MemProfilerData)
 {
-#ifdef _MSC_VER
-	m_data = new MemProfilerData;
-	memset(m_data, 0, sizeof(MemProfilerData));
-#else
-#pragma message("Non-critical warning: MemProfiler::MemProfiler() is not implemented for this platform. Memory profiling is disabled.")
-#endif
 }
 
 MemProfiler::~MemProfiler()
@@ -172,12 +214,7 @@ MemProfiler::~MemProfiler()
 
 void MemProfiler::OnStart()
 {
-#ifdef _MSC_VER
-	MemProfilerData* data = (MemProfilerData*)m_data;
-	GetProcessMemoryInfo(GetCurrentProcess(), &data->startMem, sizeof(data->startMem));
-#else
-#pragma message("Non-critical warning: MemProfiler::OnStart() is not implemented for this platform. Memory profiling is disabled.")
-#endif
+	m_data->OnStart();
 }
 
 void MemProfiler::OnStop()
@@ -186,30 +223,19 @@ void MemProfiler::OnStop()
 	unsigned int startUsagePeak = 0;
 	unsigned int endUsage       = 0;
 	unsigned int endUsagePeak   = 0;
+	if (m_data->OnStop(startUsage, startUsagePeak, endUsage, endUsagePeak))
+	{
+		static const float bytesToMegs = 1.0f / float(1 << 20);
+		const char* reportFormat = "MEM PROFILE \'%s\' - start: %.2fM, end: %.2fM {peak start: %.2fM, end: %.2fM}\n";
 
-#ifdef _MSC_VER
-	PROCESS_MEMORY_COUNTERS stopMem;
-	GetProcessMemoryInfo(GetCurrentProcess(), &stopMem, sizeof(stopMem));
-
-	MemProfilerData* data = (MemProfilerData*)m_data;
-	startUsage     = (unsigned int)data->startMem.WorkingSetSize;
-	startUsagePeak = (unsigned int)data->startMem.PeakWorkingSetSize;
-	endUsage       = (unsigned int)stopMem.WorkingSetSize;
-	endUsagePeak   = (unsigned int)stopMem.PeakWorkingSetSize;
-#else
-#pragma message("Non-critical warning: MemProfiler::OnStop() is not implemented for this platform. Memory profiling is disabled.")
-#endif
-
-	static const float bytesToMegs = 1.0f / float(1 << 20);
-	const char* reportFormat = "MEM PROFILE \'%s\' - start: %.2fM, end: %.2fM {peak start: %.2fM, end: %.2fM}\n";
-
-	printf(
-		reportFormat,
-		GetName().c_str(),
-		bytesToMegs * startUsage,
-		bytesToMegs * endUsage,
-		bytesToMegs * startUsagePeak,
-		bytesToMegs * endUsagePeak);
+		printf(
+			reportFormat,
+			GetName().c_str(),
+			bytesToMegs * startUsage,
+			bytesToMegs * endUsage,
+			bytesToMegs * startUsagePeak,
+			bytesToMegs * endUsagePeak);
+	}
 }
 
 #endif // #if TECH_PROFILE
