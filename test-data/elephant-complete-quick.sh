@@ -1,0 +1,1 @@
+ImageCompleter -ii elephant-input.png -im elephant-mask.png -io elephant-output.png -sp auto
