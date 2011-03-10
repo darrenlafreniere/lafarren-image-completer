@@ -1,19 +1,19 @@
 //
 // Copyright 2010, Darren Lafreniere
 // <http://www.lafarren.com/image-completer/>
-// 
+//
 // This file is part of lafarren.com's Image Completer.
-// 
+//
 // Image Completer is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Image Completer is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with Image Completer, named License.txt. If not, see
 // <http://www.gnu.org/licenses/>.
@@ -42,19 +42,19 @@ namespace PriorityBp
 		// Indeterminate is used for lower levels of detail (lod > 0),
 		// where the region in question contains both unknown and known
 		// pixels. Examination at a higher level of detail may be required.
-		static const Value INDETERMINATE = -1;
+		static const Value INDETERMINATE;
 
 		// Unknown pixels should be filled by the image completer.
-		static const Value UNKNOWN = 0;
+		static const Value UNKNOWN;
 
 		// Ignored pixels should not be filled by the image completer,
 		// nor may they be used as input for the image completion
 		// process, nor should they be used in energy calculations.
-		static const Value IGNORED = 1;
+		static const Value IGNORED;
 
 		// Known pixels should not be filled by the image completer,
 		// but may be used as input for the image completion process.
-		static const Value KNOWN = 2;
+		static const Value KNOWN;
 
 		// Samples a single value.
 		virtual Value GetValue(int x, int y) const = 0;
@@ -94,7 +94,7 @@ namespace PriorityBp
 
 		// The region is specified by an inclusive upper left x,y, and by an
 		// exclusive width and height. This method properly handles regions
-		// outside of the 
+		// outside of the
 		virtual bool RegionXywhHasAny(int x, int y, int w, int h, Value value) const = 0;
 		virtual bool RegionXywhHasAll(int x, int y, int w, int h, Value value) const = 0;
 

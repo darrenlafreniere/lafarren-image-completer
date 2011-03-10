@@ -30,6 +30,11 @@
 
 namespace PriorityBp
 {
+const Mask::Value Mask::INDETERMINATE = -1;
+const Mask::Value Mask::UNKNOWN = 0;
+const Mask::Value Mask::IGNORED = 1;
+const Mask::Value Mask::KNOWN = 2;
+
 //
 // Helper functions
 //
