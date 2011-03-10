@@ -73,6 +73,10 @@ Compositor* CompositorFactory::Create(CompositorPatchType patchType, CompositorP
 	case CompositorPatchTypeDebugOrder:
 		patchimageSourceFactory = new PatchTypeDebugPatchOrder::Factory;
 		break;
+    default:
+        std::cout << "Warning: patchType did not match any of the handled types. Using Normal." << std::endl;
+        patchimageSourceFactory = new PatchTypeNormal::Factory;
+        break;
 	}
 
 	switch (patchBlender)
@@ -83,6 +87,10 @@ Compositor* CompositorFactory::Create(CompositorPatchType patchType, CompositorP
 	case CompositorPatchBlenderNone:
 		patchBlenderFactory = new PatchBlenderNone::Factory;
 		break;
+    default:
+        std::cout << "Warning: patchBlender did not match any of the handled types. Using None." << std::endl;
+        patchBlenderFactory = new PatchBlenderNone::Factory;
+        break;
 	}
 
 	if (patchimageSourceFactory && patchBlenderFactory && outputBlender)
