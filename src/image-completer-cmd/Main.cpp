@@ -343,8 +343,10 @@ int main(int argc, char** argv)
 	bool succeeded = false;
 	printf("\nlafarren.com\nImage Completion Using Efficient Belief Propagation\n");
 
+#if defined(_MSC_VER)
 	TECH_MEM_PROFILE("main");
 	TECH_TIME_PROFILE("main");
+#endif
 
 	wxMessageOutputStderr output;
 	wxMessageOutput::Set(&output);

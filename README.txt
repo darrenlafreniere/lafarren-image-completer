@@ -30,6 +30,17 @@ file that can be uncommented to achieve this.
 
 ///////////////////////////////////////////////////////////////////////////////
 
+// Examples
+There are .bat files (for Windows) and .sh files (for Linux) in the test-data directory. They demonstrate the running the code is as easy as:
+
+Windows:
+image-completer-cmd.exe -ii elephant-input.png -im elephant-mask.png -io elephant-output.png -sp auto
+
+Linux:
+./ImageCompleter -ii elephant-input.png -im elephant-mask.png -io elephant-output.png -sp auto
+
+///////////////////////////////////////////////////////////////////////////////
+
 // NOTES
 
 Requires:
