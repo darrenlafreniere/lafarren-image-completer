@@ -340,6 +340,8 @@ int AppCmdHostImage::GetHeight() const
 //
 int main(int argc, char** argv)
 {
+    wxInitialize();
+
 	bool succeeded = false;
 	printf("\nlafarren.com\nImage Completion Using Efficient Belief Propagation\n");
 
