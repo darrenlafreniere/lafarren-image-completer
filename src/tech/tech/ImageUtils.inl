@@ -32,7 +32,7 @@
 #include "tech/Core.h"
 #include "tech/MathUtils.h"
 
-namespace Lafarren
+namespace Tech
 {
 	template<typename T>
 	inline T* BlendInto(T* destChannels, const T* srcChannels, float alpha, int numChannels)

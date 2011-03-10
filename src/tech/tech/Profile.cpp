@@ -35,7 +35,7 @@
 
 #include "tech/DbgMem.h"
 
-using namespace Lafarren;
+using namespace Tech;
 
 //
 // BaseProfiler

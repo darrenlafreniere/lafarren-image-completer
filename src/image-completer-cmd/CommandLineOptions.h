@@ -96,23 +96,23 @@ private:
 		operator int() const { return value; }
 	};
 
-	Lafarren::CmdLine::ParamSwitch m_shouldDisplayUsage;
-	Lafarren::CmdLine::ParamOption<std::string> m_inputImagePath;
-	Lafarren::CmdLine::ParamOption<std::string> m_maskImagePath;
-	Lafarren::CmdLine::ParamOption<std::string> m_outputImagePath;
-	Lafarren::CmdLine::ParamSwitch m_shouldShowSettings;
-	Lafarren::CmdLine::ParamSwitch m_debugLowResolutionPasses;
-	Lafarren::CmdLine::ParamOption<LowResolutionPassesMax> m_lowResolutionPassesMax;
-	Lafarren::CmdLine::ParamOption<int> m_numIterations;
-	Lafarren::CmdLine::ParamOption<int> m_latticeGapX;
-	Lafarren::CmdLine::ParamOption<int> m_latticeGapY;
-	Lafarren::CmdLine::ParamOption<int> m_postPruneLabelsMin;
-	Lafarren::CmdLine::ParamOption<int> m_postPruneLabelsMax;
-	Lafarren::CmdLine::ParamOption<PriorityBp::CompositorPatchType> m_compositorPatchType;
-	Lafarren::CmdLine::ParamOption<PriorityBp::CompositorPatchBlender> m_compositorPatchBlender;
+	Tech::CmdLine::ParamSwitch m_shouldDisplayUsage;
+	Tech::CmdLine::ParamOption<std::string> m_inputImagePath;
+	Tech::CmdLine::ParamOption<std::string> m_maskImagePath;
+	Tech::CmdLine::ParamOption<std::string> m_outputImagePath;
+	Tech::CmdLine::ParamSwitch m_shouldShowSettings;
+	Tech::CmdLine::ParamSwitch m_debugLowResolutionPasses;
+	Tech::CmdLine::ParamOption<LowResolutionPassesMax> m_lowResolutionPassesMax;
+	Tech::CmdLine::ParamOption<int> m_numIterations;
+	Tech::CmdLine::ParamOption<int> m_latticeGapX;
+	Tech::CmdLine::ParamOption<int> m_latticeGapY;
+	Tech::CmdLine::ParamOption<int> m_postPruneLabelsMin;
+	Tech::CmdLine::ParamOption<int> m_postPruneLabelsMax;
+	Tech::CmdLine::ParamOption<PriorityBp::CompositorPatchType> m_compositorPatchType;
+	Tech::CmdLine::ParamOption<PriorityBp::CompositorPatchBlender> m_compositorPatchBlender;
 #if ENABLE_PATCHES_INPUT_OUTPUT
-	Lafarren::CmdLine::ParamOption<std::string> m_inputPatchesPath;
-	Lafarren::CmdLine::ParamOption<std::string> m_outputPatchesPath;
+	Tech::CmdLine::ParamOption<std::string> m_inputPatchesPath;
+	Tech::CmdLine::ParamOption<std::string> m_outputPatchesPath;
 #endif // ENABLE_PATCHES_INPUT_OUTPUT
 
 	bool m_shouldRunImageCompletion;

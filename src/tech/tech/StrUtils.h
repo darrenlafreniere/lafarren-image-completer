@@ -27,7 +27,7 @@
 
 #include <string>
 
-namespace Lafarren
+namespace Tech
 {
 	namespace Str
 	{

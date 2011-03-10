@@ -26,9 +26,9 @@
 #ifndef PCH_H
 #define PCH_H
 
-namespace Lafarren {}
+namespace Tech {}
 namespace PriorityBp {}
-using namespace Lafarren;
+using namespace Tech;
 using namespace PriorityBp;
 
 // Compile time switches:

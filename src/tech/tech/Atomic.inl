@@ -38,7 +38,7 @@
 #define ASSERT_TECH_ATOMIC_SIZE(T) \
 	wxCOMPILE_TIME_ASSERT(sizeof(T) == sizeof(AtomicNativeType), TypeMustBeSizeofAtomicNativeType)
 
-namespace Lafarren
+namespace Tech
 {
 
 #ifdef _MSC_VER

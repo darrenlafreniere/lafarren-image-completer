@@ -24,7 +24,7 @@
 
 #include "tech/DbgMem.h"
 
-using namespace Lafarren;
+using namespace Tech;
 
 std::string Str::Format(const char* format, ...)
 {

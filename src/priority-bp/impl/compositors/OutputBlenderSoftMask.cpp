@@ -46,7 +46,7 @@ namespace PriorityBp
 		{
 			// Blend s into d based on the inverse alpha
 			const float ia = 1.0f - *softMaskDataPtr;
-			Lafarren::BlendInto(destRgbDataPtr->channel, srcRgbDataPtr->channel, ia, HostImage::Rgb::NUM_CHANNELS);
+			Tech::BlendInto(destRgbDataPtr->channel, srcRgbDataPtr->channel, ia, HostImage::Rgb::NUM_CHANNELS);
 		}
 	}
 }

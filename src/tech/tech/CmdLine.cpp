@@ -26,7 +26,7 @@
 
 #include "tech/DbgMem.h"
 
-using namespace Lafarren;
+using namespace Tech;
 
 CmdLine::Param::Param(const std::string& shortName, const std::string& longName, const std::string description)
 	: shortName(shortName)

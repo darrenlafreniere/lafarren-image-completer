@@ -25,7 +25,7 @@
 #ifndef TECH_CMD_LINE_H
 #define TECH_CMD_LINE_H
 
-namespace Lafarren
+namespace Tech
 {
 	//
 	// Reads a command line into separate parameter objects.

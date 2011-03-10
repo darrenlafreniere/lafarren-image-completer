@@ -25,7 +25,7 @@
 #ifndef TECH_IMAGE_UTILS_H
 #define TECH_IMAGE_UTILS_H
 
-namespace Lafarren
+namespace Tech
 {
 	// Blend src into dest by alpha. Returns a reference to dest.
 	template<typename T>

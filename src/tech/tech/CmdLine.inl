@@ -29,7 +29,7 @@
 #error "CmdLine.inl must only be included by CmdLine.h"
 #endif
 
-namespace Lafarren
+namespace Tech
 {
 	// CmdLine::ParamOption<std::string> partial specialization.
 	template<>

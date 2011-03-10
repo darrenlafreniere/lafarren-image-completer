@@ -29,7 +29,7 @@
 #ifndef TECH_ATOMIC_H
 #define TECH_ATOMIC_H
 
-namespace Lafarren
+namespace Tech
 {
 #ifdef _MSC_VER
 	typedef long AtomicNativeType;

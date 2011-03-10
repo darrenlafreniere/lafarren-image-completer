@@ -27,7 +27,7 @@
 
 #include "tech/DbgMem.h"
 
-namespace Lafarren
+namespace Tech
 {
 	// CmdLine::ParamOption<CommandLineOptions::LowResolutionPassesMax> partial specialization.
 	template<>
@@ -101,7 +101,7 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 	, m_shouldRunImageCompletion(false)
 	, m_isValid(false)
 {
-	Lafarren::CmdLine cmdLine;
+	Tech::CmdLine cmdLine;
 	cmdLine.AddParam(m_shouldDisplayUsage);
 	cmdLine.AddParam(m_inputImagePath);
 	cmdLine.AddParam(m_maskImagePath);
@@ -130,7 +130,7 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 	{
 		if (!m_inputImagePath.isSet)
 		{
-			error += Lafarren::Str::Format("Missing input image path.\n");
+			error += Tech::Str::Format("Missing input image path.\n");
 			m_isValid = false;
 		}
 
@@ -140,12 +140,12 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 		{
 			if (!m_maskImagePath.isSet)
 			{
-				error += Lafarren::Str::Format("Missing mask image path.\n");
+				error += Tech::Str::Format("Missing mask image path.\n");
 				m_isValid = false;
 			}
 			if (!m_outputImagePath.isSet)
 			{
-				error += Lafarren::Str::Format("Missing output image path.\n");
+				error += Tech::Str::Format("Missing output image path.\n");
 				m_isValid = false;
 			}
 

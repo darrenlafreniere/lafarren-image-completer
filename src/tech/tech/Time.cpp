@@ -33,7 +33,7 @@
 
 #include "tech/DbgMem.h"
 
-using namespace Lafarren;
+using namespace Tech;
 
 // The Time singleton should be created early and destroyed late:
 #pragma warning(disable: 4073)
@@ -147,7 +147,7 @@ private:
 
 Time Time::instance;
 
-double Lafarren::CurrentTime()
+double Tech::CurrentTime()
 {
 	return Time::GetInstance().CurrentTime();
 }

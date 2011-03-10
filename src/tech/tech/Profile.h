@@ -23,7 +23,7 @@
 #define TECH_PROFILE_H
 
 #if TECH_PROFILE
-namespace Lafarren
+namespace Tech
 {
 	//
 	// Base class for time or memory profiling.
@@ -157,23 +157,23 @@ namespace Lafarren
 
 // Reports the final profile:
 #define TECH_TIME_PROFILE(__name__) \
-	TECH_TIME_PROFILE_INDIRECT1(__LINE__, __name__, Lafarren::TimeProfiler::ReportFinal, 0)
+	TECH_TIME_PROFILE_INDIRECT1(__LINE__, __name__, Tech::TimeProfiler::ReportFinal, 0)
 
 // Reports every sample:
 #define TECH_TIME_PROFILE_EVERY_SAMPLE(__name__) \
-	TECH_TIME_PROFILE_INDIRECT1(__LINE__, __name__, Lafarren::TimeProfiler::ReportEverySample, 1)
+	TECH_TIME_PROFILE_INDIRECT1(__LINE__, __name__, Tech::TimeProfiler::ReportEverySample, 1)
 
 // Reports every Nth sample:
 #define TECH_TIME_PROFILE_EVERY_NTH_SAMPLE(__name__, __nthBlock__) \
-	TECH_TIME_PROFILE_INDIRECT1(__LINE__, __name__, Lafarren::TimeProfiler::ReportEveryNthSample, __nthBlock__)
+	TECH_TIME_PROFILE_INDIRECT1(__LINE__, __name__, Tech::TimeProfiler::ReportEveryNthSample, __nthBlock__)
 
 // Helper macros to successfully expand __LINE__
 #define TECH_TIME_PROFILE_INDIRECT1(__line__, __name__, __reportMode__, __nthBlock__) \
 	TECH_TIME_PROFILE_INDIRECT2(__line__, __name__, __reportMode__, __nthBlock__)
 
 #define TECH_TIME_PROFILE_INDIRECT2(__line__, __name__, __reportMode__, __nthBlock__) \
-	static Lafarren::TimeProfiler techTimeProfiler##__line__(__name__, __reportMode__, __nthBlock__); \
-	Lafarren::ScopedProfiler techScopedProfiler##__line__(techTimeProfiler##__line__)
+	static Tech::TimeProfiler techTimeProfiler##__line__(__name__, __reportMode__, __nthBlock__); \
+	Tech::ScopedProfiler techScopedProfiler##__line__(techTimeProfiler##__line__)
 
 #else
 
@@ -206,8 +206,8 @@ namespace Lafarren
 	TECH_MEM_PROFILE_INDIRECT2(__line__, __name__)
 
 #define TECH_MEM_PROFILE_INDIRECT2(__line__, __name__) \
-	Lafarren::MemProfiler techMemProfiler##__line__(__name__); \
-	Lafarren::ScopedProfiler techScopedProfiler##__line__(techMemProfiler##__line__)
+	Tech::MemProfiler techMemProfiler##__line__(__name__); \
+	Tech::ScopedProfiler techScopedProfiler##__line__(techMemProfiler##__line__)
 
 #else
 
