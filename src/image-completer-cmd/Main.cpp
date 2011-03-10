@@ -1,19 +1,19 @@
 //
 // Copyright 2010, Darren Lafreniere
 // <http://www.lafarren.com/image-completer/>
-// 
+//
 // This file is part of lafarren.com's Image Completer.
-// 
+//
 // Image Completer is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Image Completer is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with Image Completer, named License.txt. If not, see
 // <http://www.gnu.org/licenses/>.
@@ -38,7 +38,7 @@
 // Make sure that wxWidgets wxImage::RGBValue and PriorityBp::HostImage::Rgb
 // have identical size, since we perform no conversion.
 wxCOMPILE_TIME_ASSERT(sizeof(wxImage::RGBValue) == sizeof(PriorityBp::HostImage::Rgb), INVALID_RGB_SIZE);
-#if __WXDEBUG__
+#ifdef __WXDEBUG__
 class AssertIdenticalRgbLayout
 {
 public:
@@ -121,7 +121,7 @@ static bool LoadAndValidateImage(const char* imageTypeName, const std::string& i
 {
 	bool result = false;
 	wxMessageOutput& msgOut = *wxMessageOutput::Get();
-	
+
     if (!image.GetwxImage().LoadFile(imagePath))
 	{
 		// If LoadFile fails, it already prints an wxMessageOutput error for us.
