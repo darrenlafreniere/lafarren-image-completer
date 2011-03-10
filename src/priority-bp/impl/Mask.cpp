@@ -486,7 +486,7 @@ void MaskScalable::ScaleDown()
 	wxASSERT(m_depth >= 0);
 
 	// If there's no mask for the next lower depth, create one from the current resolution.
-	if (m_depth == m_resolutions.size() - 1)
+	if (static_cast<unsigned int>(m_depth) == m_resolutions.size() - 1)
 	{
 		const MaskLod& maskToScaleDown = GetCurrentResolution();
 		m_resolutions.push_back(new MaskInternal(maskToScaleDown));
