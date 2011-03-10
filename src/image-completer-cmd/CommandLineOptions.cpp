@@ -29,53 +29,53 @@
 
 namespace Lafarren
 {
-// CmdLine::ParamOption<CommandLineOptions::LowResolutionPassesMax> partial specialization.
-template<>
-void CmdLine::ParamOption<CommandLineOptions::LowResolutionPassesMax>::ReadOption(const char* option)
-{
-	if (std::string(option).compare(SettingsUi::GetLowResolutionPassesAutoDescription().c_str()) == 0)
+	// CmdLine::ParamOption<CommandLineOptions::LowResolutionPassesMax> partial specialization.
+	template<>
+	void CmdLine::ParamOption<CommandLineOptions::LowResolutionPassesMax>::ReadOption(const char* option)
 	{
-		this->value = PriorityBp::Settings::LOW_RESOLUTION_PASSES_AUTO;
-	}
-	else
-	{
-		this->value = atoi(option);
-	}
-}
-
-// CmdLine::ParamOption<PriorityBp::CompositorPatchType> partial specialization.
-template<>
-void CmdLine::ParamOption<PriorityBp::CompositorPatchType>::ReadOption(const char* option)
-{
-	for (int e = PriorityBp::CompositorPatchTypeInvalid + 1; e < PriorityBp::CompositorPatchTypeNum; ++e)
-	{
-		const PriorityBp::CompositorPatchType compositorPatchType = PriorityBp::CompositorPatchType(e);
-		const std::string desc(SettingsUi::GetEnumDescription(compositorPatchType));
-		if (std::string(option).compare(desc.c_str()) == 0)
+		if (std::string(option).compare(SettingsUi::GetLowResolutionPassesAutoDescription().c_str()) == 0)
 		{
-			this->value = compositorPatchType;
-			break;
+			this->value = PriorityBp::Settings::LOW_RESOLUTION_PASSES_AUTO;
+		}
+		else
+		{
+			this->value = atoi(option);
+		}
+	}
+
+	// CmdLine::ParamOption<PriorityBp::CompositorPatchType> partial specialization.
+	template<>
+	void CmdLine::ParamOption<PriorityBp::CompositorPatchType>::ReadOption(const char* option)
+	{
+		for (int e = PriorityBp::CompositorPatchTypeInvalid + 1; e < PriorityBp::CompositorPatchTypeNum; ++e)
+		{
+			const PriorityBp::CompositorPatchType compositorPatchType = PriorityBp::CompositorPatchType(e);
+			const std::string desc(SettingsUi::GetEnumDescription(compositorPatchType));
+			if (std::string(option).compare(desc.c_str()) == 0)
+			{
+				this->value = compositorPatchType;
+				break;
+			}
+		}
+	}
+
+	// CmdLine::ParamOption<PriorityBp::CompositorPatchBlender> partial specialization.
+	template<>
+	void CmdLine::ParamOption<PriorityBp::CompositorPatchBlender>::ReadOption(const char* option)
+	{
+		for (int e = PriorityBp::CompositorPatchBlenderInvalid + 1; e < PriorityBp::CompositorPatchBlenderNum; ++e)
+		{
+			const PriorityBp::CompositorPatchBlender compositorPatchBlender = PriorityBp::CompositorPatchBlender(e);
+			const std::string desc(SettingsUi::GetEnumDescription(compositorPatchBlender));
+			if (std::string(option).compare(desc.c_str()) == 0)
+			{
+				this->value = compositorPatchBlender;
+				break;
+			}
 		}
 	}
 }
 
-// CmdLine::ParamOption<PriorityBp::CompositorPatchBlender> partial specialization.
-template<>
-void CmdLine::ParamOption<PriorityBp::CompositorPatchBlender>::ReadOption(const char* option)
-{
-	for (int e = PriorityBp::CompositorPatchBlenderInvalid + 1; e < PriorityBp::CompositorPatchBlenderNum; ++e)
-	{
-		const PriorityBp::CompositorPatchBlender compositorPatchBlender = PriorityBp::CompositorPatchBlender(e);
-		const std::string desc(SettingsUi::GetEnumDescription(compositorPatchBlender));
-		if (std::string(option).compare(desc.c_str()) == 0)
-		{
-			this->value = compositorPatchBlender;
-			break;
-		}
-	}
-}
-
-} // end namespace Lafarren
 //
 // CommandLineOptions
 //

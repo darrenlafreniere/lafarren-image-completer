@@ -29,26 +29,24 @@
 
 namespace PriorityBp
 {
-  
-void OutputBlenderSoftMask::Blend(const Compositor::Input& input, const ImageFloat& patchesBlended, ImageFloat& outputImageFloat) const
-{
-	std::vector<float> softMask;
-	CreateSoftMask(input, softMask);
-
-	const RgbFloat* srcRgbDataPtr = patchesBlended.GetRgb();
-	const float* softMaskDataPtr = &softMask[0];
-	RgbFloat* destRgbDataPtr = outputImageFloat.GetRgb();
-
-	wxASSERT(patchesBlended.GetWidth() == outputImageFloat.GetWidth());
-	wxASSERT(patchesBlended.GetHeight() == outputImageFloat.GetHeight());
-
-	const int imageNumPixels = outputImageFloat.GetWidth() * outputImageFloat.GetHeight();
-	for (int i = 0; i < imageNumPixels; ++i, ++destRgbDataPtr, ++srcRgbDataPtr, ++softMaskDataPtr)
+	void OutputBlenderSoftMask::Blend(const Compositor::Input& input, const ImageFloat& patchesBlended, ImageFloat& outputImageFloat) const
 	{
-		// Blend s into d based on the inverse alpha
-		const float ia = 1.0f - *softMaskDataPtr;
-		Lafarren::BlendInto(destRgbDataPtr->channel, srcRgbDataPtr->channel, ia, HostImage::Rgb::NUM_CHANNELS);
+		std::vector<float> softMask;
+		CreateSoftMask(input, softMask);
+
+		const RgbFloat* srcRgbDataPtr = patchesBlended.GetRgb();
+		const float* softMaskDataPtr = &softMask[0];
+		RgbFloat* destRgbDataPtr = outputImageFloat.GetRgb();
+
+		wxASSERT(patchesBlended.GetWidth() == outputImageFloat.GetWidth());
+		wxASSERT(patchesBlended.GetHeight() == outputImageFloat.GetHeight());
+
+		const int imageNumPixels = outputImageFloat.GetWidth() * outputImageFloat.GetHeight();
+		for (int i = 0; i < imageNumPixels; ++i, ++destRgbDataPtr, ++srcRgbDataPtr, ++softMaskDataPtr)
+		{
+			// Blend s into d based on the inverse alpha
+			const float ia = 1.0f - *softMaskDataPtr;
+			Lafarren::BlendInto(destRgbDataPtr->channel, srcRgbDataPtr->channel, ia, HostImage::Rgb::NUM_CHANNELS);
+		}
 	}
 }
-
-}// end namespace PriorityBp

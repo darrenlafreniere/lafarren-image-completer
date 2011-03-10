@@ -178,9 +178,12 @@ void PriorityBpRunner::ProcessNeighbors(Node& node, ProcessNeighborsType type)
 
 // Sort the patches in ascending order of priority, so that the more
 // confident patches are laid atop the less confidence patches.
-bool PriorityBpRunner::SortPatchesByPriority::operator()(const Patch& patchA, const Patch& patchB)
+struct SortPatchesByPriority
 {
-   return patchA.priority < patchB.priority;
+	bool operator()(const Patch& patchA, const Patch& patchB)
+	{
+		return patchA.priority < patchB.priority;
+	};
 };
 
 void PriorityBpRunner::PopulatePatches(std::vector<Patch>& outPatches) const

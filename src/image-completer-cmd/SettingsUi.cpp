@@ -31,16 +31,16 @@
 // size the desc column to an ideal width.
 struct Member
 {
-  std::string desc;
-  std::string value;
+	std::string desc;
+	std::string value;
 
-  Member(const std::string& desc, const std::string& value) : desc(desc), value(value) {}
+	Member(const std::string& desc, const std::string& value) : desc(desc), value(value) {}
 
-  void Print(wxMessageOutput& msgOut, int descWidth) const
-  {
-    const std::string descSpacing(' ', descWidth - desc.length());
-    msgOut.Printf("\t%s:%s %s\n", desc.c_str(), descSpacing.c_str(), value.c_str());
-  }
+	void Print(wxMessageOutput& msgOut, int descWidth) const
+	{
+		const std::string descSpacing(' ', descWidth - desc.length());
+		msgOut.Printf("\t%s:%s %s\n", desc.c_str(), descSpacing.c_str(), value.c_str());
+	}
 };
 
 //

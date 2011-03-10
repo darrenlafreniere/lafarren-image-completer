@@ -31,49 +31,47 @@
 
 namespace PriorityBp
 {
-  
-CompositorRoot::PatchBlender* PatchBlenderNone::Factory::Create(const Compositor::Input& input, const ImageFloat& imageFloat, ImageFloat& outPatchesBlended) const
-{
-	return new PatchBlenderNone(input, imageFloat, outPatchesBlended);
-}
-
-PatchBlenderNone::PatchBlenderNone(const Compositor::Input& input, const ImageFloat& imageFloat, ImageFloat& outPatchesBlended)
-	: m_imageFloat(imageFloat)
-	, m_outPatchesBlended(outPatchesBlended)
-{
-}
-
-void PatchBlenderNone::Blend(const Patch& patch, const ImageFloat& patchImage) const
-{
-	const int imageWidth = m_imageFloat.GetWidth();
-	const int imageHeight = m_imageFloat.GetHeight();
-	const int patchWidth = patchImage.GetWidth();
-	const int patchHeight = patchImage.GetHeight();
-	const int patchNumPixels = patchWidth * patchHeight;
-
-	const RgbFloat* const patchImageData = patchImage.GetRgb();
-	RgbFloat* const destRgbData = m_outPatchesBlended.GetRgb();
-
-	const int colClipOffset = std::max(-patch.destLeft, 0);
-	const int rowClipOffset = std::max(-patch.destTop, 0);
-
-	const int rowsNum = std::min(patchHeight, imageHeight - patch.destTop);
-	for (int row = rowClipOffset, patchDestY = patch.destTop + rowClipOffset; row < rowsNum; ++row, ++patchDestY)
+	CompositorRoot::PatchBlender* PatchBlenderNone::Factory::Create(const Compositor::Input& input, const ImageFloat& imageFloat, ImageFloat& outPatchesBlended) const
 	{
-		const int patchRowMajorIndex = Lafarren::GetRowMajorIndex(patchWidth, colClipOffset, row);
-		const RgbFloat* patchImagePtr = patchImageData + patchRowMajorIndex;
+		return new PatchBlenderNone(input, imageFloat, outPatchesBlended);
+	}
 
-		const int imageRowMajorIndex = Lafarren::GetRowMajorIndex(imageWidth, patch.destLeft + colClipOffset, patchDestY);
-		RgbFloat* destRgbPtr = destRgbData + imageRowMajorIndex;
+	PatchBlenderNone::PatchBlenderNone(const Compositor::Input& input, const ImageFloat& imageFloat, ImageFloat& outPatchesBlended)
+		: m_imageFloat(imageFloat)
+		, m_outPatchesBlended(outPatchesBlended)
+	{
+	}
 
-		const int colsNum = std::min(patchWidth, imageWidth - patch.destLeft);
-		for (int col = colClipOffset; col < colsNum; ++patchImagePtr, ++destRgbPtr, ++col)
+	void PatchBlenderNone::Blend(const Patch& patch, const ImageFloat& patchImage) const
+	{
+		const int imageWidth = m_imageFloat.GetWidth();
+		const int imageHeight = m_imageFloat.GetHeight();
+		const int patchWidth = patchImage.GetWidth();
+		const int patchHeight = patchImage.GetHeight();
+		const int patchNumPixels = patchWidth * patchHeight;
+
+		const RgbFloat* const patchImageData = patchImage.GetRgb();
+		RgbFloat* const destRgbData = m_outPatchesBlended.GetRgb();
+
+		const int colClipOffset = std::max(-patch.destLeft, 0);
+		const int rowClipOffset = std::max(-patch.destTop, 0);
+
+		const int rowsNum = std::min(patchHeight, imageHeight - patch.destTop);
+		for (int row = rowClipOffset, patchDestY = patch.destTop + rowClipOffset; row < rowsNum; ++row, ++patchDestY)
 		{
-			wxASSERT((destRgbPtr - destRgbData) < (imageWidth * imageHeight));
-			wxASSERT((patchImagePtr - &patchImagePtr[0]) < patchNumPixels);
-			*destRgbPtr = *patchImagePtr;
+			const int patchRowMajorIndex = Lafarren::GetRowMajorIndex(patchWidth, colClipOffset, row);
+			const RgbFloat* patchImagePtr = patchImageData + patchRowMajorIndex;
+
+			const int imageRowMajorIndex = Lafarren::GetRowMajorIndex(imageWidth, patch.destLeft + colClipOffset, patchDestY);
+			RgbFloat* destRgbPtr = destRgbData + imageRowMajorIndex;
+
+			const int colsNum = std::min(patchWidth, imageWidth - patch.destLeft);
+			for (int col = colClipOffset; col < colsNum; ++patchImagePtr, ++destRgbPtr, ++col)
+			{
+				wxASSERT((destRgbPtr - destRgbData) < (imageWidth * imageHeight));
+				wxASSERT((patchImagePtr - &patchImagePtr[0]) < patchNumPixels);
+				*destRgbPtr = *patchImagePtr;
+			}
 		}
 	}
 }
-
-}// end namespace PriorityBp
