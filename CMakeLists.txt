@@ -54,6 +54,7 @@ ${prioritybp}/energy-calculators/EnergyCalculatorPerPixel.cpp
 
 ${tech}/Pch.cpp
 ${tech}/tech/CmdLine.cpp
+${tech}/tech/Core.cpp
 ${tech}/tech/ImageUtils.cpp
 ${tech}/tech/Profile.cpp
 ${tech}/tech/StrUtils.cpp
