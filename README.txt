@@ -22,7 +22,18 @@ along with Image Completer, named License.txt. If not, see
 
 
 ///////////////////////////////////////////////////////////////////////////////
+
+// Getting started
+
+If you are using Linux, you must #define UNIX. There is a line in the CMakeLists.txt
+file that can be uncommented to achieve this.
+
+///////////////////////////////////////////////////////////////////////////////
+
 // NOTES
+
+Requires:
+- wxWidgets 2.9
 
 Developed using:
 
@@ -30,3 +41,7 @@ Developed using:
 - wxWidgets (wxMSW-2.8.10, static C runtime (/MT))
 - FFTW (3.2.2, static C runtime (/MT), single precision enabled)
 - Taucs, Metis, and Atlas (included in lib)
+
+Tested on:
+- Fedora 13
+- GCC 4.4.5
