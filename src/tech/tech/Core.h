@@ -37,7 +37,7 @@ typedef unsigned long ulong;
 // Can be fully specialized for type specific information.
 template<typename T> struct TypeInfo {};
 
-#if defined(_MSC_VER) || defined(__GNUC__)
+#if defined(_MSC_VER) || defined(UNIX)
 // Only implemented for 32 bit builds at the moment.
 // Use these only where size actually matters.
 typedef char int8;
@@ -47,22 +47,16 @@ typedef short int16;
 typedef unsigned short uint16;
 typedef int int32;
 typedef unsigned int uint32;
-typedef long long int64;
-typedef unsigned long long uint64;
-
-#define FORCE_INLINE __forceinline
-#define EXPORT __declspec(dllexport)
-
 #else
-#error "Implement tech/Core.h for this platform!"
+#error "Implement tech/Core.h types for this platform!"
 #endif
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER)
 typedef __int64 int64;
 typedef unsigned __int64 uint64;
 #define FORCE_INLINE __forceinline
 #define EXPORT __declspec(dllexport)
-#elif __GNUC__
+#elif defined(UNIX)
 typedef long long int64;
 typedef unsigned long long uint64;
 #define FORCE_INLINE inline
