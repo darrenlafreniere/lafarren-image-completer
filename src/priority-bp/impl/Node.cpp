@@ -441,7 +441,7 @@ void Node::PruneLabels()
 		}
 
 #if PROFILE_MEM
-		OutputDebugString(Str::Format("PruneLabels, before: %d, after %d\n", labelNum, labelInfoSetKept.size()));
+		printf("PruneLabels, before: %d, after %d\n", labelNum, labelInfoSetKept.size());
 #endif
 
 		m_labelInfoSet.swap(labelInfoSetKept);

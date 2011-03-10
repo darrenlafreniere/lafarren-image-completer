@@ -31,7 +31,6 @@
 #define NOMINMAX
 #include <windows.h>
 #include <psapi.h>
-#define snprintf _snprintf
 #endif
 
 #include "tech/DbgMem.h"
@@ -136,18 +135,12 @@ void TimeProfiler::Report(ReportContext reportContext, int numBlocks, double tim
 		? "TIME PROFILE \'%s\' - total time: %g sec, blocks: %d, time per block: %g sec\n"
 		: "TIME PROFILE FINAL \'%s\' - total time: %g sec, blocks: %d, time per block: %g sec\n";
 
-	char buffer[2048];
-	snprintf(
-		buffer,
-		sizeof(buffer),
+	printf(
 		reportFormat,
 		GetName().c_str(),
 		time,
 		numBlocks,
 		timePerBlock);
-
-	// TODO: add other logging options
-	OutputDebugString(buffer);
 }
 
 //
@@ -168,7 +161,7 @@ m_data(NULL)
 	m_data = new MemProfilerData;
 	memset(m_data, 0, sizeof(MemProfilerData));
 #else
-#error "MemProfiler::MemProfiler() is not implemented for this platform"
+#pragma message("Non-critical warning: MemProfiler::MemProfiler() is not implemented for this platform. Memory profiling is disabled.")
 #endif
 }
 
@@ -183,7 +176,7 @@ void MemProfiler::OnStart()
 	MemProfilerData* data = (MemProfilerData*)m_data;
 	GetProcessMemoryInfo(GetCurrentProcess(), &data->startMem, sizeof(data->startMem));
 #else
-#error "MemProfiler::OnStart() is not implemented for this platform"
+#pragma message("Non-critical warning: MemProfiler::OnStart() is not implemented for this platform. Memory profiling is disabled.")
 #endif
 }
 
@@ -204,25 +197,19 @@ void MemProfiler::OnStop()
 	endUsage       = (unsigned int)stopMem.WorkingSetSize;
 	endUsagePeak   = (unsigned int)stopMem.PeakWorkingSetSize;
 #else
-#error "MemProfiler::OnStop() is not implemented for this platform"
+#pragma message("Non-critical warning: MemProfiler::OnStop() is not implemented for this platform. Memory profiling is disabled.")
 #endif
 
 	static const float bytesToMegs = 1.0f / float(1 << 20);
 	const char* reportFormat = "MEM PROFILE \'%s\' - start: %.2fM, end: %.2fM {peak start: %.2fM, end: %.2fM}\n";
 
-	char buffer[2048];
-	snprintf(
-		buffer,
-		sizeof(buffer),
+	printf(
 		reportFormat,
 		GetName().c_str(),
 		bytesToMegs * startUsage,
 		bytesToMegs * endUsage,
 		bytesToMegs * startUsagePeak,
 		bytesToMegs * endUsagePeak);
-
-	// TODO: add other logging options
-	OutputDebugString(buffer);
 }
 
 #endif // #if TECH_PROFILE
