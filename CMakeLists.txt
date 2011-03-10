@@ -14,6 +14,9 @@ include_directories(lib/tacus/ src/image-completer-cmd src/priority-bp src/prior
 set(USE_POISSON OFF CACHE BOOL "Use Poisson blending?" FORCE)
 set(USE_THREADS OFF CACHE BOOL "Use threads?" FORCE)
 
+#If you are on a UNIX system, please uncomment this line:
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUNIX")
+
 ###############
 set(ImageCompleterSources
 
