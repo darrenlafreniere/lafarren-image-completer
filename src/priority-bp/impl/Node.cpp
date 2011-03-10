@@ -1,19 +1,19 @@
 //
 // Copyright 2010, Darren Lafreniere
 // <http://www.lafarren.com/image-completer/>
-// 
+//
 // This file is part of lafarren.com's Image Completer.
-// 
+//
 // Image Completer is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Image Completer is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with Image Completer, named License.txt. If not, see
 // <http://www.gnu.org/licenses/>.
@@ -233,7 +233,7 @@ void Node::SendMessages(Node& neighbor) const
 		{
 			const Label& label = m_labelInfoSet[pi].label;
 			const EnergyCalculator::BatchQueued::Handle handle = energyBatch.QueueCalculation(label.left, label.top);
-			ASSERT_NODE_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, pi);
+			ASSERT_NODE_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, static_cast<unsigned int>(pi));
 		}
 
 		energyBatch.ProcessCalculations();
@@ -270,7 +270,7 @@ void Node::SendMessages(Node& neighbor) const
 
 		const EnergyCalculator::BatchParams energyBatchParams(qLabelNum, overlapWidth, overlapHeight, pOverlapLeft, pOverlapTop, false);
 		EnergyCalculator::BatchQueued energyBatch(m_context->energyCalculatorContainer.Get(qLabelNum).BatchOpenQueued(energyBatchParams));
-		
+
 		// Queue energy calculations
 		for (int qi = 0; qi < qLabelNum; ++qi)
 		{
@@ -279,7 +279,7 @@ void Node::SendMessages(Node& neighbor) const
 			const int qOverlapTop = qLabel.top + qOverlapTopOffset;
 
 			const EnergyCalculator::BatchQueued::Handle handle = energyBatch.QueueCalculation(qOverlapLeft, qOverlapTop);
-			ASSERT_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, qi);
+			ASSERT_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, static_cast<unsigned int>(qi));
 		}
 
 		energyBatch.ProcessCalculations();
@@ -352,7 +352,7 @@ void Node::PruneLabels()
 		{
 			const Label& label = labelSet.GetLabel(i);
 			const EnergyCalculator::BatchQueued::Handle handle = energyBatch.QueueCalculation(label.left, label.top);
-			ASSERT_NODE_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, i);
+			ASSERT_NODE_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, static_cast<unsigned int>(i));
 		}
 
 		energyBatch.ProcessCalculations();
@@ -467,7 +467,7 @@ Priority Node::CalculatePriority() const
 	{
 		const Label& label = labelSet.GetLabel(i);
 		const EnergyCalculator::BatchQueued::Handle handle = energyBatch.QueueCalculation(label.left, label.top);
-		ASSERT_NODE_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, i);
+		ASSERT_NODE_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, static_cast<unsigned int>(i));
 	}
 
 	energyBatch.ProcessCalculations();

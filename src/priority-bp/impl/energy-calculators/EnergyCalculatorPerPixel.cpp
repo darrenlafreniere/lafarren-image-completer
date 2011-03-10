@@ -320,7 +320,7 @@ PriorityBp::EnergyCalculator::BatchQueued::Handle PriorityBp::EnergyCalculatorPe
     // Give index of new QueuedCalculationAndResult to the next target thread.
     {
         // See comments above m_targetThreadIndex member.
-        QueuedCalculationAndResultIndexBuffer& queuedCalculationAndResultIndexBuffer = (!m_isAsyncBatch || m_targetThreadIndex == m_workerThreads.size())
+        QueuedCalculationAndResultIndexBuffer& queuedCalculationAndResultIndexBuffer = (!m_isAsyncBatch || static_cast<unsigned int>(m_targetThreadIndex) == m_workerThreads.size())
             ? m_queuedCalculationAndResultIndexBuffer                                           // main thread
             : m_workerThreads[m_targetThreadIndex]->GetQueuedCalculationAndResultIndexBuffer(); // worker thread
 
