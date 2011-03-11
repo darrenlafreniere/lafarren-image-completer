@@ -17,6 +17,9 @@ set(USE_THREADS OFF CACHE BOOL "Use threads?" FORCE)
 #If you are on a UNIX system, please uncomment this line:
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUNIX")
 
+#If you do not want to use threads, please uncomment this line:
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DNO_THREADS")
+
 ###############
 set(ImageCompleterSources
 

@@ -229,6 +229,7 @@ m_isAsyncBatch(false),
 m_queuedCalculationAndResultIndexBuffer(*this),
 m_targetThreadIndex(0)
 {
+#ifndef NO_THREADS
     const int cpuCount = wxThread::GetCPUCount();
     if (cpuCount > 1)
     {
@@ -241,6 +242,7 @@ m_targetThreadIndex(0)
             wxASSERT(workerThread->IsPaused());
         }
     }
+#endif
 }
 
 PriorityBp::EnergyCalculatorPerPixel::~EnergyCalculatorPerPixel()
