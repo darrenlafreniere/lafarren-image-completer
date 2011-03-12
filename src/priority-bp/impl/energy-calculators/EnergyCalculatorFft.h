@@ -42,8 +42,9 @@ namespace PriorityBp
 	class MaskLod;
 	struct Settings;
 
-	// Calculates the energy between two regions of the input image by doing
-	// straight per-pixel calculations on the CPU.
+	// Calculates the energy between two regions of the input image using the
+	// Fast Fourier Transform and a Windowed Sum Squared Table:
+	// http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.7.2795
 	//
 	// Internally, the RGB color channel data is stored in a separate buffer
 	// per channel.
