@@ -31,9 +31,6 @@
     <ClInclude Include="tech\Time.h">
       <Filter>tech</Filter>
     </ClInclude>
-    <ClInclude Include="tech\CmdLine.h">
-      <Filter>tech</Filter>
-    </ClInclude>
     <ClInclude Include="tech\StrUtils.h">
       <Filter>tech</Filter>
     </ClInclude>
@@ -47,9 +44,6 @@
       <Filter>tech</Filter>
     </ClCompile>
     <ClCompile Include="tech\Time.cpp">
-      <Filter>tech</Filter>
-    </ClCompile>
-    <ClCompile Include="tech\CmdLine.cpp">
       <Filter>tech</Filter>
     </ClCompile>
     <ClCompile Include="tech\StrUtils.cpp">
@@ -70,9 +64,6 @@
       <Filter>tech</Filter>
     </None>
     <None Include="tech\Atomic.inl">
-      <Filter>tech</Filter>
-    </None>
-    <None Include="tech\CmdLine.inl">
       <Filter>tech</Filter>
     </None>
   </ItemGroup>
