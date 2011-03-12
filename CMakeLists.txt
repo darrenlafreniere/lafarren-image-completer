@@ -6,10 +6,10 @@ find_package(wxWidgets COMPONENTS core base REQUIRED)
 include( ${wxWidgets_USE_FILE} )
 
 set(cmdsrc src/image-completer-cmd)
-set(prioritybp src/priority-bp/impl)
+set(prioritybp src/image-completer-lib/impl)
 set(tech src/tech)
 
-include_directories(lib/tacus/ src/image-completer-cmd src/priority-bp src/priority-bp/api src/priority-bp/impl src/priority-bp/impl/compositors src/priority-bp/impl/energy-calculators src/tech/tech src/tech)
+include_directories(lib/tacus/ src/image-completer-cmd src/image-completer-lib src/image-completer-lib/api src/image-completer-lib/impl src/image-completer-lib/impl/compositors src/image-completer-lib/impl/energy-calculators src/tech/tech src/tech)
 
 set(USE_POISSON OFF CACHE BOOL "Use Poisson blending?" FORCE)
 set(USE_THREADS OFF CACHE BOOL "Use threads?" FORCE)

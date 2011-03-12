@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual C++ Express 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "image-completer-cmd", "image-completer-cmd\image-completer-cmd.vcxproj", "{B2E82FB7-9483-46F9-8DB8-15AAB500657B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "priority-bp", "image-completer-lib\impl\priority-bp.vcxproj", "{5703CA3A-7F67-4D86-B854-1A45BE6D86AD}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "image-completer-lib", "image-completer-lib\impl\image-completer-lib.vcxproj", "{5703CA3A-7F67-4D86-B854-1A45BE6D86AD}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tech", "tech\tech.vcxproj", "{1608DC9C-2779-4C22-A0D7-B48085C524F4}"
 EndProject

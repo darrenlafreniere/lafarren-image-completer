@@ -106,7 +106,7 @@
     <ClInclude Include="SettingsText.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\image-completer-lib\impl\priority-bp.vcxproj">
+    <ProjectReference Include="..\image-completer-lib\impl\image-completer-lib.vcxproj">
       <Project>{5703ca3a-7f67-4d86-b854-1a45be6d86ad}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
