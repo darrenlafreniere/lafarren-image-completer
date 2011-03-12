@@ -11,14 +11,18 @@ set(tech src/tech)
 
 include_directories(lib/tacus/ src/image-completer-cmd src/image-completer-lib src/image-completer-lib/api src/image-completer-lib/impl src/image-completer-lib/impl/compositors src/image-completer-lib/impl/energy-calculators src/tech/tech src/tech)
 
+#If you want to enable the patches to be composited using Poisson blending, set this flag to ON (requires TAUCS to be installed).
 set(USE_POISSON OFF CACHE BOOL "Use Poisson blending?" FORCE)
+
+#If you want to enable the per-pixel energy calculator to use multiple hardware threads, set this flag to ON.
 set(USE_THREADS OFF CACHE BOOL "Use threads?" FORCE)
+if(USE_THREADS)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_THREADS")
+endif(USE_THREADS)
 
-#If you are on a UNIX system, please uncomment this line:
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUNIX")
-
-#If you want to the per-pixel energy calculator to use multiple hardware threads, please uncomment this line:
-#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_THREADS")
+IF(UNIX)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUNIX")
+ENDIF(UNIX)
 
 ###############
 set(ImageCompleterSources
