@@ -165,10 +165,10 @@ void CommandLineOptions::ValueFinder<LfnIc::CompositorPatchBlender>::Find(const 
 // CommandLineOptions
 //
 CommandLineOptions::CommandLineOptions(int argc, char** argv)
-	: m_isValid(false)
-	, m_shouldShowSettings(false)
+	: m_shouldShowSettings(false)
 	, m_shouldRunImageCompletion(false)
 	, m_debugLowResolutionPasses(false)
+	, m_isValid(false)
 {
 	const wxCmdLineEntryDesc CMD_LINE_DESC[] =
 	{
