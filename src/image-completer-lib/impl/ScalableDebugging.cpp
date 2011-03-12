@@ -12,9 +12,9 @@
 
 #include "tech/DbgMem.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
-	class OutputHostImage : public PriorityBp::HostImage
+	class OutputHostImage : public LfnIc::HostImage
 	{
 	public:
 		OutputHostImage(const std::string& highResOutputFilePath, int depth)
@@ -47,12 +47,12 @@ namespace PriorityBp
 			}
 		}
 
-		// PriorityBp::HostImage interface
+		// LfnIc::HostImage interface
 		virtual bool Init(int width, int height) { return m_wxImage.Create(width, height, false); }
 		virtual bool IsValid() const { return m_wxImage.Ok(); }
 		virtual const std::string& GetFilePath() const { return m_filePath; }
-		virtual Rgb* GetRgb() { return reinterpret_cast<PriorityBp::HostImage::Rgb*>(m_wxImage.GetData()); }
-		virtual const Rgb* GetRgb() const { return reinterpret_cast<const PriorityBp::HostImage::Rgb*>(m_wxImage.GetData()); }
+		virtual Rgb* GetRgb() { return reinterpret_cast<LfnIc::HostImage::Rgb*>(m_wxImage.GetData()); }
+		virtual const Rgb* GetRgb() const { return reinterpret_cast<const LfnIc::HostImage::Rgb*>(m_wxImage.GetData()); }
 		virtual int GetWidth() const { return m_wxImage.GetWidth(); }
 		virtual int GetHeight() const { return m_wxImage.GetHeight(); }
 
@@ -63,7 +63,7 @@ namespace PriorityBp
 	};
 }
 
-namespace PriorityBp { namespace ScalableDebugging
+namespace LfnIc { namespace ScalableDebugging
 {
 	void RunPriorityBp(
 		PriorityBpRunner& priorityBpRunner,

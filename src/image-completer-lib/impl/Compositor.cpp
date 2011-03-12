@@ -36,7 +36,7 @@
 //
 // Compositor::Input implementation
 //
-PriorityBp::Compositor::Input::Input(const Settings& settings, const Image& inputImage, const Mask& mask)
+LfnIc::Compositor::Input::Input(const Settings& settings, const Image& inputImage, const Mask& mask)
 	: settings(settings)
 	, inputImage(inputImage)
 	, mask(mask)
@@ -46,7 +46,7 @@ PriorityBp::Compositor::Input::Input(const Settings& settings, const Image& inpu
 //
 // CompositorFactory implementation
 //
-PriorityBp::Compositor* PriorityBp::CompositorFactory::Create(CompositorPatchType patchType, CompositorPatchBlender patchBlender)
+LfnIc::Compositor* LfnIc::CompositorFactory::Create(CompositorPatchType patchType, CompositorPatchBlender patchBlender)
 {
 	Compositor* compositor = NULL;
 

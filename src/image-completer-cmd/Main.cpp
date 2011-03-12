@@ -35,9 +35,9 @@
 // PriorityBp host interface implementations
 //
 
-// Make sure that wxWidgets wxImage::RGBValue and PriorityBp::HostImage::Rgb
+// Make sure that wxWidgets wxImage::RGBValue and LfnIc::HostImage::Rgb
 // have identical size, since we perform no conversion.
-wxCOMPILE_TIME_ASSERT(sizeof(wxImage::RGBValue) == sizeof(PriorityBp::HostImage::Rgb), INVALID_RGB_SIZE);
+wxCOMPILE_TIME_ASSERT(sizeof(wxImage::RGBValue) == sizeof(LfnIc::HostImage::Rgb), INVALID_RGB_SIZE);
 #ifdef __WXDEBUG__
 class AssertIdenticalRgbLayout
 {
@@ -45,7 +45,7 @@ public:
 	AssertIdenticalRgbLayout()
 	{
 		wxImage::RGBValue rgb1(0, 0, 0);
-		PriorityBp::HostImage::Rgb& rgb2 = reinterpret_cast<PriorityBp::HostImage::Rgb&>(rgb1);
+		LfnIc::HostImage::Rgb& rgb2 = reinterpret_cast<LfnIc::HostImage::Rgb&>(rgb1);
 		rgb2.red = 1;
 		rgb2.green = 2;
 		rgb2.blue = 3;
@@ -57,7 +57,7 @@ public:
 static const AssertIdenticalRgbLayout g_assertIdenticalRgbLayout;
 #endif
 
-class AppCmdHostImage : public PriorityBp::HostImage
+class AppCmdHostImage : public LfnIc::HostImage
 {
 public:
 	// AppCmdHostImage interface
@@ -65,7 +65,7 @@ public:
 	wxImage& GetwxImage();
 	const wxImage& GetwxImage() const;
 
-	// PriorityBp::HostImage interface
+	// LfnIc::HostImage interface
 	virtual bool Init(int width, int height);
 	virtual bool IsValid() const;
 	virtual const std::string& GetFilePath() const;
@@ -80,7 +80,7 @@ private:
 	wxImage m_wxImage;
 };
 
-class AppCmdHost : public PriorityBp::Host
+class AppCmdHost : public LfnIc::Host
 {
 public:
 	// AppCmdHost interface
@@ -90,12 +90,12 @@ public:
 	const AppCmdHostImage& GetMaskImageImpl();
 	AppCmdHostImage& GetOutputImageImpl();
 
-	// PriorityBp::Host interface
-	virtual const PriorityBp::Settings& GetSettings();
-	virtual const PriorityBp::HostImage& GetInputImage();
-	virtual const PriorityBp::HostImage& GetMaskImage();
-	virtual PriorityBp::HostImage& GetOutputImage();
-	virtual const PriorityBp::HostImage& GetOutputImage() const;
+	// LfnIc::Host interface
+	virtual const LfnIc::Settings& GetSettings();
+	virtual const LfnIc::HostImage& GetInputImage();
+	virtual const LfnIc::HostImage& GetMaskImage();
+	virtual LfnIc::HostImage& GetOutputImage();
+	virtual const LfnIc::HostImage& GetOutputImage() const;
 	virtual std::istream* GetPatchesIstream();
 	virtual std::ostream* GetPatchesOstream();
 
@@ -107,7 +107,7 @@ private:
 	AppCmdHostImage m_maskImage;
 	AppCmdHostImage m_outputImage;
 
-	PriorityBp::Settings m_settings;
+	LfnIc::Settings m_settings;
 
 	std::auto_ptr<std::ifstream> m_patchesIstream;
 	std::auto_ptr<std::ofstream> m_patchesOstream;
@@ -130,9 +130,9 @@ static bool LoadAndValidateImage(const char* imageTypeName, const std::string& i
 	{
 		msgOut.Printf("The %s image was invalid.\n", imageTypeName);
 	}
-	else if (image.GetWidth() > PriorityBp::Settings::IMAGE_WIDTH_MAX || image.GetHeight() > PriorityBp::Settings::IMAGE_HEIGHT_MAX)
+	else if (image.GetWidth() > LfnIc::Settings::IMAGE_WIDTH_MAX || image.GetHeight() > LfnIc::Settings::IMAGE_HEIGHT_MAX)
 	{
-		msgOut.Printf("The %s image is too large. Max size: %dx%x.\n", imageTypeName, PriorityBp::Settings::IMAGE_WIDTH_MAX, PriorityBp::Settings::IMAGE_HEIGHT_MAX);
+		msgOut.Printf("The %s image is too large. Max size: %dx%x.\n", imageTypeName, LfnIc::Settings::IMAGE_WIDTH_MAX, LfnIc::Settings::IMAGE_HEIGHT_MAX);
 	}
 	else
 	{
@@ -147,11 +147,11 @@ AppCmdHost::AppCmdHost(const CommandLineOptions& options)
 {
 	if (LoadAndValidateImage("input", options.GetInputImagePath(), m_inputImage))
 	{
-		PriorityBp::SettingsConstruct(m_settings, m_inputImage);
+		LfnIc::SettingsConstruct(m_settings, m_inputImage);
 
 		ApplyCommandLineOptionsToSettings(options);
 		SettingsText::PrintInvalidMembers settingsTextPrintInvalidMembers;
-		if (PriorityBp::AreSettingsValid(m_settings, &settingsTextPrintInvalidMembers))
+		if (LfnIc::AreSettingsValid(m_settings, &settingsTextPrintInvalidMembers))
 		{
 			m_isValid = true;
 
@@ -210,27 +210,27 @@ AppCmdHostImage& AppCmdHost::GetOutputImageImpl()
 	return m_outputImage;
 }
 
-const PriorityBp::Settings& AppCmdHost::GetSettings()
+const LfnIc::Settings& AppCmdHost::GetSettings()
 {
 	return m_settings;
 }
 
-const PriorityBp::HostImage& AppCmdHost::GetInputImage()
+const LfnIc::HostImage& AppCmdHost::GetInputImage()
 {
 	return m_inputImage;
 }
 
-const PriorityBp::HostImage& AppCmdHost::GetMaskImage()
+const LfnIc::HostImage& AppCmdHost::GetMaskImage()
 {
 	return m_maskImage;
 }
 
-PriorityBp::HostImage& AppCmdHost::GetOutputImage()
+LfnIc::HostImage& AppCmdHost::GetOutputImage()
 {
 	return m_outputImage;
 }
 
-const PriorityBp::HostImage& AppCmdHost::GetOutputImage() const
+const LfnIc::HostImage& AppCmdHost::GetOutputImage() const
 {
 	return m_outputImage;
 }
@@ -315,14 +315,14 @@ bool AppCmdHostImage::Init(int width, int height)
 	return m_wxImage.Create(width, height, false);
 }
 
-PriorityBp::HostImage::Rgb* AppCmdHostImage::GetRgb()
+LfnIc::HostImage::Rgb* AppCmdHostImage::GetRgb()
 {
-	return reinterpret_cast<PriorityBp::HostImage::Rgb*>(m_wxImage.GetData());
+	return reinterpret_cast<LfnIc::HostImage::Rgb*>(m_wxImage.GetData());
 }
 
-const PriorityBp::HostImage::Rgb* AppCmdHostImage::GetRgb() const
+const LfnIc::HostImage::Rgb* AppCmdHostImage::GetRgb() const
 {
-	return reinterpret_cast<const PriorityBp::HostImage::Rgb*>(m_wxImage.GetData());
+	return reinterpret_cast<const LfnIc::HostImage::Rgb*>(m_wxImage.GetData());
 }
 
 int AppCmdHostImage::GetWidth() const
@@ -375,7 +375,7 @@ int main(int argc, char** argv)
 
 				if (options.ShouldRunImageCompletion())
 				{
-					if (PriorityBp::Complete(host))
+					if (LfnIc::Complete(host))
 					{
 						AppCmdHostImage& outputImage = host.GetOutputImageImpl();
 						outputImage.GetwxImage().SaveFile(outputImage.GetFilePath());

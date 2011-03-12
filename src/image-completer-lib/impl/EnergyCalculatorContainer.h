@@ -29,7 +29,7 @@
 #include "energy-calculators/EnergyCalculatorFft.h"
 #endif
 
-namespace PriorityBp
+namespace LfnIc
 {
 	class Image;
 	class MaskLod;

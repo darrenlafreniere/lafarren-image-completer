@@ -28,15 +28,15 @@
 
 #include "tech/DbgMem.h"
 
-wxCOMPILE_TIME_ASSERT(PriorityBp::Image::Rgb::NUM_CHANNELS == PriorityBp::RgbFloat::NUM_CHANNELS, RgbNumChannelsMismatch);
+wxCOMPILE_TIME_ASSERT(LfnIc::Image::Rgb::NUM_CHANNELS == LfnIc::RgbFloat::NUM_CHANNELS, RgbNumChannelsMismatch);
 
-PriorityBp::ImageFloat::ImageFloat()
+LfnIc::ImageFloat::ImageFloat()
 	: m_width(0)
 	, m_height(0)
 {
 }
 
-PriorityBp::ImageFloat::ImageFloat(const Image& input)
+LfnIc::ImageFloat::ImageFloat(const Image& input)
 {
 	const int width = input.GetWidth();
 	const int height = input.GetHeight();
@@ -54,34 +54,34 @@ PriorityBp::ImageFloat::ImageFloat(const Image& input)
 	}
 }
 
-PriorityBp::ImageFloat::ImageFloat(int width, int height)
+LfnIc::ImageFloat::ImageFloat(int width, int height)
 : m_width(width)
 , m_height(height)
 , m_data(width * height)
 {
 }
 
-PriorityBp::ImageFloat::ImageFloat(int width, int height, const RgbFloat& initialRgb)
+LfnIc::ImageFloat::ImageFloat(int width, int height, const RgbFloat& initialRgb)
 : m_width(width)
 , m_height(height)
 , m_data(width * height, initialRgb)
 {
 }
 
-void PriorityBp::ImageFloat::Create(int width, int height)
+void LfnIc::ImageFloat::Create(int width, int height)
 {
 	m_width = width;
 	m_height = height;
 	m_data.resize(width * height);
 }
 
-void PriorityBp::ImageFloat::CopyTo(ImageFloat& output) const
+void LfnIc::ImageFloat::CopyTo(ImageFloat& output) const
 {
 	output.Create(m_width, m_height);
 	memcpy(&output.m_data[0], &m_data[0], m_width * m_height * sizeof(RgbFloat));
 }
 
-void PriorityBp::ImageFloat::CopyTo(HostImage& output) const
+void LfnIc::ImageFloat::CopyTo(HostImage& output) const
 {
 	output.Init(m_width, m_height);
 
@@ -99,17 +99,17 @@ void PriorityBp::ImageFloat::CopyTo(HostImage& output) const
 	}
 }
 
-PriorityBp::RgbFloat& PriorityBp::ImageFloat::GetPixel(int x, int y)
+LfnIc::RgbFloat& LfnIc::ImageFloat::GetPixel(int x, int y)
 {
 	return m_data[LfnTech::GetRowMajorIndex(m_width, x, y)];
 }
 
-const PriorityBp::RgbFloat& PriorityBp::ImageFloat::GetPixel(int x, int y) const
+const LfnIc::RgbFloat& LfnIc::ImageFloat::GetPixel(int x, int y) const
 {
 	return m_data[LfnTech::GetRowMajorIndex(m_width, x, y)];
 }
 
-void PriorityBp::ImageFloat::SetPixel(int x, int y, const RgbFloat& pixel)
+void LfnIc::ImageFloat::SetPixel(int x, int y, const RgbFloat& pixel)
 {
 	m_data[LfnTech::GetRowMajorIndex(m_width, x, y)] = pixel;
 }

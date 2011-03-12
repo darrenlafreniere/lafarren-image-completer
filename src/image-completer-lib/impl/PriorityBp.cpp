@@ -41,7 +41,7 @@
 //
 // PriorityBp implementation
 //
-namespace PriorityBp
+namespace LfnIc
 {
 	static bool ReadPatches(std::istream& patchesIstream, std::vector<Patch>& outPatches)
 	{
@@ -160,8 +160,8 @@ namespace PriorityBp
 	{
 		return
 			image.IsValid() &&
-			image.GetWidth() <= PriorityBp::Settings::IMAGE_WIDTH_MAX &&
-			image.GetHeight() <= PriorityBp::Settings::IMAGE_HEIGHT_MAX;
+			image.GetWidth() <= LfnIc::Settings::IMAGE_WIDTH_MAX &&
+			image.GetHeight() <= LfnIc::Settings::IMAGE_HEIGHT_MAX;
 	}
 
 	bool Complete(Host& host)

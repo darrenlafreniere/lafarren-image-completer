@@ -26,7 +26,7 @@
 
 #include "PatchTypeNormal.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	class ImageFloat;
 	class MaskWritable;

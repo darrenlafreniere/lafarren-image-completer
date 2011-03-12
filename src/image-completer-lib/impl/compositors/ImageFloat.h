@@ -24,7 +24,7 @@
 
 #include "PriorityBpHost.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	class Image;
 

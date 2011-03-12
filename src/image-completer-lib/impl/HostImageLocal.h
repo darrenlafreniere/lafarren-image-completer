@@ -24,10 +24,10 @@
 
 #include "PriorityBpHost.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	//
-	// Implements PriorityBp::HostImage using heap memory. Intended for local
+	// Implements LfnIc::HostImage using heap memory. Intended for local
 	// temporary image buffers. PriorityBp is considered the "host" of this
 	// image implementation.
 	//

@@ -22,7 +22,7 @@
 #ifndef ENERGY_CALCULATOR_UTILS_H
 #define ENERGY_CALCULATOR_UTILS_H
 
-namespace PriorityBp
+namespace LfnIc
 {
 	//
 	// Provides base utilies that any energy calculator implementation could use.

@@ -24,7 +24,7 @@
 
 #include "EnergyCalculator.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	// Forward declarations
 	class Image;

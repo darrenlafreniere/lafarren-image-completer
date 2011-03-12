@@ -31,7 +31,7 @@
 // the brute force energy calculator results.
 #define FFT_VALIDATION_ENABLED 0
 
-namespace PriorityBp
+namespace LfnIc
 {
 	// Forward declarations
 	class Mask;

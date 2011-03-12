@@ -28,7 +28,7 @@
 
 #include "tech/Core.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	// Forward declarations
 	class Host;

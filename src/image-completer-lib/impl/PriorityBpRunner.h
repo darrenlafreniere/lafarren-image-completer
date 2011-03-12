@@ -24,7 +24,7 @@
 
 #include "Patch.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	class Node;
 	class NodeSet;

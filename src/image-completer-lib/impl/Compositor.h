@@ -25,7 +25,7 @@
 #include "Patch.h"
 #include "PriorityBpHost.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	class Image;
 	class Mask;

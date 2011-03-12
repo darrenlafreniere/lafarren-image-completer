@@ -28,20 +28,20 @@ class SettingsText
 {
 public:
 	// Prints the user-tweakable settings to wxMessageOutput.
-	static void Print(const PriorityBp::Settings& settings);
+	static void Print(const LfnIc::Settings& settings);
 
 	// Returns a user friendly string describing the specified settings
 	// member. settingsMemberOffset is the offset in byte of the settings
-	// member (e.g., offsetof(PriorityBp::Settings, latticeGapX))
+	// member (e.g., offsetof(LfnIc::Settings, latticeGapX))
 	static std::string GetMemberDescription(int settingsMemberOffset);
 
 	// Returns the command line option used to indicate
-	// PriorityBp::Settings::LOW_RESOLUTION_PASSES_AUTO.
+	// LfnIc::Settings::LOW_RESOLUTION_PASSES_AUTO.
 	static std::string GetLowResolutionPassesAutoDescription();
 
 	// Returns a description string for an enum value.
-	static std::string GetEnumDescription(PriorityBp::CompositorPatchType e);
-	static std::string GetEnumDescription(PriorityBp::CompositorPatchBlender e);
+	static std::string GetEnumDescription(LfnIc::CompositorPatchType e);
+	static std::string GetEnumDescription(LfnIc::CompositorPatchBlender e);
 
 	template<typename T>
 	static std::string JoinEnumDescriptions()
@@ -59,13 +59,13 @@ public:
 		return joined;
 	}
 
-	// An instance of this class can be passed to PriorityBp::Settings::IsValid.
+	// An instance of this class can be passed to LfnIc::Settings::IsValid.
 	// It'll display info for an invalid settings member(s).
-	class PrintInvalidMembers : public PriorityBp::SettingsInvalidMemberHandler
+	class PrintInvalidMembers : public LfnIc::SettingsInvalidMemberHandler
 	{
 	public:
 		PrintInvalidMembers();
-		virtual void OnInvalidMemberDetected(const PriorityBp::Settings& settings, int memberOffset, const char* message);
+		virtual void OnInvalidMemberDetected(const LfnIc::Settings& settings, int memberOffset, const char* message);
 
 	private:
 		wxMessageOutput& m_msgOut;

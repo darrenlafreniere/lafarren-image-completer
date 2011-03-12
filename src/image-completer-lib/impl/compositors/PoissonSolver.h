@@ -25,7 +25,7 @@
 #include "ImageFloat.h"
 #include "MaskWritable.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	class HostImage;
 	class Mask;

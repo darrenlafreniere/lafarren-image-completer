@@ -24,7 +24,7 @@
 
 #include "Compositor.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	// Given the input mask, this method creates a soft mask of image
 	// WxH alpha values. The unknown regions are feathered outward to

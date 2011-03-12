@@ -26,7 +26,7 @@
 
 #include <limits>
 
-namespace PriorityBp
+namespace LfnIc
 {
 	// Markov Random Field energy
 	typedef int64 Energy;
@@ -93,18 +93,18 @@ namespace PriorityBp
 	};
 }
 
-// Full TypeInfo specialization for PriorityBp::CompositorPatchType.
-template<> struct TypeInfo<PriorityBp::CompositorPatchType>
+// Full TypeInfo specialization for LfnIc::CompositorPatchType.
+template<> struct TypeInfo<LfnIc::CompositorPatchType>
 {
-	static const int First = PriorityBp::CompositorPatchTypeInvalid + 1;
-	static const int Last = PriorityBp::CompositorPatchTypeNum - 1;
+	static const int First = LfnIc::CompositorPatchTypeInvalid + 1;
+	static const int Last = LfnIc::CompositorPatchTypeNum - 1;
 };
 
-// Full TypeInfo specialization for PriorityBp::CompositorPatchBlender.
-template<> struct TypeInfo<PriorityBp::CompositorPatchBlender>
+// Full TypeInfo specialization for LfnIc::CompositorPatchBlender.
+template<> struct TypeInfo<LfnIc::CompositorPatchBlender>
 {
-	static const int First = PriorityBp::CompositorPatchBlenderInvalid + 1;
-	static const int Last = PriorityBp::CompositorPatchBlenderNum - 1;
+	static const int First = LfnIc::CompositorPatchBlenderInvalid + 1;
+	static const int Last = LfnIc::CompositorPatchBlenderNum - 1;
 };
 
 #endif

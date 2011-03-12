@@ -58,15 +58,15 @@ const int MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY = UINT_MAX / MAX_ENERGY_PER_PIXE
 class PolicyNoMask
 {
 public:
-	inline void OnPreLoop(const PriorityBp::Mask* mask) {}
+	inline void OnPreLoop(const LfnIc::Mask* mask) {}
 	inline void OnARow(int aSrcIndex) {}
 	inline void OnBRow(int bSrcIndex) {}
 
 	// See MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY for why this uses uint32.
-	FORCE_INLINE uint32 CalculateSquaredDifference(const PriorityBp::Image::Rgb* aSrcRow, const PriorityBp::Image::Rgb* bSrcRow, int x)
+	FORCE_INLINE uint32 CalculateSquaredDifference(const LfnIc::Image::Rgb* aSrcRow, const LfnIc::Image::Rgb* bSrcRow, int x)
 	{
-		const PriorityBp::Image::Rgb& a = aSrcRow[x];
-		const PriorityBp::Image::Rgb& b = bSrcRow[x];
+		const LfnIc::Image::Rgb& a = aSrcRow[x];
+		const LfnIc::Image::Rgb& b = bSrcRow[x];
 
 		// d[x] = component delta
 		// e = dr^2 + dg^2 + db^2
@@ -85,22 +85,22 @@ class PolicyMask : public PolicyNoMask
 public:
 	typedef PolicyNoMask Super;
 
-	inline void OnPreLoop(const PriorityBp::MaskLod* mask)
+	inline void OnPreLoop(const LfnIc::MaskLod* mask)
 	{
 		m_lodBuffer = mask ? mask->GetLodBuffer(mask->GetHighestLod()) : NULL;
 	}
 
 	// See MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY for why this uses uint32.
-	inline uint32 CalculateSquaredDifference(const PriorityBp::Image::Rgb* aSrcRow, const PriorityBp::Image::Rgb* bSrcRow, int x)
+	inline uint32 CalculateSquaredDifference(const LfnIc::Image::Rgb* aSrcRow, const LfnIc::Image::Rgb* bSrcRow, int x)
 	{
-		return (!m_lodRow || m_lodRow[x] == PriorityBp::Mask::KNOWN)
+		return (!m_lodRow || m_lodRow[x] == LfnIc::Mask::KNOWN)
 			? Super::CalculateSquaredDifference(aSrcRow, bSrcRow, x)
 			: 0;
 	}
 
 protected:
-	const PriorityBp::Mask::Value* m_lodBuffer;
-	const PriorityBp::Mask::Value* m_lodRow;
+	const LfnIc::Mask::Value* m_lodBuffer;
+	const LfnIc::Mask::Value* m_lodRow;
 };
 
 //
@@ -137,21 +137,21 @@ public:
 // mask testing is compiled out when it's not needed.
 //
 template<typename POLICY>
-static inline PriorityBp::Energy CalculateEnergy(
-	const PriorityBp::Image& inputImage, const PriorityBp::MaskLod* mask,
+static inline LfnIc::Energy CalculateEnergy(
+	const LfnIc::Image& inputImage, const LfnIc::MaskLod* mask,
 	int width, int height,
 	int aLeft, int aTop,
 	int bLeft, int bTop)
 {
-	PriorityBp::Energy energy64Bit = PriorityBp::Energy(0);
+	LfnIc::Energy energy64Bit = LfnIc::Energy(0);
 
 	const int imageWidth = inputImage.GetWidth();
 	const int imageHeight = inputImage.GetHeight();
 
-	PriorityBp::EnergyCalculatorUtils::ClampToMinBoundary(aLeft, bLeft, width, 0);
-	PriorityBp::EnergyCalculatorUtils::ClampToMinBoundary(aTop, bTop, height, 0);
-	PriorityBp::EnergyCalculatorUtils::ClampToMaxBoundary(aLeft, bLeft, width, imageWidth);
-	PriorityBp::EnergyCalculatorUtils::ClampToMaxBoundary(aTop, bTop, height, imageHeight);
+	LfnIc::EnergyCalculatorUtils::ClampToMinBoundary(aLeft, bLeft, width, 0);
+	LfnIc::EnergyCalculatorUtils::ClampToMinBoundary(aTop, bTop, height, 0);
+	LfnIc::EnergyCalculatorUtils::ClampToMaxBoundary(aLeft, bLeft, width, imageWidth);
+	LfnIc::EnergyCalculatorUtils::ClampToMaxBoundary(aTop, bTop, height, imageHeight);
 
 	if (width > 0 && height > 0)
 	{
@@ -164,13 +164,13 @@ static inline PriorityBp::Energy CalculateEnergy(
 		int numPixelsInBatch = 0;
 		const bool canFitInU32Bit = (width * height) <= MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY;
 
-		const PriorityBp::Image::Rgb* inputImageRgb = inputImage.GetRgb();
+		const LfnIc::Image::Rgb* inputImageRgb = inputImage.GetRgb();
 		int aRowIndex = LfnTech::GetRowMajorIndex(imageWidth, aLeft, aTop);
 		int bRowIndex = LfnTech::GetRowMajorIndex(imageWidth, bLeft, bTop);
 		for (int y = 0; y < height; ++y, aRowIndex += imageWidth, bRowIndex += imageWidth)
 		{
-			const PriorityBp::Image::Rgb* aRow = inputImageRgb + aRowIndex;
-			const PriorityBp::Image::Rgb* bRow = inputImageRgb + bRowIndex;
+			const LfnIc::Image::Rgb* aRow = inputImageRgb + aRowIndex;
+			const LfnIc::Image::Rgb* bRow = inputImageRgb + bRowIndex;
 			policy.OnARow(aRowIndex);
 			policy.OnBRow(bRowIndex);
 
@@ -214,14 +214,14 @@ static inline PriorityBp::Energy CalculateEnergy(
 		energy64Bit += energyU32Bit;
 	}
 
-	wxASSERT(energy64Bit >= PriorityBp::ENERGY_MIN && energy64Bit <= PriorityBp::ENERGY_MAX);
+	wxASSERT(energy64Bit >= LfnIc::ENERGY_MIN && energy64Bit <= LfnIc::ENERGY_MAX);
 	return energy64Bit;
 }
 
 //
 // EnergyCalculatorPerPixel implementation
 //
-PriorityBp::EnergyCalculatorPerPixel::EnergyCalculatorPerPixel(const Image& inputImage, const MaskLod& mask) :
+LfnIc::EnergyCalculatorPerPixel::EnergyCalculatorPerPixel(const Image& inputImage, const MaskLod& mask) :
 m_inputImage(inputImage),
 	m_mask(mask),
 	m_batchState(BatchStateClosed),
@@ -245,7 +245,7 @@ m_inputImage(inputImage),
 #endif
 }
 
-PriorityBp::EnergyCalculatorPerPixel::~EnergyCalculatorPerPixel()
+LfnIc::EnergyCalculatorPerPixel::~EnergyCalculatorPerPixel()
 {
 	for (int i = 0, n = m_workerThreads.size(); i < n; ++i)
 	{
@@ -255,7 +255,7 @@ PriorityBp::EnergyCalculatorPerPixel::~EnergyCalculatorPerPixel()
 	}
 }
 
-PriorityBp::EnergyCalculator::BatchImmediate PriorityBp::EnergyCalculatorPerPixel::BatchOpenImmediate(const BatchParams& params)
+LfnIc::EnergyCalculator::BatchImmediate LfnIc::EnergyCalculatorPerPixel::BatchOpenImmediate(const BatchParams& params)
 {
 	wxASSERT(m_batchState == BatchStateClosed);
 	m_batchState = BatchStateOpenImmediate;
@@ -264,7 +264,7 @@ PriorityBp::EnergyCalculator::BatchImmediate PriorityBp::EnergyCalculatorPerPixe
 	return GetBatchImmediate(*this);
 }
 
-PriorityBp::EnergyCalculator::BatchQueued PriorityBp::EnergyCalculatorPerPixel::BatchOpenQueued(const BatchParams& params)
+LfnIc::EnergyCalculator::BatchQueued LfnIc::EnergyCalculatorPerPixel::BatchOpenQueued(const BatchParams& params)
 {
 	wxASSERT(m_batchState == BatchStateClosed);
 	m_batchState = BatchStateOpenQueued;
@@ -283,14 +283,14 @@ PriorityBp::EnergyCalculator::BatchQueued PriorityBp::EnergyCalculatorPerPixel::
 	return GetBatchQueued(*this);
 }
 
-void PriorityBp::EnergyCalculatorPerPixel::BatchClose()
+void LfnIc::EnergyCalculatorPerPixel::BatchClose()
 {
 	wxASSERT(m_batchState != BatchStateClosed);
 	m_batchState = BatchStateClosed;
 	m_isAsyncBatch = false;
 }
 
-PriorityBp::Energy PriorityBp::EnergyCalculatorPerPixel::Calculate(int bLeft, int bTop) const
+LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::Calculate(int bLeft, int bTop) const
 {
 	wxASSERT(m_batchState != BatchStateClosed);
 
@@ -304,7 +304,7 @@ PriorityBp::Energy PriorityBp::EnergyCalculatorPerPixel::Calculate(int bLeft, in
 	}
 }
 
-PriorityBp::EnergyCalculator::BatchQueued::Handle PriorityBp::EnergyCalculatorPerPixel::QueueCalculation(int bLeft, int bTop)
+LfnIc::EnergyCalculator::BatchQueued::Handle LfnIc::EnergyCalculatorPerPixel::QueueCalculation(int bLeft, int bTop)
 {
 	wxASSERT(m_batchState != BatchStateClosed);
 
@@ -335,7 +335,7 @@ PriorityBp::EnergyCalculator::BatchQueued::Handle PriorityBp::EnergyCalculatorPe
 	return BatchQueued::Handle(queuedCalculationAndResultIndex);
 }
 
-void PriorityBp::EnergyCalculatorPerPixel::ProcessCalculations()
+void LfnIc::EnergyCalculatorPerPixel::ProcessCalculations()
 {
 	// Resume the worker threads and have them process their calculations.
 	if (m_isAsyncBatch)
@@ -365,13 +365,13 @@ void PriorityBp::EnergyCalculatorPerPixel::ProcessCalculations()
 	m_batchState = BatchStateOpenQueuedAndProcessed;
 }
 
-PriorityBp::Energy PriorityBp::EnergyCalculatorPerPixel::GetResult(BatchQueued::Handle handle) const
+LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::GetResult(BatchQueued::Handle handle) const
 {
 	wxASSERT(m_batchState == BatchStateOpenQueuedAndProcessed);
 	return m_queuedCalculationsAndResults[handle].result;
 }
 
-PriorityBp::Energy PriorityBp::EnergyCalculatorPerPixel::CalculateNoMask(int bLeft, int bTop) const
+LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::CalculateNoMask(int bLeft, int bTop) const
 {
 	return CalculateEnergy<PolicyNoMask>(
 		m_inputImage, NULL,
@@ -380,7 +380,7 @@ PriorityBp::Energy PriorityBp::EnergyCalculatorPerPixel::CalculateNoMask(int bLe
 		bLeft, bTop);
 }
 
-PriorityBp::Energy PriorityBp::EnergyCalculatorPerPixel::CalculateMaskA(int bLeft, int bTop) const
+LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::CalculateMaskA(int bLeft, int bTop) const
 {
 	return CalculateEnergy<PolicyMaskA>(
 		m_inputImage, &m_mask,
@@ -389,12 +389,12 @@ PriorityBp::Energy PriorityBp::EnergyCalculatorPerPixel::CalculateMaskA(int bLef
 		bLeft, bTop);
 }
 
-PriorityBp::EnergyCalculatorPerPixel::QueuedCalculationAndResultIndexBuffer::QueuedCalculationAndResultIndexBuffer(EnergyCalculatorPerPixel& energyCalculatorPerPixel) :
+LfnIc::EnergyCalculatorPerPixel::QueuedCalculationAndResultIndexBuffer::QueuedCalculationAndResultIndexBuffer(EnergyCalculatorPerPixel& energyCalculatorPerPixel) :
 m_energyCalculatorPerPixel(energyCalculatorPerPixel)
 {
 }
 
-void PriorityBp::EnergyCalculatorPerPixel::QueuedCalculationAndResultIndexBuffer::ProcessCalculationsAndClear()
+void LfnIc::EnergyCalculatorPerPixel::QueuedCalculationAndResultIndexBuffer::ProcessCalculationsAndClear()
 {
 	for (int i = 0, n = size(); i < n; ++i)
 	{
@@ -405,7 +405,7 @@ void PriorityBp::EnergyCalculatorPerPixel::QueuedCalculationAndResultIndexBuffer
 	clear();
 }
 
-PriorityBp::EnergyCalculatorPerPixel::WorkerThread::WorkerThread(EnergyCalculatorPerPixel& energyCalculatorPerPixel) :
+LfnIc::EnergyCalculatorPerPixel::WorkerThread::WorkerThread(EnergyCalculatorPerPixel& energyCalculatorPerPixel) :
 wxThread(wxTHREAD_JOINABLE),
 	m_energyCalculatorPerPixel(energyCalculatorPerPixel),
 	m_queuedCalculationAndResultIndexBuffer(energyCalculatorPerPixel),
@@ -416,7 +416,7 @@ wxThread(wxTHREAD_JOINABLE),
 	FinishProcessingCalculationsAndPause();
 }
 
-wxThread::ExitCode PriorityBp::EnergyCalculatorPerPixel::WorkerThread::Entry()
+wxThread::ExitCode LfnIc::EnergyCalculatorPerPixel::WorkerThread::Entry()
 {
 	State state = Active;
 	while (state != Quitting)
@@ -457,12 +457,12 @@ wxThread::ExitCode PriorityBp::EnergyCalculatorPerPixel::WorkerThread::Entry()
 	return 0;
 }
 
-bool PriorityBp::EnergyCalculatorPerPixel::WorkerThread::IsPaused() const
+bool LfnIc::EnergyCalculatorPerPixel::WorkerThread::IsPaused() const
 {
 	return wxThread::IsPaused();
 }
 
-void PriorityBp::EnergyCalculatorPerPixel::WorkerThread::ResumeAndStartProcessingCalculations()
+void LfnIc::EnergyCalculatorPerPixel::WorkerThread::ResumeAndStartProcessingCalculations()
 {
 	wxASSERT(IsPaused());
 
@@ -475,7 +475,7 @@ void PriorityBp::EnergyCalculatorPerPixel::WorkerThread::ResumeAndStartProcessin
 	// FinishProcessingCalculationsAndPause() handles all synchronization.
 }
 
-void PriorityBp::EnergyCalculatorPerPixel::WorkerThread::FinishProcessingCalculationsAndPause()
+void LfnIc::EnergyCalculatorPerPixel::WorkerThread::FinishProcessingCalculationsAndPause()
 {
 	wxASSERT(!IsPaused());
 
@@ -497,7 +497,7 @@ void PriorityBp::EnergyCalculatorPerPixel::WorkerThread::FinishProcessingCalcula
 	wxThread::Pause();
 }
 
-void PriorityBp::EnergyCalculatorPerPixel::WorkerThread::ResumeAndQuit()
+void LfnIc::EnergyCalculatorPerPixel::WorkerThread::ResumeAndQuit()
 {
 	wxASSERT(IsPaused());
 
@@ -510,7 +510,7 @@ void PriorityBp::EnergyCalculatorPerPixel::WorkerThread::ResumeAndQuit()
 	Wait();
 }
 
-PriorityBp::EnergyCalculatorPerPixel::WorkerThread::State PriorityBp::EnergyCalculatorPerPixel::WorkerThread::AtomicGetState() const
+LfnIc::EnergyCalculatorPerPixel::WorkerThread::State LfnIc::EnergyCalculatorPerPixel::WorkerThread::AtomicGetState() const
 {
 	// The exchange and comparand are dummies.
 	return State(LfnTech::Atomic<>::CompareExchange(&m_state, Invalid, Invalid));

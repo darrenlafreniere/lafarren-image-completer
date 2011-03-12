@@ -29,7 +29,7 @@
 #error "EnergyCalculator.inl must only be included by EnergyCalculator.h"
 #endif
 
-namespace PriorityBp
+namespace LfnIc
 {
 	//
 	// EnergyCalculator

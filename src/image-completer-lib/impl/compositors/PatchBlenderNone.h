@@ -24,7 +24,7 @@
 
 #include "CompositorRoot.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	// Layers patches without blending.
 	class PatchBlenderNone : public CompositorRoot::PatchBlender

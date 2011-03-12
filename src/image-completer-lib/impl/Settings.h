@@ -25,7 +25,7 @@
 #include "PriorityBpSettings.h"
 #include "Scalable.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	//
 	// Extends the Settings class to provide in-place scalable settings.

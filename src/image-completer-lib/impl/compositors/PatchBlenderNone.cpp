@@ -29,18 +29,18 @@
 
 #include "tech/DbgMem.h"
 
-PriorityBp::CompositorRoot::PatchBlender* PriorityBp::PatchBlenderNone::Factory::Create(const Compositor::Input& input, const ImageFloat& imageFloat, ImageFloat& outPatchesBlended) const
+LfnIc::CompositorRoot::PatchBlender* LfnIc::PatchBlenderNone::Factory::Create(const Compositor::Input& input, const ImageFloat& imageFloat, ImageFloat& outPatchesBlended) const
 {
 	return new PatchBlenderNone(input, imageFloat, outPatchesBlended);
 }
 
-PriorityBp::PatchBlenderNone::PatchBlenderNone(const Compositor::Input& input, const ImageFloat& imageFloat, ImageFloat& outPatchesBlended)
+LfnIc::PatchBlenderNone::PatchBlenderNone(const Compositor::Input& input, const ImageFloat& imageFloat, ImageFloat& outPatchesBlended)
 	: m_imageFloat(imageFloat)
 	, m_outPatchesBlended(outPatchesBlended)
 {
 }
 
-void PriorityBp::PatchBlenderNone::Blend(const Patch& patch, const ImageFloat& patchImage) const
+void LfnIc::PatchBlenderNone::Blend(const Patch& patch, const ImageFloat& patchImage) const
 {
 	const int imageWidth = m_imageFloat.GetWidth();
 	const int imageHeight = m_imageFloat.GetHeight();

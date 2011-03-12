@@ -25,7 +25,7 @@
 #include "PriorityBpHost.h"
 #include "Scalable.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	//
 	// Defines an interface to an image.
@@ -33,7 +33,7 @@ namespace PriorityBp
 	class Image
 	{
 	public:
-		// Semantics are identical to those of PriorityBp::HostImage. See that
+		// Semantics are identical to those of LfnIc::HostImage. See that
 		// class for more info.
 		typedef HostImage::Rgb Rgb;
 		virtual const Rgb* GetRgb() const = 0;

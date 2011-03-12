@@ -108,7 +108,7 @@ void CommandLineOptions::ValueFinder<CommandLineOptions::LowResolutionPassesMax>
 		if (stringValue.CmpNoCase(SettingsText::GetLowResolutionPassesAutoDescription()) == 0)
 		{
 			this->wasFound = true;
-			value = PriorityBp::Settings::LOW_RESOLUTION_PASSES_AUTO;
+			value = LfnIc::Settings::LOW_RESOLUTION_PASSES_AUTO;
 		}
 		else if (stringValue.IsNumber())
 		{
@@ -122,14 +122,14 @@ void CommandLineOptions::ValueFinder<CommandLineOptions::LowResolutionPassesMax>
 }
 
 template<>
-void CommandLineOptions::ValueFinder<PriorityBp::CompositorPatchType>::Find(const wxCmdLineParser& parser, const wxString& name)
+void CommandLineOptions::ValueFinder<LfnIc::CompositorPatchType>::Find(const wxCmdLineParser& parser, const wxString& name)
 {
 	wxString stringValue;
 	if (parser.Found(name, &stringValue))
 	{
-		for (int e = PriorityBp::CompositorPatchTypeInvalid + 1; e < PriorityBp::CompositorPatchTypeNum; ++e)
+		for (int e = LfnIc::CompositorPatchTypeInvalid + 1; e < LfnIc::CompositorPatchTypeNum; ++e)
 		{
-			const PriorityBp::CompositorPatchType compositorPatchType = PriorityBp::CompositorPatchType(e);
+			const LfnIc::CompositorPatchType compositorPatchType = LfnIc::CompositorPatchType(e);
 			const wxString desc(SettingsText::GetEnumDescription(compositorPatchType));
 			if (stringValue.CmpNoCase(desc) == 0)
 			{
@@ -142,14 +142,14 @@ void CommandLineOptions::ValueFinder<PriorityBp::CompositorPatchType>::Find(cons
 }
 
 template<>
-void CommandLineOptions::ValueFinder<PriorityBp::CompositorPatchBlender>::Find(const wxCmdLineParser& parser, const wxString& name)
+void CommandLineOptions::ValueFinder<LfnIc::CompositorPatchBlender>::Find(const wxCmdLineParser& parser, const wxString& name)
 {
 	wxString stringValue;
 	if (parser.Found(name, &stringValue))
 	{
-		for (int e = PriorityBp::CompositorPatchBlenderInvalid + 1; e < PriorityBp::CompositorPatchBlenderNum; ++e)
+		for (int e = LfnIc::CompositorPatchBlenderInvalid + 1; e < LfnIc::CompositorPatchBlenderNum; ++e)
 		{
-			const PriorityBp::CompositorPatchBlender compositorPatchBlender = PriorityBp::CompositorPatchBlender(e);
+			const LfnIc::CompositorPatchBlender compositorPatchBlender = LfnIc::CompositorPatchBlender(e);
 			const wxString desc(SettingsText::GetEnumDescription(compositorPatchBlender));
 			if (stringValue.CmpNoCase(desc) == 0)
 			{
@@ -185,8 +185,8 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 		{ wxCMD_LINE_OPTION, CMD_SETTINGS_LATTICE_GAP_HEIGHT, "settings-lattice-height", Desc("Height of each gap in the lattice."), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL },
 		{ wxCMD_LINE_OPTION, CMD_SETTINGS_POST_PRUNE_PATCHES_MIN, "settings-patches-min", Desc("Min patches after pruning."), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL },
 		{ wxCMD_LINE_OPTION, CMD_SETTINGS_POST_PRUNE_PATCHES_MAX, "settings-patches-max", Desc("Max patches after pruning."), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL },
-		{ wxCMD_LINE_OPTION, CMD_SETTINGS_COMPOSITOR_PATCH_TYPE, "settings-compositor-patch-type", Desc(wxString("Compositor patch source type.\n") + Desc::Indent() + "(" + SettingsText::JoinEnumDescriptions<PriorityBp::CompositorPatchType>().c_str() + ")"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
-		{ wxCMD_LINE_OPTION, CMD_SETTINGS_COMPOSITOR_PATCH_BLENDER, "settings-compositor-patch-blender", Desc(wxString("Compositor patch blender style.\n") + Desc::Indent() + "(" + SettingsText::JoinEnumDescriptions<PriorityBp::CompositorPatchBlender>().c_str() + ")"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
+		{ wxCMD_LINE_OPTION, CMD_SETTINGS_COMPOSITOR_PATCH_TYPE, "settings-compositor-patch-type", Desc(wxString("Compositor patch source type.\n") + Desc::Indent() + "(" + SettingsText::JoinEnumDescriptions<LfnIc::CompositorPatchType>().c_str() + ")"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
+		{ wxCMD_LINE_OPTION, CMD_SETTINGS_COMPOSITOR_PATCH_BLENDER, "settings-compositor-patch-blender", Desc(wxString("Compositor patch blender style.\n") + Desc::Indent() + "(" + SettingsText::JoinEnumDescriptions<LfnIc::CompositorPatchBlender>().c_str() + ")"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
 
 #if ENABLE_PATCHES_INPUT_OUTPUT
 		{ wxCMD_LINE_OPTION, CMD_PATCHES_INPUT, "patches-input", Desc("The input patches file path."), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },

@@ -22,14 +22,14 @@
 #include "Pch.h"
 #include "HostImageLocal.h"
 
-PriorityBp::HostImageLocal::HostImageLocal()
+LfnIc::HostImageLocal::HostImageLocal()
 	: m_width(0)
 	, m_height(0)
 	, m_rgb(NULL)
 {
 }
 
-PriorityBp::HostImageLocal::HostImageLocal(int width, int height)
+LfnIc::HostImageLocal::HostImageLocal(int width, int height)
 	: m_width(0)
 	, m_height(0)
 	, m_rgb(NULL)
@@ -37,42 +37,42 @@ PriorityBp::HostImageLocal::HostImageLocal(int width, int height)
 	InitInternal(width, height);
 }
 
-PriorityBp::HostImageLocal::~HostImageLocal()
+LfnIc::HostImageLocal::~HostImageLocal()
 {
 	delete [] m_rgb;
 }
 
-bool PriorityBp::HostImageLocal::Init(int width, int height)
+bool LfnIc::HostImageLocal::Init(int width, int height)
 {
 	return InitInternal(width, height);
 }
 
-bool PriorityBp::HostImageLocal::IsValid() const
+bool LfnIc::HostImageLocal::IsValid() const
 {
 	return IsValidInternal();
 }
 
-PriorityBp::HostImage::Rgb* PriorityBp::HostImageLocal::GetRgb()
+LfnIc::HostImage::Rgb* LfnIc::HostImageLocal::GetRgb()
 {
 	return m_rgb;
 }
 
-const PriorityBp::HostImage::Rgb* PriorityBp::HostImageLocal::GetRgb() const
+const LfnIc::HostImage::Rgb* LfnIc::HostImageLocal::GetRgb() const
 {
 	return m_rgb;
 }
 
-int PriorityBp::HostImageLocal::GetWidth() const
+int LfnIc::HostImageLocal::GetWidth() const
 {
 	return m_width;
 }
 
-int PriorityBp::HostImageLocal::GetHeight() const
+int LfnIc::HostImageLocal::GetHeight() const
 {
 	return m_height;
 }
 
-bool PriorityBp::HostImageLocal::InitInternal(int width, int height)
+bool LfnIc::HostImageLocal::InitInternal(int width, int height)
 {
 	delete [] m_rgb;
 	m_rgb = NULL;
@@ -88,7 +88,7 @@ bool PriorityBp::HostImageLocal::InitInternal(int width, int height)
 	return IsValidInternal();
 }
 
-bool PriorityBp::HostImageLocal::IsValidInternal() const
+bool LfnIc::HostImageLocal::IsValidInternal() const
 {
 	return m_width > 0 && m_height > 0 && m_rgb;
 }

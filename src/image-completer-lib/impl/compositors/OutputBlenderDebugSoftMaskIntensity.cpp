@@ -25,7 +25,7 @@
 #include "CompositorUtils.h"
 #include "ImageFloat.h"
 
-void PriorityBp::OutputBlenderDebugSoftMaskIntensity::Blend(const Compositor::Input& input, const ImageFloat& patchesBlended, ImageFloat& outputImageFloat) const
+void LfnIc::OutputBlenderDebugSoftMaskIntensity::Blend(const Compositor::Input& input, const ImageFloat& patchesBlended, ImageFloat& outputImageFloat) const
 {
 	std::vector<float> softMask;
 	CreateSoftMask(input, softMask);

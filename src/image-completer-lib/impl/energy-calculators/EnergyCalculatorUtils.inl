@@ -29,7 +29,7 @@
 #error "EnergyCalculatorUtils.inl must only be included by EnergyCalculatorUtils.h"
 #endif
 
-namespace PriorityBp
+namespace LfnIc
 {
 	inline void EnergyCalculatorUtils::ClampToMinBoundary(int& a, int& size, int boundary)
 	{

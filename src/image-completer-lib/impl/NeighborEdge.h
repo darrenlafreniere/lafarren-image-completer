@@ -22,7 +22,7 @@
 #ifndef NEIGHBOR_EDGE_H
 #define NEIGHBOR_EDGE_H
 
-namespace PriorityBp
+namespace LfnIc
 {
 	// Neighbor edges
 	enum NeighborEdge

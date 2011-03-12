@@ -29,18 +29,18 @@
 
 #include "tech/DbgMem.h"
 
-PriorityBp::CompositorRoot::PatchType* PriorityBp::PatchTypeNormal::Factory::Create(const Compositor::Input& input, ImageFloat& imageFloat) const
+LfnIc::CompositorRoot::PatchType* LfnIc::PatchTypeNormal::Factory::Create(const Compositor::Input& input, ImageFloat& imageFloat) const
 {
 	return new PatchTypeNormal(input, imageFloat);
 }
 
-PriorityBp::PatchTypeNormal::PatchTypeNormal(const Compositor::Input& input, ImageFloat& imageFloat)
+LfnIc::PatchTypeNormal::PatchTypeNormal(const Compositor::Input& input, ImageFloat& imageFloat)
 	: m_imageFloat(imageFloat)
 	, m_patchImage(input.settings.patchWidth, input.settings.patchHeight)
 {
 }
 
-const PriorityBp::ImageFloat& PriorityBp::PatchTypeNormal::Get(const Patch& patch) const
+const LfnIc::ImageFloat& LfnIc::PatchTypeNormal::Get(const Patch& patch) const
 {
 	// Copy patch data out of image.
 	{

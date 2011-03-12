@@ -24,7 +24,7 @@
 
 #include "PriorityBpTypes.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	// Forward declarations
 	class LabelSet;

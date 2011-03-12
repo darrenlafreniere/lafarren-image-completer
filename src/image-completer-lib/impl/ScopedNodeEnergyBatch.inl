@@ -31,7 +31,7 @@
 
 #include "Node.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	//
 	// ScopedNodeEnergyBatchImmediate implementation

@@ -1,7 +1,7 @@
 #ifndef SCALABLE_DEBUGGING_H
 #define SCALABLE_DEBUGGING_H
 
-namespace PriorityBp
+namespace LfnIc
 {
 	class ImageScalable;
 	class MaskScalable;

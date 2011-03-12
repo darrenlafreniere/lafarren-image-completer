@@ -24,18 +24,18 @@
 
 #include "tech/MathUtils.h"
 
-PriorityBp::MaskWritable::MaskWritable(int width, int height, Value value)
+LfnIc::MaskWritable::MaskWritable(int width, int height, Value value)
 	: m_values(width * height, value)
 	, m_width(width)
 {
 }
 
-PriorityBp::MaskWritable::Value PriorityBp::MaskWritable::GetValue(int x, int y) const
+LfnIc::MaskWritable::Value LfnIc::MaskWritable::GetValue(int x, int y) const
 {
 	return m_values[LfnTech::GetRowMajorIndex(m_width, x, y)];
 }
 
-void PriorityBp::MaskWritable::SetValue(int x, int y, Value value)
+void LfnIc::MaskWritable::SetValue(int x, int y, Value value)
 {
 	m_values[LfnTech::GetRowMajorIndex(m_width, x, y)] = value;
 }

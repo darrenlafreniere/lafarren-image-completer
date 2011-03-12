@@ -72,20 +72,20 @@
 //			update beliefs bq(.) as well as priority of node q
 //
 
-PriorityBp::PriorityBpRunner::PriorityBpRunner(const Settings& settings, NodeSet& nodeSet) :
+LfnIc::PriorityBpRunner::PriorityBpRunner(const Settings& settings, NodeSet& nodeSet) :
 m_settings(settings),
 m_nodeSet(nodeSet),
 m_forwardOrder(nodeSet.size())
 {
 }
 
-void PriorityBp::PriorityBpRunner::RunAndGetPatches(std::vector<Patch>& outPatches)
+void LfnIc::PriorityBpRunner::RunAndGetPatches(std::vector<Patch>& outPatches)
 {
 	Run();
 	PopulatePatches(outPatches);
 }
 
-void PriorityBp::PriorityBpRunner::Run()
+void LfnIc::PriorityBpRunner::Run()
 {
 #if _DEBUG
 	// Sometimes it's useful when debugging to skip a lot of the algorithm.
@@ -101,8 +101,8 @@ void PriorityBp::PriorityBpRunner::Run()
 
 	// Assign node priorities and declare them uncommitted
 	{
-		PRIORITY_BP_TIME_PROFILE("PriorityBp::PriorityBpRunner::Run - initial priorities");
-		PRIORITY_BP_MEM_PROFILE("PriorityBp::PriorityBpRunner::Run - initial priorities");
+		PRIORITY_BP_TIME_PROFILE("LfnIc::PriorityBpRunner::Run - initial priorities");
+		PRIORITY_BP_MEM_PROFILE("LfnIc::PriorityBpRunner::Run - initial priorities");
 
 		for (int i = 0, n = m_nodeSet.size(); i < n; ++i)
 		{
@@ -117,18 +117,18 @@ void PriorityBp::PriorityBpRunner::Run()
 	wxASSERT(m_settings.numIterations >= 1);
 	for (int i = 0; i < m_settings.numIterations; ++i)
 	{
-		PRIORITY_BP_TIME_PROFILE("PriorityBp::PriorityBpRunner::Run - iteration");
-		PRIORITY_BP_MEM_PROFILE(Str::Format("PriorityBp::PriorityBpRunner::Run - iteration %d", i));
+		PRIORITY_BP_TIME_PROFILE("LfnIc::PriorityBpRunner::Run - iteration");
+		PRIORITY_BP_MEM_PROFILE(Str::Format("LfnIc::PriorityBpRunner::Run - iteration %d", i));
 
 		ForwardPass();
 		BackwardPass();
 	}
 }
 
-void PriorityBp::PriorityBpRunner::ForwardPass()
+void LfnIc::PriorityBpRunner::ForwardPass()
 {
-	PRIORITY_BP_TIME_PROFILE("PriorityBp::PriorityBpRunner::ForwardPass");
-	PRIORITY_BP_MEM_PROFILE("PriorityBp::PriorityBpRunner::ForwardPass");
+	PRIORITY_BP_TIME_PROFILE("LfnIc::PriorityBpRunner::ForwardPass");
+	PRIORITY_BP_MEM_PROFILE("LfnIc::PriorityBpRunner::ForwardPass");
 
 	for (int i = 0, n = m_nodeSet.size(); i < n; ++i)
 	{
@@ -143,10 +143,10 @@ void PriorityBp::PriorityBpRunner::ForwardPass()
 	}
 }
 
-void PriorityBp::PriorityBpRunner::BackwardPass()
+void LfnIc::PriorityBpRunner::BackwardPass()
 {
-	PRIORITY_BP_TIME_PROFILE("PriorityBp::PriorityBpRunner::BackwardPass");
-	PRIORITY_BP_MEM_PROFILE("PriorityBp::PriorityBpRunner::BackwardPass");
+	PRIORITY_BP_TIME_PROFILE("LfnIc::PriorityBpRunner::BackwardPass");
+	PRIORITY_BP_MEM_PROFILE("LfnIc::PriorityBpRunner::BackwardPass");
 
 	for (int i = m_nodeSet.size(); --i >= 0; )
 	{
@@ -158,7 +158,7 @@ void PriorityBp::PriorityBpRunner::BackwardPass()
 	}
 }
 
-void PriorityBp::PriorityBpRunner::ProcessNeighbors(Node& node, ProcessNeighborsType type)
+void LfnIc::PriorityBpRunner::ProcessNeighbors(Node& node, ProcessNeighborsType type)
 {
 	for (int i = 0; i < NumNeighborEdges; ++i)
 	{
@@ -180,13 +180,13 @@ void PriorityBp::PriorityBpRunner::ProcessNeighbors(Node& node, ProcessNeighbors
 // confident patches are laid atop the less confidence patches.
 struct SortPatchesByPriority
 {
-	bool operator()(const PriorityBp::Patch& patchA, const PriorityBp::Patch& patchB)
+	bool operator()(const LfnIc::Patch& patchA, const LfnIc::Patch& patchB)
 	{
 		return patchA.priority < patchB.priority;
 	};
 };
 
-void PriorityBp::PriorityBpRunner::PopulatePatches(std::vector<Patch>& outPatches) const
+void LfnIc::PriorityBpRunner::PopulatePatches(std::vector<Patch>& outPatches) const
 {
 	const int nodeNum = m_nodeSet.size();
 	outPatches.resize(nodeNum);
@@ -215,7 +215,7 @@ void PriorityBp::PriorityBpRunner::PopulatePatches(std::vector<Patch>& outPatche
 	std::sort(outPatches.begin(), outPatches.end(), SortPatchesByPriority());
 }
 
-PriorityBp::PriorityBpRunner::ForwardOrder::ForwardOrder(int nodeNum) :
+LfnIc::PriorityBpRunner::ForwardOrder::ForwardOrder(int nodeNum) :
 Super(nodeNum)
 {
 }

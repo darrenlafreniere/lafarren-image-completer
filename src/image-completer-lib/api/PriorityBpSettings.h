@@ -25,7 +25,7 @@
 #include "tech/Core.h"
 #include "PriorityBpTypes.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	// Forward declarations
 	class HostImage;
@@ -133,7 +133,7 @@ namespace PriorityBp
 		// memberOffset:
 		// Offset of a member variable that was considered invalid. E.g.,
 		// if latticeGapX was invalid, then memberOffset will ==
-		// offsetof(PriorityBp::Settings, latticeGapX).
+		// offsetof(LfnIc::Settings, latticeGapX).
 		//
 		// message:
 		// Why it was considered invalid.

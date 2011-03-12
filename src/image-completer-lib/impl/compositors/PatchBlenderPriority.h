@@ -24,7 +24,7 @@
 
 #include "CompositorRoot.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	// Blends patches by priority, where higher priority patches are given a
 	// higher alpha value relative to patches its overlaid with.

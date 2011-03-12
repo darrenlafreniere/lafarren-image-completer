@@ -27,7 +27,7 @@
 
 #include "PriorityBpTypes.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	class Image;
 	class MaskLod;

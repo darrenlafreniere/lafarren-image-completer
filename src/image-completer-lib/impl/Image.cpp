@@ -29,7 +29,7 @@
 //
 // Internal Image extension. Exists to give ImageScalable destruction permission.
 //
-namespace PriorityBp
+namespace LfnIc
 {
 	class ImageInternal : public Image
 	{
@@ -41,7 +41,7 @@ namespace PriorityBp
 //
 // Extends ImageInternal by delegating all calls to a HostImage instance.
 //
-namespace PriorityBp
+namespace LfnIc
 {
 	class ImageDelegateToHostImage : public ImageInternal
 	{
@@ -60,22 +60,22 @@ namespace PriorityBp
 	};
 }
 
-PriorityBp::ImageDelegateToHostImage::ImageDelegateToHostImage(const HostImage& hostImage) :
+LfnIc::ImageDelegateToHostImage::ImageDelegateToHostImage(const HostImage& hostImage) :
 m_hostImage(hostImage)
 {
 }
 
-const PriorityBp::Image::Rgb* PriorityBp::ImageDelegateToHostImage::GetRgb() const
+const LfnIc::Image::Rgb* LfnIc::ImageDelegateToHostImage::GetRgb() const
 {
 	return m_hostImage.GetRgb();
 }
 
-int PriorityBp::ImageDelegateToHostImage::GetWidth() const
+int LfnIc::ImageDelegateToHostImage::GetWidth() const
 {
 	return m_hostImage.GetWidth();
 }
 
-int PriorityBp::ImageDelegateToHostImage::GetHeight() const
+int LfnIc::ImageDelegateToHostImage::GetHeight() const
 {
 	return m_hostImage.GetHeight();
 }
@@ -84,7 +84,7 @@ int PriorityBp::ImageDelegateToHostImage::GetHeight() const
 // Extends ImageInternal. Initializes its data from halving the resolution of
 // an input Image instance
 //
-namespace PriorityBp
+namespace LfnIc
 {
 	class ImageScaledDown : public ImageInternal
 	{
@@ -106,7 +106,7 @@ namespace PriorityBp
 	};
 }
 
-PriorityBp::ImageScaledDown::ImageScaledDown(const Image& imageToScaleDown)
+LfnIc::ImageScaledDown::ImageScaledDown(const Image& imageToScaleDown)
 {
 	// Alias to reduce wordiness.
 	const int otherWidth = imageToScaleDown.GetWidth();
@@ -175,22 +175,22 @@ PriorityBp::ImageScaledDown::ImageScaledDown(const Image& imageToScaleDown)
 	}
 }
 
-PriorityBp::ImageScaledDown::~ImageScaledDown()
+LfnIc::ImageScaledDown::~ImageScaledDown()
 {
 	delete [] m_rgb;
 }
 
-const PriorityBp::Image::Rgb* PriorityBp::ImageScaledDown::GetRgb() const
+const LfnIc::Image::Rgb* LfnIc::ImageScaledDown::GetRgb() const
 {
 	return m_rgb;
 }
 
-int PriorityBp::ImageScaledDown::GetWidth() const
+int LfnIc::ImageScaledDown::GetWidth() const
 {
 	return m_width;
 }
 
-int PriorityBp::ImageScaledDown::GetHeight() const
+int LfnIc::ImageScaledDown::GetHeight() const
 {
 	return m_height;
 }
@@ -198,14 +198,14 @@ int PriorityBp::ImageScaledDown::GetHeight() const
 //
 // ImageScalable implementation
 //
-PriorityBp::ImageScalable::ImageScalable(const HostImage& hostImage) :
+LfnIc::ImageScalable::ImageScalable(const HostImage& hostImage) :
 m_depth(0)
 {
 	// Delegate to original resolution HostImage at depth 0.
 	m_resolutions.push_back(new ImageDelegateToHostImage(hostImage));
 }
 
-PriorityBp::ImageScalable::~ImageScalable()
+LfnIc::ImageScalable::~ImageScalable()
 {
 	for (int i = 0, n = m_resolutions.size(); i < n; ++i)
 	{
@@ -213,22 +213,22 @@ PriorityBp::ImageScalable::~ImageScalable()
 	}
 }
 
-const PriorityBp::Image::Rgb* PriorityBp::ImageScalable::GetRgb() const
+const LfnIc::Image::Rgb* LfnIc::ImageScalable::GetRgb() const
 {
 	return GetCurrentResolution().GetRgb();
 }
 
-int PriorityBp::ImageScalable::GetWidth() const
+int LfnIc::ImageScalable::GetWidth() const
 {
 	return GetCurrentResolution().GetWidth();
 }
 
-int PriorityBp::ImageScalable::GetHeight() const
+int LfnIc::ImageScalable::GetHeight() const
 {
 	return GetCurrentResolution().GetHeight();
 }
 
-void PriorityBp::ImageScalable::ScaleUp()
+void LfnIc::ImageScalable::ScaleUp()
 {
 	wxASSERT(m_depth > 0);
 
@@ -241,7 +241,7 @@ void PriorityBp::ImageScalable::ScaleUp()
 	--m_depth;
 }
 
-void PriorityBp::ImageScalable::ScaleDown()
+void LfnIc::ImageScalable::ScaleDown()
 {
 	wxASSERT(m_depth >= 0);
 
@@ -261,7 +261,7 @@ void PriorityBp::ImageScalable::ScaleDown()
 	wxASSERT(m_resolutions[m_depth]);
 }
 
-int PriorityBp::ImageScalable::GetScaleDepth() const
+int LfnIc::ImageScalable::GetScaleDepth() const
 {
 	return m_depth;
 }

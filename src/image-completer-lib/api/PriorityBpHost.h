@@ -24,7 +24,7 @@
 
 #include <iostream>
 
-namespace PriorityBp
+namespace LfnIc
 {
 	// Forward declarations
 	class Host;
@@ -33,7 +33,7 @@ namespace PriorityBp
 
 	//
 	// Host interface, to be implemented by the host and passed to
-	// PriorityBp::Complete.
+	// LfnIc::Complete.
 	//
 	class Host
 	{

@@ -46,13 +46,13 @@ struct Member
 //
 // SettingsText
 //
-void SettingsText::Print(const PriorityBp::Settings& settings)
+void SettingsText::Print(const LfnIc::Settings& settings)
 {
-	wxASSERT(PriorityBp::AreSettingsValid(settings));
+	wxASSERT(LfnIc::AreSettingsValid(settings));
 	wxMessageOutput& msgOut = *wxMessageOutput::Get();
 
 	std::string lowResolutionPassesMaxString;
-	if (settings.lowResolutionPassesMax == PriorityBp::Settings::LOW_RESOLUTION_PASSES_AUTO)
+	if (settings.lowResolutionPassesMax == LfnIc::Settings::LOW_RESOLUTION_PASSES_AUTO)
 	{
 		lowResolutionPassesMaxString = GetLowResolutionPassesAutoDescription();
 	}
@@ -61,7 +61,7 @@ void SettingsText::Print(const PriorityBp::Settings& settings)
 		lowResolutionPassesMaxString = LfnTech::Str::Format("%d", settings.lowResolutionPassesMax);
 	}
 
-#define DESC(member) GetMemberDescription(offsetof(PriorityBp::Settings, member))
+#define DESC(member) GetMemberDescription(offsetof(LfnIc::Settings, member))
 #define VAL_W "17" /* TODO: auto-size this as well? */
 #define VAL_X(fmt, x) LfnTech::Str::Format("%" VAL_W fmt, x)
 #define VAL_S(s) VAL_X("s", s)
@@ -121,60 +121,60 @@ void SettingsText::Print(const PriorityBp::Settings& settings)
 
 // Returns a user friendly string describing the specified settings
 // member. settingsMemberOffset is the offset in byte of the settings
-// member (e.g., offsetof(PriorityBp::Settings, latticeGapX))
+// member (e.g., offsetof(LfnIc::Settings, latticeGapX))
 std::string SettingsText::GetMemberDescription(int settingsMemberOffset)
 {
 	std::string desc;
 
-	if (settingsMemberOffset == offsetof(PriorityBp::Settings, lowResolutionPassesMax))
+	if (settingsMemberOffset == offsetof(LfnIc::Settings, lowResolutionPassesMax))
 	{
 		desc = "low resolution passes";
 	}
-	else if (settingsMemberOffset == offsetof(PriorityBp::Settings, numIterations))
+	else if (settingsMemberOffset == offsetof(LfnIc::Settings, numIterations))
 	{
 		desc = "number of iterations";
 	}
-	else if (settingsMemberOffset == offsetof(PriorityBp::Settings, latticeGapX))
+	else if (settingsMemberOffset == offsetof(LfnIc::Settings, latticeGapX))
 	{
 		desc = "lattice gap width";
 	}
-	else if (settingsMemberOffset == offsetof(PriorityBp::Settings, latticeGapY))
+	else if (settingsMemberOffset == offsetof(LfnIc::Settings, latticeGapY))
 	{
 		desc = "lattice gap height";
 	}
-	else if (settingsMemberOffset == offsetof(PriorityBp::Settings, patchWidth))
+	else if (settingsMemberOffset == offsetof(LfnIc::Settings, patchWidth))
 	{
 		desc = "patch width";
 	}
-	else if (settingsMemberOffset == offsetof(PriorityBp::Settings, patchHeight))
+	else if (settingsMemberOffset == offsetof(LfnIc::Settings, patchHeight))
 	{
 		desc = "patch height";
 	}
-	else if (settingsMemberOffset == offsetof(PriorityBp::Settings, confidenceBeliefThreshold))
+	else if (settingsMemberOffset == offsetof(LfnIc::Settings, confidenceBeliefThreshold))
 	{
 		desc = "confidence belief threshold";
 	}
-	else if (settingsMemberOffset == offsetof(PriorityBp::Settings, pruneBeliefThreshold))
+	else if (settingsMemberOffset == offsetof(LfnIc::Settings, pruneBeliefThreshold))
 	{
 		desc = "prune belief threshold";
 	}
-	else if (settingsMemberOffset == offsetof(PriorityBp::Settings, pruneEnergySimilarThreshold))
+	else if (settingsMemberOffset == offsetof(LfnIc::Settings, pruneEnergySimilarThreshold))
 	{
 		desc = "prune energy similarity threshold";
 	}
-	else if (settingsMemberOffset == offsetof(PriorityBp::Settings, postPruneLabelsMin))
+	else if (settingsMemberOffset == offsetof(LfnIc::Settings, postPruneLabelsMin))
 	{
 		desc = "post-prune patches min";
 	}
-	else if (settingsMemberOffset == offsetof(PriorityBp::Settings, postPruneLabelsMax))
+	else if (settingsMemberOffset == offsetof(LfnIc::Settings, postPruneLabelsMax))
 	{
 		desc = "post-prune patches max";
 	}
-	else if (settingsMemberOffset == offsetof(PriorityBp::Settings, compositorPatchType))
+	else if (settingsMemberOffset == offsetof(LfnIc::Settings, compositorPatchType))
 	{
 		desc = "patch type";
 	}
-	else if (settingsMemberOffset == offsetof(PriorityBp::Settings, compositorPatchBlender))
+	else if (settingsMemberOffset == offsetof(LfnIc::Settings, compositorPatchBlender))
 	{
 		desc = "patch blender";
 	}
@@ -191,29 +191,29 @@ std::string SettingsText::GetLowResolutionPassesAutoDescription()
 	return "auto";
 }
 
-std::string SettingsText::GetEnumDescription(PriorityBp::CompositorPatchType e)
+std::string SettingsText::GetEnumDescription(LfnIc::CompositorPatchType e)
 {
 	std::string desc;
 	switch (e)
 	{
-	case PriorityBp::CompositorPatchTypeNormal:        desc = "normal"; break;
+	case LfnIc::CompositorPatchTypeNormal:        desc = "normal"; break;
 #ifdef USE_POISSON
-	case PriorityBp::CompositorPatchTypePoisson:       desc = "poisson"; break;
+	case LfnIc::CompositorPatchTypePoisson:       desc = "poisson"; break;
 #endif
-	case PriorityBp::CompositorPatchTypeDebugOrder:    desc = "debug-patch-order"; break;
+	case LfnIc::CompositorPatchTypeDebugOrder:    desc = "debug-patch-order"; break;
 	default:                                           desc = "unknown"; break;
 	}
 
 	return desc;
 }
 
-std::string SettingsText::GetEnumDescription(PriorityBp::CompositorPatchBlender e)
+std::string SettingsText::GetEnumDescription(LfnIc::CompositorPatchBlender e)
 {
 	std::string desc;
 	switch (e)
 	{
-	case PriorityBp::CompositorPatchBlenderPriority:   desc = "priority"; break;
-	case PriorityBp::CompositorPatchBlenderNone:       desc = "none"; break;
+	case LfnIc::CompositorPatchBlenderPriority:   desc = "priority"; break;
+	case LfnIc::CompositorPatchBlenderNone:       desc = "none"; break;
 	default:                                           desc = "unknown"; break;
 	}
 
@@ -229,7 +229,7 @@ SettingsText::PrintInvalidMembers::PrintInvalidMembers()
 {
 }
 
-void SettingsText::PrintInvalidMembers::OnInvalidMemberDetected(const PriorityBp::Settings& settings, int memberOffset, const char* message)
+void SettingsText::PrintInvalidMembers::OnInvalidMemberDetected(const LfnIc::Settings& settings, int memberOffset, const char* message)
 {
 	if (!m_hasPrintedHeader)
 	{

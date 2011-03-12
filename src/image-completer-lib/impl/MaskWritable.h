@@ -24,7 +24,7 @@
 
 #include "Mask.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	//
 	// Simple writable implementation of the Mask interface.

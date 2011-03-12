@@ -27,7 +27,7 @@
 #include "PriorityBpTypes.h"
 #include "Scalable.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	// Forward declarations
 	class ConstNodeLabels;

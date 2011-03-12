@@ -81,7 +81,7 @@
 
 #include "tech/DbgMem.h"
 
-namespace PriorityBp { namespace Poisson
+namespace LfnIc { namespace Poisson
 {
 	class BVarInitializer;
 	class BVarInitializerZero;
@@ -194,7 +194,7 @@ namespace PriorityBp { namespace Poisson
 }}
 
 // Poisson::AAndBVars implementation
-namespace PriorityBp { namespace Poisson
+namespace LfnIc { namespace Poisson
 {
 	AAndBVars::AAndBVars(const ImageFloat& inputImage, const Mask& mask, const BVarInitializer& bVarInitializer, const UnknownVars& unknownVars)
 		// Create the sparse 'a' matrix, we have at least 5 non-zero elements
@@ -286,7 +286,7 @@ namespace PriorityBp { namespace Poisson
 }}
 
 // Poisson::UnknownVars implementation
-namespace PriorityBp { namespace Poisson
+namespace LfnIc { namespace Poisson
 {
 	UnknownVars::UnknownVars(int width, int height, const Mask& mask)
 		: m_width(width)
@@ -360,7 +360,7 @@ namespace PriorityBp { namespace Poisson
 }}
 
 // Poisson::PixelNeighbors implementation
-namespace PriorityBp { namespace Poisson
+namespace LfnIc { namespace Poisson
 {
 	PixelNeighbors::PixelNeighbors(int width, int height, int x, int y)
 		: m_hasTop(y > 0)
@@ -391,7 +391,7 @@ namespace PriorityBp { namespace Poisson
 }}
 
 // Helper functions
-namespace PriorityBp { namespace Poisson
+namespace LfnIc { namespace Poisson
 {
 	void WriteOutput(
 		const UnknownVars& unknownVars,
@@ -452,7 +452,7 @@ namespace PriorityBp { namespace Poisson
 }}
 
 // Public interface implementation
-namespace PriorityBp { namespace Poisson
+namespace LfnIc { namespace Poisson
 {
 	void Complete(
 		const ImageFloat& inputImage,

@@ -28,18 +28,18 @@
 #include "tech/DbgMem.h"
 
 // Given a 0.0-1.0 alpha, returns a color from red to purple.
-static PriorityBp::RgbFloat GetRainbowColor(float alpha)
+static LfnIc::RgbFloat GetRainbowColor(float alpha)
 {
 	wxASSERT(alpha >= 0.0f && alpha <= 1.0f);
-	static const PriorityBp::RgbFloat refColors[] =
+	static const LfnIc::RgbFloat refColors[] =
 	{
-		PriorityBp::RgbFloat(1.00f, 0.00f, 0.00f), // red
-		PriorityBp::RgbFloat(1.00f, 0.65f, 0.00f), // orange
-		PriorityBp::RgbFloat(1.00f, 1.00f, 0.00f), // yellow
-		PriorityBp::RgbFloat(0.00f, 0.50f, 0.00f), // green
-		PriorityBp::RgbFloat(0.00f, 0.00f, 1.00f), // blue
-		PriorityBp::RgbFloat(0.30f, 0.00f, 0.51f), // indigo
-		PriorityBp::RgbFloat(0.93f, 0.51f, 0.93f), // violet
+		LfnIc::RgbFloat(1.00f, 0.00f, 0.00f), // red
+		LfnIc::RgbFloat(1.00f, 0.65f, 0.00f), // orange
+		LfnIc::RgbFloat(1.00f, 1.00f, 0.00f), // yellow
+		LfnIc::RgbFloat(0.00f, 0.50f, 0.00f), // green
+		LfnIc::RgbFloat(0.00f, 0.00f, 1.00f), // blue
+		LfnIc::RgbFloat(0.30f, 0.00f, 0.51f), // indigo
+		LfnIc::RgbFloat(0.93f, 0.51f, 0.93f), // violet
 	};
 	static const int numRefColors = sizeof(refColors) / sizeof(refColors[0]);
 	static const int penultimateRefColorIndex = numRefColors - 2;
@@ -61,30 +61,30 @@ static PriorityBp::RgbFloat GetRainbowColor(float alpha)
 		}
 	}
 
-	const PriorityBp::RgbFloat& colorLow = refColors[refIndex];
-	const PriorityBp::RgbFloat& colorHigh = refColors[refIndex + 1];
+	const LfnIc::RgbFloat& colorLow = refColors[refIndex];
+	const LfnIc::RgbFloat& colorHigh = refColors[refIndex + 1];
 	const float blendAlpha = (alpha - refAlphaLow) / refAlphaStep;
 							
-	return PriorityBp::RgbFloat(
+	return LfnIc::RgbFloat(
 		colorLow.r + blendAlpha * (colorHigh.r - colorLow.r),
 		colorLow.g + blendAlpha * (colorHigh.g - colorLow.g),
 		colorLow.b + blendAlpha * (colorHigh.b - colorLow.b));
 }
 
-PriorityBp::CompositorRoot::PatchType* PriorityBp::PatchTypeDebugPatchOrder::Factory::Create(const Compositor::Input& input, ImageFloat& imageFloat) const
+LfnIc::CompositorRoot::PatchType* LfnIc::PatchTypeDebugPatchOrder::Factory::Create(const Compositor::Input& input, ImageFloat& imageFloat) const
 {
 	return new PatchTypeDebugPatchOrder(input, imageFloat);
 }
 
-PriorityBp::PatchTypeDebugPatchOrder::PatchTypeDebugPatchOrder(const Compositor::Input& input, ImageFloat& imageFloat)
+LfnIc::PatchTypeDebugPatchOrder::PatchTypeDebugPatchOrder(const Compositor::Input& input, ImageFloat& imageFloat)
 	: m_patches(input.patches)
 	, m_patchImage(input.settings.patchWidth, input.settings.patchHeight)
 {
 }
 
-const PriorityBp::ImageFloat& PriorityBp::PatchTypeDebugPatchOrder::Get(const Patch& patch) const
+const LfnIc::ImageFloat& LfnIc::PatchTypeDebugPatchOrder::Get(const Patch& patch) const
 {
-	PriorityBp::RgbFloat rgb(0.0f, 0.0f, 0.0f);
+	LfnIc::RgbFloat rgb(0.0f, 0.0f, 0.0f);
 	for (int patchIdx = 0, patchesNum = m_patches.size(); patchIdx < patchesNum; ++patchIdx)
 	{
 		if (&m_patches[patchIdx] == &patch)

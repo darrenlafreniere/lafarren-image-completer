@@ -32,7 +32,7 @@
 
 #define ENERGY_FFT_SINGLE_PRECISION 1
 
-namespace PriorityBp
+namespace LfnIc
 {
 	// Forward declarations
 #if FFT_VALIDATION_ENABLED

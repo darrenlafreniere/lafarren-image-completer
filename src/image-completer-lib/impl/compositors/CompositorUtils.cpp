@@ -34,12 +34,12 @@
 const int BLEND_SIZE = 2;
 const int SOFT_MASK_NUM_SAMPLES = (BLEND_SIZE * 2) + 1;
 
-inline float MaskValueToAlpha(PriorityBp::Mask::Value maskValue)
+inline float MaskValueToAlpha(LfnIc::Mask::Value maskValue)
 {
-	return (maskValue == PriorityBp::Mask::UNKNOWN) ? 0.0f : 1.0f;
+	return (maskValue == LfnIc::Mask::UNKNOWN) ? 0.0f : 1.0f;
 }
 
-void PriorityBp::CreateSoftMask(const Compositor::Input& input, std::vector<float>& out)
+void LfnIc::CreateSoftMask(const Compositor::Input& input, std::vector<float>& out)
 {
 	const Image& inputImage = input.inputImage;
 	const Mask& mask = input.mask;

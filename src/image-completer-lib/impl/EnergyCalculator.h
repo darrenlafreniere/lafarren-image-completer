@@ -25,7 +25,7 @@
 #include "tech/Core.h"
 #include "PriorityBpTypes.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	//
 	// Abstract interface for energy calculation. For batches of only one to a

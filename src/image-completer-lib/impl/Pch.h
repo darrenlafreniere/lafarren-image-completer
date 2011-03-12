@@ -27,7 +27,7 @@
 #define PCH_H
 
 namespace LfnTech {}
-namespace PriorityBp {}
+namespace LfnIc {}
 
 // Compile time switches:
 #define TECH_PROFILE 1

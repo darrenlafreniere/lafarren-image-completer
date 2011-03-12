@@ -22,7 +22,7 @@
 #ifndef SCALABLE_H
 #define SCALABLE_H
 
-namespace PriorityBp
+namespace LfnIc
 {
 	//
 	// Interface for scaling an object up and down in-place. Implementators

@@ -30,7 +30,7 @@
 
 #include "tech/DbgMem.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	//
 	// Helper class for generating the Node set that intersects with the
@@ -64,7 +64,7 @@ namespace PriorityBp
 	};
 }
 
-PriorityBp::Lattice::Lattice(const Image& inputImage, const MaskLod& mask, Node::Context& nodeContext, std::vector<Node>& nodeStorage) :
+LfnIc::Lattice::Lattice(const Image& inputImage, const MaskLod& mask, Node::Context& nodeContext, std::vector<Node>& nodeStorage) :
 m_inputImage(inputImage),
 m_mask(mask),
 m_nodeContext(nodeContext),
@@ -74,7 +74,7 @@ m_numRows(0)
 {
 }
 
-void PriorityBp::Lattice::CreateUnknownRegionNodes()
+void LfnIc::Lattice::CreateUnknownRegionNodes()
 {
 	// The lattice has a horizontal and vertical spacing of latticeGapX
 	// and latticeGapY, respectively. The nodes will be all lattice
@@ -117,7 +117,7 @@ void PriorityBp::Lattice::CreateUnknownRegionNodes()
 	}
 }
 
-void PriorityBp::Lattice::ConnectNeighboringNodes()
+void LfnIc::Lattice::ConnectNeighboringNodes()
 {
 	for (int row = 0; row < m_numRows; ++row)
 	{
@@ -147,17 +147,17 @@ void PriorityBp::Lattice::ConnectNeighboringNodes()
 	}
 }
 
-int PriorityBp::Lattice::NumCols() const
+int LfnIc::Lattice::NumCols() const
 {
 	return m_numCols;
 }
 
-int PriorityBp::Lattice::NumRows() const
+int LfnIc::Lattice::NumRows() const
 {
 	return m_numRows;
 }
 
-PriorityBp::Node* PriorityBp::Lattice::GetNode(int col, int row) const
+LfnIc::Node* LfnIc::Lattice::GetNode(int col, int row) const
 {
 	Node* node = NULL;
 
@@ -179,7 +179,7 @@ PriorityBp::Node* PriorityBp::Lattice::GetNode(int col, int row) const
 //
 // NodeSet implementation
 //
-PriorityBp::NodeSet::NodeSet(
+LfnIc::NodeSet::NodeSet(
 	const Settings& settings,
 	const Image& inputImage,
 	const MaskLod& mask,
@@ -195,7 +195,7 @@ m_depth(0)
 	m_nodeSetInfo.resize(size());
 }
 
-void PriorityBp::NodeSet::UpdatePriority(const Node& node)
+void LfnIc::NodeSet::UpdatePriority(const Node& node)
 {
 	for (int i = 0, n = size(); i < n; ++i)
 	{
@@ -207,7 +207,7 @@ void PriorityBp::NodeSet::UpdatePriority(const Node& node)
 	}
 }
 
-PriorityBp::Priority PriorityBp::NodeSet::GetPriority(const Node& node) const
+LfnIc::Priority LfnIc::NodeSet::GetPriority(const Node& node) const
 {
 	Priority priority = PRIORITY_MIN;
 	for (int i = 0, n = size(); i < n; ++i)
@@ -222,7 +222,7 @@ PriorityBp::Priority PriorityBp::NodeSet::GetPriority(const Node& node) const
 	return priority;
 }
 
-void PriorityBp::NodeSet::SetCommitted(const Node& node, bool committed)
+void LfnIc::NodeSet::SetCommitted(const Node& node, bool committed)
 {
 	for (int i = 0, n = size(); i < n; ++i)
 	{
@@ -234,7 +234,7 @@ void PriorityBp::NodeSet::SetCommitted(const Node& node, bool committed)
 	}
 }
 
-bool PriorityBp::NodeSet::IsCommitted(const Node& node) const
+bool LfnIc::NodeSet::IsCommitted(const Node& node) const
 {
 	for (int i = 0, n = size(); i < n; ++i)
 	{
@@ -247,7 +247,7 @@ bool PriorityBp::NodeSet::IsCommitted(const Node& node) const
 	return false;
 }
 
-PriorityBp::Node* PriorityBp::NodeSet::GetHighestPriorityUncommittedNode() const
+LfnIc::Node* LfnIc::NodeSet::GetHighestPriorityUncommittedNode() const
 {
 	Node* node = NULL;
 	Priority priorityHighest = PRIORITY_MIN;
@@ -263,7 +263,7 @@ PriorityBp::Node* PriorityBp::NodeSet::GetHighestPriorityUncommittedNode() const
 	return node;
 }
 
-void PriorityBp::NodeSet::ScaleUp()
+void LfnIc::NodeSet::ScaleUp()
 {
 	wxASSERT(m_depth > 0);
 	--m_depth;
@@ -275,7 +275,7 @@ void PriorityBp::NodeSet::ScaleUp()
 	}
 }
 
-void PriorityBp::NodeSet::ScaleDown()
+void LfnIc::NodeSet::ScaleDown()
 {
 	wxASSERT(m_depth >= 0);
 	++m_depth;
@@ -287,12 +287,12 @@ void PriorityBp::NodeSet::ScaleDown()
 	}
 }
 
-int PriorityBp::NodeSet::GetScaleDepth() const
+int LfnIc::NodeSet::GetScaleDepth() const
 {
 	return m_depth;
 }
 
-PriorityBp::NodeSet::NodeInfo::NodeInfo() :
+LfnIc::NodeSet::NodeInfo::NodeInfo() :
 priority(PRIORITY_MIN),
 isCommitted(false)
 {

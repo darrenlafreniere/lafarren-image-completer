@@ -31,72 +31,72 @@
 #include "tech/DbgMem.h"
 
 //
-// PriorityBp::Settings implementation
+// LfnIc::Settings implementation
 //
-const int PriorityBp::Settings::LATTICE_GAP_MIN = 4;
-const float PriorityBp::Settings::PATCH_TO_LATTICE_RATIO = 2.0f;
-const int PriorityBp::Settings::PATCH_SIDE_MIN = LATTICE_GAP_MIN * PATCH_TO_LATTICE_RATIO;
-const int64 PriorityBp::Settings::PATCH_PIXELS_MAX = (IMAGE_DIMENSION_MAX * PATCH_TO_LATTICE_RATIO) * (IMAGE_DIMENSION_MAX * PATCH_TO_LATTICE_RATIO);
+const int LfnIc::Settings::LATTICE_GAP_MIN = 4;
+const float LfnIc::Settings::PATCH_TO_LATTICE_RATIO = 2.0f;
+const int LfnIc::Settings::PATCH_SIDE_MIN = LATTICE_GAP_MIN * PATCH_TO_LATTICE_RATIO;
+const int64 LfnIc::Settings::PATCH_PIXELS_MAX = (IMAGE_DIMENSION_MAX * PATCH_TO_LATTICE_RATIO) * (IMAGE_DIMENSION_MAX * PATCH_TO_LATTICE_RATIO);
 
-const PriorityBp::Belief PriorityBp::Settings::CONFIDENCE_BELIEF_THRESHOLD_MIN = BELIEF_MIN;
-const PriorityBp::Belief PriorityBp::Settings::CONFIDENCE_BELIEF_THRESHOLD_MAX = BELIEF_MAX;
+const LfnIc::Belief LfnIc::Settings::CONFIDENCE_BELIEF_THRESHOLD_MIN = BELIEF_MIN;
+const LfnIc::Belief LfnIc::Settings::CONFIDENCE_BELIEF_THRESHOLD_MAX = BELIEF_MAX;
 
-const PriorityBp::Belief PriorityBp::Settings::PRUNE_BELIEF_THRESHOLD_MIN = BELIEF_MIN;
-const PriorityBp::Belief PriorityBp::Settings::PRUNE_BELIEF_THRESHOLD_MAX = BELIEF_MAX;
+const LfnIc::Belief LfnIc::Settings::PRUNE_BELIEF_THRESHOLD_MIN = BELIEF_MIN;
+const LfnIc::Belief LfnIc::Settings::PRUNE_BELIEF_THRESHOLD_MAX = BELIEF_MAX;
 
-const PriorityBp::Energy PriorityBp::Settings::PRUNE_ENERGY_SIMILAR_THRESHOLD_MIN = ENERGY_MIN;
-const PriorityBp::Energy PriorityBp::Settings::PRUNE_ENERGY_SIMILAR_THRESHOLD_MAX = ENERGY_MAX;
+const LfnIc::Energy LfnIc::Settings::PRUNE_ENERGY_SIMILAR_THRESHOLD_MIN = ENERGY_MIN;
+const LfnIc::Energy LfnIc::Settings::PRUNE_ENERGY_SIMILAR_THRESHOLD_MAX = ENERGY_MAX;
 
-const int PriorityBp::Settings::POST_PRUNE_LABEL_MIN = 3;
-const int PriorityBp::Settings::POST_PRUNE_LABEL_MAX = INT_MAX;
+const int LfnIc::Settings::POST_PRUNE_LABEL_MIN = 3;
+const int LfnIc::Settings::POST_PRUNE_LABEL_MAX = INT_MAX;
 
 // Internal construct helper
-static void SettingsConstructHelper(PriorityBp::Settings& out, int latticeGapX, int latticeGapY)
+static void SettingsConstructHelper(LfnIc::Settings& out, int latticeGapX, int latticeGapY)
 {
 #if _DEBUG
-	const PriorityBp::Energy maxRgbComponentEnergy = 255;
-	const PriorityBp::Energy maxREnergy = maxRgbComponentEnergy;
-	const PriorityBp::Energy maxGEnergy = maxRgbComponentEnergy;
-	const PriorityBp::Energy maxBEnergy = maxRgbComponentEnergy;
-	const PriorityBp::Energy maxPixelEnergy = (maxREnergy * maxREnergy) + (maxGEnergy * maxGEnergy) + (maxBEnergy * maxBEnergy);
-	const PriorityBp::Energy maxPatchPixels = PriorityBp::ENERGY_MAX / maxPixelEnergy;
-	wxASSERT(PriorityBp::Settings::PATCH_PIXELS_MAX < maxPatchPixels);
+	const LfnIc::Energy maxRgbComponentEnergy = 255;
+	const LfnIc::Energy maxREnergy = maxRgbComponentEnergy;
+	const LfnIc::Energy maxGEnergy = maxRgbComponentEnergy;
+	const LfnIc::Energy maxBEnergy = maxRgbComponentEnergy;
+	const LfnIc::Energy maxPixelEnergy = (maxREnergy * maxREnergy) + (maxGEnergy * maxGEnergy) + (maxBEnergy * maxBEnergy);
+	const LfnIc::Energy maxPatchPixels = LfnIc::ENERGY_MAX / maxPixelEnergy;
+	wxASSERT(LfnIc::Settings::PATCH_PIXELS_MAX < maxPatchPixels);
 #endif
 
 	out.debugLowResolutionPasses = false;
 	out.lowResolutionPassesMax = 0;
-	out.numIterations = PriorityBp::Settings::NUM_ITERATIONS_DEFAULT;
+	out.numIterations = LfnIc::Settings::NUM_ITERATIONS_DEFAULT;
 
 	out.latticeGapX = latticeGapX;
 	out.latticeGapY = latticeGapY;
-	out.patchWidth  = out.latticeGapX * PriorityBp::Settings::PATCH_TO_LATTICE_RATIO;
-	out.patchHeight = out.latticeGapY * PriorityBp::Settings::PATCH_TO_LATTICE_RATIO;
+	out.patchWidth  = out.latticeGapX * LfnIc::Settings::PATCH_TO_LATTICE_RATIO;
+	out.patchHeight = out.latticeGapY * LfnIc::Settings::PATCH_TO_LATTICE_RATIO;
 
 	// Based on the patch size, 3 components (rgb), and an
 	// acceptable component difference (between 0.0 and 1.0),
 	// calculate an acceptable, mediocre ssd to base other
 	// settings on.
 	const float ssd0ComponentAcceptableDiff = 0.15f;
-	const PriorityBp::Energy ssd0ComponentDiff = PriorityBp::Energy(ssd0ComponentAcceptableDiff * 255.0f);
-	const PriorityBp::Energy ssd0ComponentDiffSq = ssd0ComponentDiff * ssd0ComponentDiff;
-	const PriorityBp::Energy ssd0RgbDiffSq = 3 * ssd0ComponentDiffSq;
-	const PriorityBp::Energy ssd0 = out.patchWidth * out.patchHeight * ssd0RgbDiffSq;
+	const LfnIc::Energy ssd0ComponentDiff = LfnIc::Energy(ssd0ComponentAcceptableDiff * 255.0f);
+	const LfnIc::Energy ssd0ComponentDiffSq = ssd0ComponentDiff * ssd0ComponentDiff;
+	const LfnIc::Energy ssd0RgbDiffSq = 3 * ssd0ComponentDiffSq;
+	const LfnIc::Energy ssd0 = out.patchWidth * out.patchHeight * ssd0RgbDiffSq;
 
 	out.confidenceBeliefThreshold = -ssd0;
-	out.pruneBeliefThreshold = -ssd0 * PriorityBp::Energy(2);
-	out.pruneEnergySimilarThreshold = ssd0 / PriorityBp::Energy(2);
-	out.postPruneLabelsMin = PriorityBp::Settings::POST_PRUNE_LABEL_MIN;
-	out.postPruneLabelsMax = PriorityBp::Settings::POST_PRUNE_LABEL_MIN * 4;
-	out.compositorPatchType = PriorityBp::CompositorPatchTypeDefault;
-	out.compositorPatchBlender = PriorityBp::CompositorPatchBlenderDefault;
+	out.pruneBeliefThreshold = -ssd0 * LfnIc::Energy(2);
+	out.pruneEnergySimilarThreshold = ssd0 / LfnIc::Energy(2);
+	out.postPruneLabelsMin = LfnIc::Settings::POST_PRUNE_LABEL_MIN;
+	out.postPruneLabelsMax = LfnIc::Settings::POST_PRUNE_LABEL_MIN * 4;
+	out.compositorPatchType = LfnIc::CompositorPatchTypeDefault;
+	out.compositorPatchBlender = LfnIc::CompositorPatchBlenderDefault;
 }
 
-void PriorityBp::SettingsConstruct(Settings& out)
+void LfnIc::SettingsConstruct(Settings& out)
 {
-	SettingsConstructHelper(out, PriorityBp::Settings::LATTICE_GAP_MIN, PriorityBp::Settings::LATTICE_GAP_MIN);
+	SettingsConstructHelper(out, LfnIc::Settings::LATTICE_GAP_MIN, LfnIc::Settings::LATTICE_GAP_MIN);
 }
 
-void PriorityBp::SettingsConstruct(Settings& out, const HostImage& inputImage)
+void LfnIc::SettingsConstruct(Settings& out, const HostImage& inputImage)
 {
 	// Calculate a suggested lattice gap x and y
 	const int imageSizeAtGapMin = 100;
@@ -125,12 +125,12 @@ void PriorityBp::SettingsConstruct(Settings& out, const HostImage& inputImage)
 	SettingsConstructHelper(out, latticeGapX, latticeGapY);
 }
 
-void PriorityBp::SettingsConstruct(Settings& out, int latticeGapX, int latticeGapY)
+void LfnIc::SettingsConstruct(Settings& out, int latticeGapX, int latticeGapY)
 {
 	SettingsConstructHelper(out, latticeGapX, latticeGapY);
 }
 
-bool PriorityBp::AreSettingsValid(const Settings& settings, SettingsInvalidMemberHandler* handlerPtr)
+bool LfnIc::AreSettingsValid(const Settings& settings, SettingsInvalidMemberHandler* handlerPtr)
 {
 	// Implement a "null" InvalidMemberHandler, and use it if the passed in
 	// handler is NULL in order to avoid checking the handler pointer for each
@@ -206,13 +206,13 @@ bool PriorityBp::AreSettingsValid(const Settings& settings, SettingsInvalidMembe
 //
 // SettingsScalable implementation
 //
-PriorityBp::SettingsScalable::SettingsScalable(const Settings& settings) :
+LfnIc::SettingsScalable::SettingsScalable(const Settings& settings) :
 Settings(settings), // copy
 m_depth(0)
 {
 }
 
-void PriorityBp::SettingsScalable::ScaleUp()
+void LfnIc::SettingsScalable::ScaleUp()
 {
 	// Copy the last saved resolution settings and pop up.
 	wxASSERT(m_depth > 0);
@@ -221,7 +221,7 @@ void PriorityBp::SettingsScalable::ScaleUp()
 	m_resolutions.pop_back();
 }
 
-void PriorityBp::SettingsScalable::ScaleDown()
+void LfnIc::SettingsScalable::ScaleDown()
 {
 	// Save the current resolution settings.
 	wxASSERT(static_cast<unsigned int>(m_depth) == m_resolutions.size());
@@ -247,7 +247,7 @@ void PriorityBp::SettingsScalable::ScaleDown()
 	postPruneLabelsMax *= NUM_NODE_LABELS_KEPT_MULTIPLIER;
 }
 
-int PriorityBp::SettingsScalable::GetScaleDepth() const
+int LfnIc::SettingsScalable::GetScaleDepth() const
 {
 	return m_depth;
 }

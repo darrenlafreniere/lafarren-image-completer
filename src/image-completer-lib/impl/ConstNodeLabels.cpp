@@ -30,20 +30,20 @@
 //
 // ConstNodeLabels implementation
 //
-PriorityBp::ConstNodeLabels::ConstNodeLabels(const Node& node) :
+LfnIc::ConstNodeLabels::ConstNodeLabels(const Node& node) :
 m_node(node),
 m_globalLabelSet((node.m_labelInfoSet.size() == 0) ? &node.m_context->labelSet : NULL)
 {
 }
 
-int PriorityBp::ConstNodeLabels::size() const
+int LfnIc::ConstNodeLabels::size() const
 {
 	return m_globalLabelSet
 		? m_globalLabelSet->size()
 		: m_node.m_labelInfoSet.size();
 }
 
-const PriorityBp::Label& PriorityBp::ConstNodeLabels::GetLabel(int index) const
+const LfnIc::Label& LfnIc::ConstNodeLabels::GetLabel(int index) const
 {
 	wxASSERT(index >= 0);
 	wxASSERT(index < size());
@@ -52,7 +52,7 @@ const PriorityBp::Label& PriorityBp::ConstNodeLabels::GetLabel(int index) const
 		: m_node.m_labelInfoSet[index].label;
 }
 
-const PriorityBp::Energy* PriorityBp::ConstNodeLabels::GetMessages(int index) const
+const LfnIc::Energy* LfnIc::ConstNodeLabels::GetMessages(int index) const
 {
 	wxASSERT(index >= 0);
 	wxASSERT(index < size());

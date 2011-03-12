@@ -25,7 +25,7 @@
 #include "NeighborEdge.h"
 #include "PriorityBpTypes.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	// Describes a single rectangular patch that is to be copied from
 	// one region of the image to another. The patch stores the

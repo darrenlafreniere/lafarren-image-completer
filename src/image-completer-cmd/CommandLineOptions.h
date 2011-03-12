@@ -83,10 +83,10 @@ public:
 	inline int GetPostPruneLabelsMax() const { return m_postPruneLabelsMax.value; }
 
 	inline bool HasCompositorPatchType() const { return m_compositorPatchType.wasFound; }
-	inline PriorityBp::CompositorPatchType GetCompositorPatchType() const { return m_compositorPatchType.value; }
+	inline LfnIc::CompositorPatchType GetCompositorPatchType() const { return m_compositorPatchType.value; }
 
 	inline bool HasCompositorPatchBlender() const { return m_compositorPatchBlender.wasFound; }
-	inline PriorityBp::CompositorPatchBlender GetCompositorPatchBlender() const { return m_compositorPatchBlender.value; }
+	inline LfnIc::CompositorPatchBlender GetCompositorPatchBlender() const { return m_compositorPatchBlender.value; }
 
 private:
 	template<typename T>
@@ -118,8 +118,8 @@ private:
 	ValueFinder<long> m_latticeGapY;
 	ValueFinder<long> m_postPruneLabelsMin;
 	ValueFinder<long> m_postPruneLabelsMax;
-	ValueFinder<PriorityBp::CompositorPatchType> m_compositorPatchType;
-	ValueFinder<PriorityBp::CompositorPatchBlender> m_compositorPatchBlender;
+	ValueFinder<LfnIc::CompositorPatchType> m_compositorPatchType;
+	ValueFinder<LfnIc::CompositorPatchBlender> m_compositorPatchBlender;
 
 	bool m_shouldShowSettings;
 	bool m_shouldRunImageCompletion;

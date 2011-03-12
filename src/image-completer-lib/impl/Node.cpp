@@ -57,14 +57,14 @@
 //
 // Node implementation
 //
-PriorityBp::Node::Context::Context(const Settings& settings, const LabelSet& labelSet, EnergyCalculatorContainer& energyCalculatorContainer) :
+LfnIc::Node::Context::Context(const Settings& settings, const LabelSet& labelSet, EnergyCalculatorContainer& energyCalculatorContainer) :
 settings(settings),
 labelSet(labelSet),
 energyCalculatorContainer(energyCalculatorContainer)
 {
 }
 
-PriorityBp::Node::Node(Context& context, const MaskLod& mask, int x, int y) :
+LfnIc::Node::Node(Context& context, const MaskLod& mask, int x, int y) :
 m_context(&context),
 m_overlapsKnownRegion(false),
 m_hasPrunedOnce(false),
@@ -110,7 +110,7 @@ m_depth(0)
 	}
 }
 
-PriorityBp::Node::Node(const Node& other) :
+LfnIc::Node::Node(const Node& other) :
 m_context(other.m_context),
 m_overlapsKnownRegion(other.m_overlapsKnownRegion),
 m_hasPrunedOnce(other.m_hasPrunedOnce),
@@ -120,17 +120,17 @@ m_depth(other.m_depth)
 	memcpy(m_neighbors, other.m_neighbors, sizeof(m_neighbors));
 }
 
-int PriorityBp::Node::GetX() const
+int LfnIc::Node::GetX() const
 {
 	return GetCurrentResolution().x;
 }
 
-int PriorityBp::Node::GetY() const
+int LfnIc::Node::GetY() const
 {
 	return GetCurrentResolution().y;
 }
 
-bool PriorityBp::Node::AddNeighbor(Node& neighbor, NeighborEdge edge)
+bool LfnIc::Node::AddNeighbor(Node& neighbor, NeighborEdge edge)
 {
 #ifdef _DEBUG
 	wxASSERT(!m_neighbors[edge]);
@@ -152,14 +152,14 @@ bool PriorityBp::Node::AddNeighbor(Node& neighbor, NeighborEdge edge)
 	return true;
 }
 
-PriorityBp::Node* PriorityBp::Node::GetNeighbor(NeighborEdge edge) const
+LfnIc::Node* LfnIc::Node::GetNeighbor(NeighborEdge edge) const
 {
 	wxASSERT(edge >= FirstNeighborEdge);
 	wxASSERT(edge <= LastNeighborEdge);
 	return m_neighbors[edge];
 }
 
-PriorityBp::NeighborEdge PriorityBp::Node::GetNeighborEdge(const Node& neighbor) const
+LfnIc::NeighborEdge LfnIc::Node::GetNeighborEdge(const Node& neighbor) const
 {
 	for (int i = 0; i < NumNeighborEdges; ++i)
 	{
@@ -169,11 +169,11 @@ PriorityBp::NeighborEdge PriorityBp::Node::GetNeighborEdge(const Node& neighbor)
 		}
 	}
 
-	wxFAIL_MSG("PriorityBp::Node::GetNeighborIndex: specified node is not a neighbor!");
+	wxFAIL_MSG("LfnIc::Node::GetNeighborIndex: specified node is not a neighbor!");
 	return InvalidNeighborEdge;
 }
 
-void PriorityBp::Node::SendMessages(Node& neighbor) const
+void LfnIc::Node::SendMessages(Node& neighbor) const
 {
 	// At this point, this node must have its own label info set.
 	wxASSERT(m_labelInfoSet.size() > 0);
@@ -319,7 +319,7 @@ void PriorityBp::Node::SendMessages(Node& neighbor) const
 	}
 }
 
-namespace PriorityBp
+namespace LfnIc
 {
 	// TODO: move belief into LabelInfo?
 	struct PruneInfo
@@ -336,10 +336,10 @@ namespace PriorityBp
 	}
 }
 
-void PriorityBp::Node::PruneLabels()
+void LfnIc::Node::PruneLabels()
 {
 #if PROFILE_MEM
-	TECH_MEM_PROFILE("PriorityBp::Node::PruneLabels");
+	TECH_MEM_PROFILE("LfnIc::Node::PruneLabels");
 #endif
 	ConstNodeLabels labelSet(*this);
 	const int labelNum = labelSet.size();
@@ -452,7 +452,7 @@ void PriorityBp::Node::PruneLabels()
 	}
 }
 
-PriorityBp::Priority PriorityBp::Node::CalculatePriority() const
+LfnIc::Priority LfnIc::Node::CalculatePriority() const
 {
 	Priority priority = PRIORITY_MIN;
 
@@ -505,7 +505,7 @@ PriorityBp::Priority PriorityBp::Node::CalculatePriority() const
 	return priority;
 }
 
-PriorityBp::Belief PriorityBp::Node::CalculateBelief(Energy labelEnergy, const Energy messages[NumNeighborEdges]) const
+LfnIc::Belief LfnIc::Node::CalculateBelief(Energy labelEnergy, const Energy messages[NumNeighborEdges]) const
 {
 	Belief belief= Belief(-labelEnergy);
 	for (int i = 0; i < NumNeighborEdges; ++i)
@@ -517,7 +517,7 @@ PriorityBp::Belief PriorityBp::Node::CalculateBelief(Energy labelEnergy, const E
 	return belief;
 }
 
-PriorityBp::Belief PriorityBp::Node::CalculateBelief(const Label& label, const Energy messages[NumNeighborEdges]) const
+LfnIc::Belief LfnIc::Node::CalculateBelief(const Label& label, const Energy messages[NumNeighborEdges]) const
 {
 	Energy e;
 	if (OverlapsKnownRegion())
@@ -537,10 +537,10 @@ PriorityBp::Belief PriorityBp::Node::CalculateBelief(const Label& label, const E
 	return CalculateBelief(e, messages);
 }
 
-void PriorityBp::Node::PopulateLabelInfoSetIfNeeded()
+void LfnIc::Node::PopulateLabelInfoSetIfNeeded()
 {
 #if PROFILE_MEM
-	TECH_MEM_PROFILE("PriorityBp::Node::PopulateLabelInfoSetIfNeeded");
+	TECH_MEM_PROFILE("LfnIc::Node::PopulateLabelInfoSetIfNeeded");
 #endif
 	if (m_labelInfoSet.size() == 0)
 	{
@@ -556,22 +556,22 @@ void PriorityBp::Node::PopulateLabelInfoSetIfNeeded()
 	}
 }
 
-int PriorityBp::Node::GetLeft() const
+int LfnIc::Node::GetLeft() const
 {
 	return GetCurrentResolution().x - (m_context->settings.patchWidth / 2);
 }
 
-int PriorityBp::Node::GetTop() const
+int LfnIc::Node::GetTop() const
 {
 	return GetCurrentResolution().y - (m_context->settings.patchHeight / 2);
 }
 
-bool PriorityBp::Node::OverlapsKnownRegion() const
+bool LfnIc::Node::OverlapsKnownRegion() const
 {
 	return m_overlapsKnownRegion;
 }
 
-void PriorityBp::Node::ScaleUp()
+void LfnIc::Node::ScaleUp()
 {
 	wxASSERT(m_depth > 0);
 
@@ -620,7 +620,7 @@ void PriorityBp::Node::ScaleUp()
 	}
 }
 
-void PriorityBp::Node::ScaleDown()
+void LfnIc::Node::ScaleDown()
 {
 	wxASSERT(m_depth >= 0);
 
@@ -635,12 +635,12 @@ void PriorityBp::Node::ScaleDown()
 	wxASSERT(m_labelInfoSet.size() == 0);
 }
 
-int PriorityBp::Node::GetScaleDepth() const
+int LfnIc::Node::GetScaleDepth() const
 {
 	return m_depth;
 }
 
-void PriorityBp::Node::LabelInfo::SetLabelAndClearMessages(const Label& label)
+void LfnIc::Node::LabelInfo::SetLabelAndClearMessages(const Label& label)
 {
 	this->label = label;
 	memset(messages, 0, sizeof(messages));

@@ -35,7 +35,7 @@
 //
 // CompositorRoot implementation
 //
-PriorityBp::CompositorRoot::CompositorRoot(
+LfnIc::CompositorRoot::CompositorRoot(
 	const PatchType::Factory* patchTypeFactory,
 	const PatchBlender::Factory* patchBlenderFactory,
 	const OutputBlender* outputBlender)
@@ -48,7 +48,7 @@ PriorityBp::CompositorRoot::CompositorRoot(
 	wxASSERT(m_outputBlender.get());
 }
 
-bool PriorityBp::CompositorRoot::Compose(const Input& input, HostImage& outputImage) const
+bool LfnIc::CompositorRoot::Compose(const Input& input, HostImage& outputImage) const
 {
 	bool result = false;
 

@@ -24,7 +24,7 @@
 
 #include "Compositor.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	class ImageFloat;
 

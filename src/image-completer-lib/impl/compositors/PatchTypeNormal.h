@@ -25,7 +25,7 @@
 #include "CompositorRoot.h"
 #include "ImageFloat.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	struct Settings;
 

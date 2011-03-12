@@ -25,7 +25,7 @@
 #include "PriorityBpHost.h"
 #include "Scalable.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	//
 	// Encapsulates the image mask's data, and provides methods for querying

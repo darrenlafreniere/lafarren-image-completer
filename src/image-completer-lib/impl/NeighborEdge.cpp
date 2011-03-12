@@ -24,7 +24,7 @@
 
 #include "tech/DbgMem.h"
 
-namespace PriorityBp
+namespace LfnIc
 {
 	struct NeighborEdgeDirection
 	{
@@ -47,7 +47,7 @@ namespace PriorityBp
 	}
 }
 
-bool PriorityBp::GetNeighborEdgeDirection(NeighborEdge edge, int& outX, int& outY)
+bool LfnIc::GetNeighborEdgeDirection(NeighborEdge edge, int& outX, int& outY)
 {
 	bool result = true;
 
@@ -66,12 +66,12 @@ bool PriorityBp::GetNeighborEdgeDirection(NeighborEdge edge, int& outX, int& out
 	return result;
 }
 
-int PriorityBp::GetNeighborEdgeDirectionX(NeighborEdge edge)
+int LfnIc::GetNeighborEdgeDirectionX(NeighborEdge edge)
 {
 	return IsNeighborEdgeValid(edge) ? g_neighborEdgeDirection[edge].x : 0;
 }
 
-int PriorityBp::GetNeighborEdgeDirectionY(NeighborEdge edge)
+int LfnIc::GetNeighborEdgeDirectionY(NeighborEdge edge)
 {
 	return IsNeighborEdgeValid(edge) ? g_neighborEdgeDirection[edge].y : 0;
 }

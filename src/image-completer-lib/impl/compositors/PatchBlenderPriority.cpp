@@ -35,12 +35,12 @@ const float FEATHER_SIDE_PERCENTAGE = 0.10f;
 const float ALPHA_OF_LOWEST_PRIORITY_PATCH  = 0.66f;
 const float ALPHA_OF_HIGHEST_PRIORITY_PATCH = 1.0f;
 
-PriorityBp::CompositorRoot::PatchBlender* PriorityBp::PatchBlenderPriority::Factory::Create(const Compositor::Input& input, const ImageFloat& imageFloat, ImageFloat& outPatchesBlended) const
+LfnIc::CompositorRoot::PatchBlender* LfnIc::PatchBlenderPriority::Factory::Create(const Compositor::Input& input, const ImageFloat& imageFloat, ImageFloat& outPatchesBlended) const
 {
 	return new PatchBlenderPriority(input, imageFloat, outPatchesBlended);
 }
 
-PriorityBp::PatchBlenderPriority::PatchBlenderPriority(const Compositor::Input& input, const ImageFloat& imageFloat, ImageFloat& outPatchesBlended)
+LfnIc::PatchBlenderPriority::PatchBlenderPriority(const Compositor::Input& input, const ImageFloat& imageFloat, ImageFloat& outPatchesBlended)
 	: m_priorityLowest(input.patches[0].priority)
 	, m_priorityHighest(input.patches[input.patches.size() - 1].priority)
 	, m_imageFloat(imageFloat)
@@ -83,7 +83,7 @@ PriorityBp::PatchBlenderPriority::PatchBlenderPriority(const Compositor::Input& 
 	}
 }
 
-PriorityBp::PatchBlenderPriority::~PatchBlenderPriority()
+LfnIc::PatchBlenderPriority::~PatchBlenderPriority()
 {
 	RgbFloat* rgbData = m_outPatchesBlended.GetRgb();
 	const int imageNumPixels = m_imageFloat.GetWidth() * m_imageFloat.GetHeight();
@@ -101,7 +101,7 @@ PriorityBp::PatchBlenderPriority::~PatchBlenderPriority()
 	}
 }
 
-void PriorityBp::PatchBlenderPriority::Blend(const Patch& patch, const ImageFloat& patchImage) const
+void LfnIc::PatchBlenderPriority::Blend(const Patch& patch, const ImageFloat& patchImage) const
 {
 #if _DEBUG
 	wxASSERT(m_priorityPrevious <= patch.priority);

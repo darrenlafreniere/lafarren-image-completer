@@ -28,12 +28,12 @@
 
 #include "tech/DbgMem.h"
 
-const PriorityBp::Mask::Value PriorityBp::Mask::INDETERMINATE = -1;
-const PriorityBp::Mask::Value PriorityBp::Mask::UNKNOWN = 0;
-const PriorityBp::Mask::Value PriorityBp::Mask::IGNORED = 1;
-const PriorityBp::Mask::Value PriorityBp::Mask::KNOWN = 2;
+const LfnIc::Mask::Value LfnIc::Mask::INDETERMINATE = -1;
+const LfnIc::Mask::Value LfnIc::Mask::UNKNOWN = 0;
+const LfnIc::Mask::Value LfnIc::Mask::IGNORED = 1;
+const LfnIc::Mask::Value LfnIc::Mask::KNOWN = 2;
 
-namespace PriorityBp
+namespace LfnIc
 {
 	//
 	// Helper functions
@@ -91,7 +91,7 @@ namespace PriorityBp
 // resolution of an input Mask instance.
 //
 
-class PriorityBp::MaskInternal : public MaskLod
+class LfnIc::MaskInternal : public MaskLod
 {
 public:
 	MaskInternal(int inputImageWidth, int inputImageHeight, const HostImage& maskImage, int maskImageOffsetX, int maskImageOffsetY);
@@ -139,7 +139,7 @@ private:
 	LodSet m_lodSet;
 };
 
-PriorityBp::MaskInternal::MaskInternal(int inputImageWidth, int inputImageHeight, const HostImage& maskImage, int maskImageOffsetX, int maskImageOffsetY) :
+LfnIc::MaskInternal::MaskInternal(int inputImageWidth, int inputImageHeight, const HostImage& maskImage, int maskImageOffsetX, int maskImageOffsetY) :
 m_width(inputImageWidth),
 m_height(inputImageHeight)
 {
@@ -167,7 +167,7 @@ m_height(inputImageHeight)
 	CreateLowerLodsFromHighest();
 }
 
-PriorityBp::MaskInternal::MaskInternal(const MaskLod& maskToScaleDown)
+LfnIc::MaskInternal::MaskInternal(const MaskLod& maskToScaleDown)
 {
 	// Create lod 0 directly from maskToScaleDown's lod 1.
 	{
@@ -194,12 +194,12 @@ PriorityBp::MaskInternal::MaskInternal(const MaskLod& maskToScaleDown)
 	CreateLowerLodsFromHighest();
 }
 
-int PriorityBp::MaskInternal::GetLowestLod() const
+int LfnIc::MaskInternal::GetLowestLod() const
 {
 	return m_lodSet.size() - 1;
 }
 
-PriorityBp::Mask::Value PriorityBp::MaskInternal::GetValue(int x, int y) const
+LfnIc::Mask::Value LfnIc::MaskInternal::GetValue(int x, int y) const
 {
 	Mask::Value value = KNOWN;
 
@@ -211,39 +211,39 @@ PriorityBp::Mask::Value PriorityBp::MaskInternal::GetValue(int x, int y) const
 	return value;
 }
 
-const PriorityBp::MaskLod::LodData& PriorityBp::MaskInternal::GetLodData(int lod) const
+const LfnIc::MaskLod::LodData& LfnIc::MaskInternal::GetLodData(int lod) const
 {
 	wxASSERT(lod >= GetHighestLod());
 	wxASSERT(lod <= GetLowestLod());
 	return m_lodSet[lod];
 }
 
-const PriorityBp::Mask::Value* PriorityBp::MaskInternal::GetLodBuffer(int lod) const
+const LfnIc::Mask::Value* LfnIc::MaskInternal::GetLodBuffer(int lod) const
 {
 	return &GetLodData(lod).buffer[0];
 }
 
-bool PriorityBp::MaskInternal::RegionXywhHasAny(int x, int y, int w, int h, Value value) const
+bool LfnIc::MaskInternal::RegionXywhHasAny(int x, int y, int w, int h, Value value) const
 {
 	return RegionLtrbHasAny(x, y, x + w - 1, y + h - 1, value);
 }
 
-bool PriorityBp::MaskInternal::RegionXywhHasAll(int x, int y, int w, int h, Value value) const
+bool LfnIc::MaskInternal::RegionXywhHasAll(int x, int y, int w, int h, Value value) const
 {
 	return RegionLtrbHasAll(x, y, x + w - 1, y + h - 1, value);
 }
 
-bool PriorityBp::MaskInternal::RegionLtrbHasAny(int left, int top, int right, int bottom, Value value) const
+bool LfnIc::MaskInternal::RegionLtrbHasAny(int left, int top, int right, int bottom, Value value) const
 {
 	return RegionLtrbSearch(left, top, right, bottom, value, REGION_SEARCH_ANY);
 }
 
-bool PriorityBp::MaskInternal::RegionLtrbHasAll(int left, int top, int right, int bottom, Value value) const
+bool LfnIc::MaskInternal::RegionLtrbHasAll(int left, int top, int right, int bottom, Value value) const
 {
 	return RegionLtrbSearch(left, top, right, bottom, value, REGION_SEARCH_ALL);
 }
 
-void PriorityBp::MaskInternal::CreateLowerLodsFromHighest()
+void LfnIc::MaskInternal::CreateLowerLodsFromHighest()
 {
 	// Create lower lods until reaching the first all-indeterminate lod, or
 	// until reaching the 1x1 lod.
@@ -343,7 +343,7 @@ void PriorityBp::MaskInternal::CreateLowerLodsFromHighest()
 	}
 }
 
-PriorityBp::MaskLod::LodData& PriorityBp::MaskInternal::AddLod()
+LfnIc::MaskLod::LodData& LfnIc::MaskInternal::AddLod()
 {
 	int width;
 	int height;
@@ -368,7 +368,7 @@ PriorityBp::MaskLod::LodData& PriorityBp::MaskInternal::AddLod()
 	return lodData;
 }
 
-bool PriorityBp::MaskInternal::RegionLtrbSearch(int left, int top, int right, int bottom, Value value, RegionSearchMode mode) const
+bool LfnIc::MaskInternal::RegionLtrbSearch(int left, int top, int right, int bottom, Value value, RegionSearchMode mode) const
 {
 	wxASSERT(left <= right);
 	wxASSERT(top <= bottom);
@@ -424,14 +424,14 @@ bool PriorityBp::MaskInternal::RegionLtrbSearch(int left, int top, int right, in
 //
 // MaskScalable implementation
 //
-PriorityBp::MaskScalable::MaskScalable(int inputImageWidth, int inputImageHeight, const HostImage& maskImage, int maskImageOffsetX, int maskImageOffsetY) :
+LfnIc::MaskScalable::MaskScalable(int inputImageWidth, int inputImageHeight, const HostImage& maskImage, int maskImageOffsetX, int maskImageOffsetY) :
 m_depth(0)
 {
 	// Create original resolution mask.
 	m_resolutions.push_back(new MaskInternal(inputImageWidth, inputImageHeight, maskImage, maskImageOffsetX, maskImageOffsetY));
 }
 
-PriorityBp::MaskScalable::~MaskScalable()
+LfnIc::MaskScalable::~MaskScalable()
 {
 	for (int i = 0, n = m_resolutions.size(); i < n; ++i)
 	{
@@ -439,37 +439,37 @@ PriorityBp::MaskScalable::~MaskScalable()
 	}
 }
 
-int PriorityBp::MaskScalable::GetLowestLod() const
+int LfnIc::MaskScalable::GetLowestLod() const
 {
 	return GetCurrentResolution().GetLowestLod();
 }
 
-PriorityBp::Mask::Value PriorityBp::MaskScalable::GetValue(int x, int y) const
+LfnIc::Mask::Value LfnIc::MaskScalable::GetValue(int x, int y) const
 {
 	return GetCurrentResolution().GetValue(x, y);
 }
 
-const PriorityBp::MaskLod::LodData& PriorityBp::MaskScalable::GetLodData(int lod) const
+const LfnIc::MaskLod::LodData& LfnIc::MaskScalable::GetLodData(int lod) const
 {
 	return GetCurrentResolution().GetLodData(lod);
 }
 
-const PriorityBp::Mask::Value* PriorityBp::MaskScalable::GetLodBuffer(int lod) const
+const LfnIc::Mask::Value* LfnIc::MaskScalable::GetLodBuffer(int lod) const
 {
 	return GetCurrentResolution().GetLodBuffer(lod);
 }
 
-bool PriorityBp::MaskScalable::RegionXywhHasAny(int x, int y, int w, int h, Value value) const
+bool LfnIc::MaskScalable::RegionXywhHasAny(int x, int y, int w, int h, Value value) const
 {
 	return GetCurrentResolution().RegionXywhHasAny(x, y, w, h, value);
 }
 
-bool PriorityBp::MaskScalable::RegionXywhHasAll(int x, int y, int w, int h, Value value) const
+bool LfnIc::MaskScalable::RegionXywhHasAll(int x, int y, int w, int h, Value value) const
 {
 	return GetCurrentResolution().RegionXywhHasAll(x, y, w, h, value);
 }
 
-void PriorityBp::MaskScalable::ScaleUp()
+void LfnIc::MaskScalable::ScaleUp()
 {
 	wxASSERT(m_depth > 0);
 
@@ -482,7 +482,7 @@ void PriorityBp::MaskScalable::ScaleUp()
 	--m_depth;
 }
 
-void PriorityBp::MaskScalable::ScaleDown()
+void LfnIc::MaskScalable::ScaleDown()
 {
 	wxASSERT(m_depth >= 0);
 
@@ -502,7 +502,7 @@ void PriorityBp::MaskScalable::ScaleDown()
 	wxASSERT(m_resolutions[m_depth]);
 }
 
-int PriorityBp::MaskScalable::GetScaleDepth() const
+int LfnIc::MaskScalable::GetScaleDepth() const
 {
 	return m_depth;
 }

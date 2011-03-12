@@ -29,7 +29,7 @@
 #error "ImageFloat.inl must only be included by ImageFloat.h"
 #endif
 
-namespace PriorityBp
+namespace LfnIc
 {
 	//
 	// RgbFloat
