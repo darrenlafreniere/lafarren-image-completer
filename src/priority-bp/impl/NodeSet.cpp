@@ -30,38 +30,41 @@
 
 #include "tech/DbgMem.h"
 
-//
-// Helper class for generating the Node set that intersects with the
-// unknown region(s).
-//
-class Lattice
+namespace PriorityBp
 {
-public:
-	Lattice(const Image& inputImage, const MaskLod& mask, Node::Context& nodeContext, std::vector<Node>& nodeStorage);
+	//
+	// Helper class for generating the Node set that intersects with the
+	// unknown region(s).
+	//
+	class Lattice
+	{
+	public:
+		Lattice(const Image& inputImage, const MaskLod& mask, Node::Context& nodeContext, std::vector<Node>& nodeStorage);
 
-	void CreateUnknownRegionNodes();
-	void ConnectNeighboringNodes();
+		void CreateUnknownRegionNodes();
+		void ConnectNeighboringNodes();
 
-	int NumCols() const;
-	int NumRows() const;
+		int NumCols() const;
+		int NumRows() const;
 
-	// May return NULL if no node was created for a lattice point, which will
-	// happen if its region does not intersect with the unknown region(s).
-	Node* GetNode(int col, int row) const;
+		// May return NULL if no node was created for a lattice point, which will
+		// happen if its region does not intersect with the unknown region(s).
+		Node* GetNode(int col, int row) const;
 
-private:
-	static const int INVALID_INDEX = -1;
+	private:
+		static const int INVALID_INDEX = -1;
 
-	const Image& m_inputImage;
-	const MaskLod& m_mask;
-	Node::Context& m_nodeContext;
-	std::vector<Node>& m_nodeStorage;
-	std::vector<int> m_pointNodeIndices;
-	int m_numCols;
-	int m_numRows;
-};
+		const Image& m_inputImage;
+		const MaskLod& m_mask;
+		Node::Context& m_nodeContext;
+		std::vector<Node>& m_nodeStorage;
+		std::vector<int> m_pointNodeIndices;
+		int m_numCols;
+		int m_numRows;
+	};
+}
 
-Lattice::Lattice(const Image& inputImage, const MaskLod& mask, Node::Context& nodeContext, std::vector<Node>& nodeStorage) :
+PriorityBp::Lattice::Lattice(const Image& inputImage, const MaskLod& mask, Node::Context& nodeContext, std::vector<Node>& nodeStorage) :
 m_inputImage(inputImage),
 m_mask(mask),
 m_nodeContext(nodeContext),
@@ -71,7 +74,7 @@ m_numRows(0)
 {
 }
 
-void Lattice::CreateUnknownRegionNodes()
+void PriorityBp::Lattice::CreateUnknownRegionNodes()
 {
 	// The lattice has a horizontal and vertical spacing of latticeGapX
 	// and latticeGapY, respectively. The nodes will be all lattice
@@ -114,7 +117,7 @@ void Lattice::CreateUnknownRegionNodes()
 	}
 }
 
-void Lattice::ConnectNeighboringNodes()
+void PriorityBp::Lattice::ConnectNeighboringNodes()
 {
 	for (int row = 0; row < m_numRows; ++row)
 	{
@@ -144,23 +147,23 @@ void Lattice::ConnectNeighboringNodes()
 	}
 }
 
-int Lattice::NumCols() const
+int PriorityBp::Lattice::NumCols() const
 {
 	return m_numCols;
 }
 
-int Lattice::NumRows() const
+int PriorityBp::Lattice::NumRows() const
 {
 	return m_numRows;
 }
 
-Node* Lattice::GetNode(int col, int row) const
+PriorityBp::Node* PriorityBp::Lattice::GetNode(int col, int row) const
 {
 	Node* node = NULL;
 
 	if (col >= 0 && row >= 0 && col < m_numCols && row < m_numRows)
 	{
-		const int pointIndex = GetRowMajorIndex(m_numCols, col, row);
+		const int pointIndex = Tech::GetRowMajorIndex(m_numCols, col, row);
 		wxASSERT(pointIndex >= 0 && pointIndex < int(m_pointNodeIndices.size()));
 
 		const int nodeIndex = m_pointNodeIndices[pointIndex];
@@ -176,7 +179,7 @@ Node* Lattice::GetNode(int col, int row) const
 //
 // NodeSet implementation
 //
-NodeSet::NodeSet(
+PriorityBp::NodeSet::NodeSet(
 	const Settings& settings,
 	const Image& inputImage,
 	const MaskLod& mask,
@@ -192,7 +195,7 @@ m_depth(0)
 	m_nodeSetInfo.resize(size());
 }
 
-void NodeSet::UpdatePriority(const Node& node)
+void PriorityBp::NodeSet::UpdatePriority(const Node& node)
 {
 	for (int i = 0, n = size(); i < n; ++i)
 	{
@@ -204,7 +207,7 @@ void NodeSet::UpdatePriority(const Node& node)
 	}
 }
 
-Priority NodeSet::GetPriority(const Node& node) const
+PriorityBp::Priority PriorityBp::NodeSet::GetPriority(const Node& node) const
 {
 	Priority priority = PRIORITY_MIN;
 	for (int i = 0, n = size(); i < n; ++i)
@@ -219,7 +222,7 @@ Priority NodeSet::GetPriority(const Node& node) const
 	return priority;
 }
 
-void NodeSet::SetCommitted(const Node& node, bool committed)
+void PriorityBp::NodeSet::SetCommitted(const Node& node, bool committed)
 {
 	for (int i = 0, n = size(); i < n; ++i)
 	{
@@ -231,7 +234,7 @@ void NodeSet::SetCommitted(const Node& node, bool committed)
 	}
 }
 
-bool NodeSet::IsCommitted(const Node& node) const
+bool PriorityBp::NodeSet::IsCommitted(const Node& node) const
 {
 	for (int i = 0, n = size(); i < n; ++i)
 	{
@@ -244,7 +247,7 @@ bool NodeSet::IsCommitted(const Node& node) const
 	return false;
 }
 
-Node* NodeSet::GetHighestPriorityUncommittedNode() const
+PriorityBp::Node* PriorityBp::NodeSet::GetHighestPriorityUncommittedNode() const
 {
 	Node* node = NULL;
 	Priority priorityHighest = PRIORITY_MIN;
@@ -260,7 +263,7 @@ Node* NodeSet::GetHighestPriorityUncommittedNode() const
 	return node;
 }
 
-void NodeSet::ScaleUp()
+void PriorityBp::NodeSet::ScaleUp()
 {
 	wxASSERT(m_depth > 0);
 	--m_depth;
@@ -272,7 +275,7 @@ void NodeSet::ScaleUp()
 	}
 }
 
-void NodeSet::ScaleDown()
+void PriorityBp::NodeSet::ScaleDown()
 {
 	wxASSERT(m_depth >= 0);
 	++m_depth;
@@ -284,12 +287,12 @@ void NodeSet::ScaleDown()
 	}
 }
 
-int NodeSet::GetScaleDepth() const
+int PriorityBp::NodeSet::GetScaleDepth() const
 {
 	return m_depth;
 }
 
-NodeSet::NodeInfo::NodeInfo() :
+PriorityBp::NodeSet::NodeInfo::NodeInfo() :
 priority(PRIORITY_MIN),
 isCommitted(false)
 {

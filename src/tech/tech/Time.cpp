@@ -33,8 +33,6 @@
 
 #include "tech/DbgMem.h"
 
-using namespace Tech;
-
 // The Time singleton should be created early and destroyed late:
 #pragma warning(disable: 4073)
 #pragma init_seg(lib)
@@ -142,7 +140,7 @@ private:
 	static void CALLBACK OnTimerStatic(UINT wTimerID, UINT msg, DWORD dwUser, DWORD dw1, DWORD dw2)
 	{
 		Time* thisPtr = (Time*)dwUser;
-		Atomic<>::ExchangeAdd(&thisPtr->m_timeMs, INTERVAL_MS);
+		Tech::Atomic<>::ExchangeAdd(&thisPtr->m_timeMs, INTERVAL_MS);
 	}
 
 	UINT m_resolution;

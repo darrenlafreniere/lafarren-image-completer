@@ -28,8 +28,6 @@
 
 namespace Tech {}
 namespace PriorityBp {}
-using namespace Tech;
-using namespace PriorityBp;
 
 // Compile time switches:
 #define TECH_PROFILE 1

@@ -27,83 +27,80 @@
 
 #include "tech/DbgMem.h"
 
-namespace PriorityBp
+// Given a 0.0-1.0 alpha, returns a color from red to purple.
+static PriorityBp::RgbFloat GetRainbowColor(float alpha)
 {
-	// Given a 0.0-1.0 alpha, returns a color from red to purple.
-	static RgbFloat GetRainbowColor(float alpha)
+	wxASSERT(alpha >= 0.0f && alpha <= 1.0f);
+	static const PriorityBp::RgbFloat refColors[] =
 	{
-		wxASSERT(alpha >= 0.0f && alpha <= 1.0f);
-		static const RgbFloat refColors[] =
-		{
-			RgbFloat(1.00f, 0.00f, 0.00f), // red
-			RgbFloat(1.00f, 0.65f, 0.00f), // orange
-			RgbFloat(1.00f, 1.00f, 0.00f), // yellow
-			RgbFloat(0.00f, 0.50f, 0.00f), // green
-			RgbFloat(0.00f, 0.00f, 1.00f), // blue
-			RgbFloat(0.30f, 0.00f, 0.51f), // indigo
-			RgbFloat(0.93f, 0.51f, 0.93f), // violet
-		};
-		static const int numRefColors = sizeof(refColors) / sizeof(refColors[0]);
-		static const int penultimateRefColorIndex = numRefColors - 2;
-		static const float refAlphaStep = 1.0f / float(numRefColors - 1);
+		PriorityBp::RgbFloat(1.00f, 0.00f, 0.00f), // red
+		PriorityBp::RgbFloat(1.00f, 0.65f, 0.00f), // orange
+		PriorityBp::RgbFloat(1.00f, 1.00f, 0.00f), // yellow
+		PriorityBp::RgbFloat(0.00f, 0.50f, 0.00f), // green
+		PriorityBp::RgbFloat(0.00f, 0.00f, 1.00f), // blue
+		PriorityBp::RgbFloat(0.30f, 0.00f, 0.51f), // indigo
+		PriorityBp::RgbFloat(0.93f, 0.51f, 0.93f), // violet
+	};
+	static const int numRefColors = sizeof(refColors) / sizeof(refColors[0]);
+	static const int penultimateRefColorIndex = numRefColors - 2;
+	static const float refAlphaStep = 1.0f / float(numRefColors - 1);
 
-		int refIndex = 0;
-		float refAlphaLow = 0.0f;
-		while (refIndex < penultimateRefColorIndex)
+	int refIndex = 0;
+	float refAlphaLow = 0.0f;
+	while (refIndex < penultimateRefColorIndex)
+	{
+		const float refAlphaHigh = refAlphaLow + refAlphaStep;
+		if (alpha < refAlphaHigh)
 		{
-			const float refAlphaHigh = refAlphaLow + refAlphaStep;
-			if (alpha < refAlphaHigh)
-			{
-				break;
-			}
-			else
-			{
-				++refIndex;
-				refAlphaLow = refAlphaHigh;
-			}
+			break;
 		}
+		else
+		{
+			++refIndex;
+			refAlphaLow = refAlphaHigh;
+		}
+	}
 
-		const RgbFloat& colorLow = refColors[refIndex];
-		const RgbFloat& colorHigh = refColors[refIndex + 1];
-		const float blendAlpha = (alpha - refAlphaLow) / refAlphaStep;
+	const PriorityBp::RgbFloat& colorLow = refColors[refIndex];
+	const PriorityBp::RgbFloat& colorHigh = refColors[refIndex + 1];
+	const float blendAlpha = (alpha - refAlphaLow) / refAlphaStep;
 							
-		return RgbFloat(
-			colorLow.r + blendAlpha * (colorHigh.r - colorLow.r),
-			colorLow.g + blendAlpha * (colorHigh.g - colorLow.g),
-			colorLow.b + blendAlpha * (colorHigh.b - colorLow.b));
-	}
+	return PriorityBp::RgbFloat(
+		colorLow.r + blendAlpha * (colorHigh.r - colorLow.r),
+		colorLow.g + blendAlpha * (colorHigh.g - colorLow.g),
+		colorLow.b + blendAlpha * (colorHigh.b - colorLow.b));
+}
 
-	CompositorRoot::PatchType* PatchTypeDebugPatchOrder::Factory::Create(const Compositor::Input& input, ImageFloat& imageFloat) const
-	{
-		return new PatchTypeDebugPatchOrder(input, imageFloat);
-	}
+PriorityBp::CompositorRoot::PatchType* PriorityBp::PatchTypeDebugPatchOrder::Factory::Create(const Compositor::Input& input, ImageFloat& imageFloat) const
+{
+	return new PatchTypeDebugPatchOrder(input, imageFloat);
+}
 
-	PatchTypeDebugPatchOrder::PatchTypeDebugPatchOrder(const Compositor::Input& input, ImageFloat& imageFloat)
-		: m_patches(input.patches)
-		, m_patchImage(input.settings.patchWidth, input.settings.patchHeight)
-	{
-	}
+PriorityBp::PatchTypeDebugPatchOrder::PatchTypeDebugPatchOrder(const Compositor::Input& input, ImageFloat& imageFloat)
+	: m_patches(input.patches)
+	, m_patchImage(input.settings.patchWidth, input.settings.patchHeight)
+{
+}
 
-	const ImageFloat& PatchTypeDebugPatchOrder::Get(const Patch& patch) const
+const PriorityBp::ImageFloat& PriorityBp::PatchTypeDebugPatchOrder::Get(const Patch& patch) const
+{
+	PriorityBp::RgbFloat rgb(0.0f, 0.0f, 0.0f);
+	for (int patchIdx = 0, patchesNum = m_patches.size(); patchIdx < patchesNum; ++patchIdx)
 	{
-		RgbFloat rgb(0.0f, 0.0f, 0.0f);
-		for (int patchIdx = 0, patchesNum = m_patches.size(); patchIdx < patchesNum; ++patchIdx)
+		if (&m_patches[patchIdx] == &patch)
 		{
-			if (&m_patches[patchIdx] == &patch)
-			{
-				const float rainbowAlpha = float(patchIdx) / float(patchesNum - 1);
-				rgb = GetRainbowColor(rainbowAlpha);
-				break;
-			}
+			const float rainbowAlpha = float(patchIdx) / float(patchesNum - 1);
+			rgb = GetRainbowColor(rainbowAlpha);
+			break;
 		}
-
-		for (int i = 0, n = m_patchImage.GetWidth() * m_patchImage.GetHeight(); i < n; ++i)
-		{
-			m_patchImage.GetRgb()[i].r = rgb.r;
-			m_patchImage.GetRgb()[i].g = rgb.g;
-			m_patchImage.GetRgb()[i].b = rgb.b;
-		}
-
-		return m_patchImage;
 	}
+
+	for (int i = 0, n = m_patchImage.GetWidth() * m_patchImage.GetHeight(); i < n; ++i)
+	{
+		m_patchImage.GetRgb()[i].r = rgb.r;
+		m_patchImage.GetRgb()[i].g = rgb.g;
+		m_patchImage.GetRgb()[i].b = rgb.b;
+	}
+
+	return m_patchImage;
 }

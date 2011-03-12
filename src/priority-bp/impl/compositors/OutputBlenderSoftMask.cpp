@@ -27,26 +27,23 @@
 #include "CompositorUtils.h"
 #include "ImageFloat.h"
 
-namespace PriorityBp
+void PriorityBp::OutputBlenderSoftMask::Blend(const Compositor::Input& input, const ImageFloat& patchesBlended, ImageFloat& outputImageFloat) const
 {
-	void OutputBlenderSoftMask::Blend(const Compositor::Input& input, const ImageFloat& patchesBlended, ImageFloat& outputImageFloat) const
+	std::vector<float> softMask;
+	CreateSoftMask(input, softMask);
+
+	const RgbFloat* srcRgbDataPtr = patchesBlended.GetRgb();
+	const float* softMaskDataPtr = &softMask[0];
+	RgbFloat* destRgbDataPtr = outputImageFloat.GetRgb();
+
+	wxASSERT(patchesBlended.GetWidth() == outputImageFloat.GetWidth());
+	wxASSERT(patchesBlended.GetHeight() == outputImageFloat.GetHeight());
+
+	const int imageNumPixels = outputImageFloat.GetWidth() * outputImageFloat.GetHeight();
+	for (int i = 0; i < imageNumPixels; ++i, ++destRgbDataPtr, ++srcRgbDataPtr, ++softMaskDataPtr)
 	{
-		std::vector<float> softMask;
-		CreateSoftMask(input, softMask);
-
-		const RgbFloat* srcRgbDataPtr = patchesBlended.GetRgb();
-		const float* softMaskDataPtr = &softMask[0];
-		RgbFloat* destRgbDataPtr = outputImageFloat.GetRgb();
-
-		wxASSERT(patchesBlended.GetWidth() == outputImageFloat.GetWidth());
-		wxASSERT(patchesBlended.GetHeight() == outputImageFloat.GetHeight());
-
-		const int imageNumPixels = outputImageFloat.GetWidth() * outputImageFloat.GetHeight();
-		for (int i = 0; i < imageNumPixels; ++i, ++destRgbDataPtr, ++srcRgbDataPtr, ++softMaskDataPtr)
-		{
-			// Blend s into d based on the inverse alpha
-			const float ia = 1.0f - *softMaskDataPtr;
-			Tech::BlendInto(destRgbDataPtr->channel, srcRgbDataPtr->channel, ia, HostImage::Rgb::NUM_CHANNELS);
-		}
+		// Blend s into d based on the inverse alpha
+		const float ia = 1.0f - *softMaskDataPtr;
+		Tech::BlendInto(destRgbDataPtr->channel, srcRgbDataPtr->channel, ia, HostImage::Rgb::NUM_CHANNELS);
 	}
 }

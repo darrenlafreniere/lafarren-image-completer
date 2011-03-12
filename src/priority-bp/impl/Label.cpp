@@ -31,8 +31,8 @@
 
 #include "tech/DbgMem.h"
 
-wxCOMPILE_TIME_ASSERT(sizeof(Label) == sizeof(int), LabelExpectedToBeSizeofInt);
-wxCOMPILE_TIME_ASSERT(SHRT_MAX <= Settings::IMAGE_DIMENSION_MAX, LabelStorageTooSmallForMaxImageDimension);
+wxCOMPILE_TIME_ASSERT(sizeof(PriorityBp::Label) == sizeof(int), LabelExpectedToBeSizeofInt);
+wxCOMPILE_TIME_ASSERT(SHRT_MAX <= PriorityBp::Settings::IMAGE_DIMENSION_MAX, LabelStorageTooSmallForMaxImageDimension);
 
 // See the edge case in LabelSet::Resolution::Resolution(const Resolution&).
 inline void GetCoordinatesToIncludeOddEdge(int width, int height, int& outIncludeOddEdgeAtX, int& outIncludeOddEdgeAtY)
@@ -44,7 +44,7 @@ inline void GetCoordinatesToIncludeOddEdge(int width, int height, int& outInclud
 	outIncludeOddEdgeAtY = heightIsOdd ? (height - 3) : -1;
 }
 
-LabelSet::LabelSet(const Settings& settings, const Image& inputImage, const MaskLod& mask) :
+PriorityBp::LabelSet::LabelSet(const Settings& settings, const Image& inputImage, const MaskLod& mask) :
 m_inputImage(inputImage),
 m_depth(0)
 {
@@ -52,7 +52,7 @@ m_depth(0)
 	m_resolutions.push_back(new Resolution(settings, inputImage, mask));
 }
 
-LabelSet::~LabelSet()
+PriorityBp::LabelSet::~LabelSet()
 {
 	for (int i = 0, n = m_resolutions.size(); i < n; ++i)
 	{
@@ -60,17 +60,17 @@ LabelSet::~LabelSet()
 	}
 }
 
-const Label& LabelSet::operator[](int i) const
+const PriorityBp::Label& PriorityBp::LabelSet::operator[](int i) const
 {
 	return GetCurrentResolution().labels[i];
 }
 
-int LabelSet::size() const
+int PriorityBp::LabelSet::size() const
 {
 	return GetCurrentResolution().labels.size();
 }
 
-void LabelSet::ScaleUp()
+void PriorityBp::LabelSet::ScaleUp()
 {
 	wxASSERT(m_depth > 0);
 
@@ -83,7 +83,7 @@ void LabelSet::ScaleUp()
 	--m_depth;
 }
 
-void LabelSet::ScaleDown()
+void PriorityBp::LabelSet::ScaleDown()
 {
 	wxASSERT(m_depth >= 0);
 
@@ -110,12 +110,12 @@ void LabelSet::ScaleDown()
 	wxASSERT(m_resolutions[m_depth]);
 }
 
-int LabelSet::GetScaleDepth() const
+int PriorityBp::LabelSet::GetScaleDepth() const
 {
 	return m_depth;
 }
 
-void LabelSet::GetLowToCurrentResolutionMapping(const Label& lowResolutionLabel, LabelSet::LowToCurrentResolutionMapping& out) const
+void PriorityBp::LabelSet::GetLowToCurrentResolutionMapping(const Label& lowResolutionLabel, LabelSet::LowToCurrentResolutionMapping& out) const
 {
 	int includeOddEdgeAtX, includeOddEdgeAtY;
 	GetCoordinatesToIncludeOddEdge(m_inputImage.GetWidth(), m_inputImage.GetHeight(), includeOddEdgeAtX, includeOddEdgeAtY);
@@ -145,7 +145,7 @@ void LabelSet::GetLowToCurrentResolutionMapping(const Label& lowResolutionLabel,
 	}
 }
 
-LabelSet::LabelBitArray::LabelBitArray(int width, int height) :
+PriorityBp::LabelSet::LabelBitArray::LabelBitArray(int width, int height) :
 m_data(NULL),
 m_width(width),
 m_height(height),
@@ -155,12 +155,12 @@ m_dataNumUints(((width * height) + 7) / 8)
 	memset(m_data, 0, sizeof(uint) * m_dataNumUints);
 }
 
-LabelSet::LabelBitArray::~LabelBitArray()
+PriorityBp::LabelSet::LabelBitArray::~LabelBitArray()
 {
 	delete [] m_data;
 }
 
-void LabelSet::LabelBitArray::Set(int x, int y)
+void PriorityBp::LabelSet::LabelBitArray::Set(int x, int y)
 {
 	int index;
 	int shift;
@@ -170,7 +170,7 @@ void LabelSet::LabelBitArray::Set(int x, int y)
 	wxASSERT(IsSet(x, y));
 }
 
-bool LabelSet::LabelBitArray::IsSet(int x, int y) const
+bool PriorityBp::LabelSet::LabelBitArray::IsSet(int x, int y) const
 {
 	int index;
 	int shift;
@@ -179,15 +179,15 @@ bool LabelSet::LabelBitArray::IsSet(int x, int y) const
 	return (m_data[index] & (1 << shift)) != 0;
 }
 
-void LabelSet::LabelBitArray::GetIndexAndShift(int x, int y, int& outIndex, int& outShift) const
+void PriorityBp::LabelSet::LabelBitArray::GetIndexAndShift(int x, int y, int& outIndex, int& outShift) const
 {
-	const int rowMajorIndex = GetRowMajorIndex(m_width, x, y);
+	const int rowMajorIndex = Tech::GetRowMajorIndex(m_width, x, y);
 	outIndex = rowMajorIndex / 8;
 	outShift = rowMajorIndex & 7;
 	wxASSERT(outIndex < m_dataNumUints);
 }
 
-LabelSet::Resolution::Resolution(const Settings& settings, const Image& inputImage, const MaskLod& mask) :
+PriorityBp::LabelSet::Resolution::Resolution(const Settings& settings, const Image& inputImage, const MaskLod& mask) :
 labelBitArray(inputImage.GetWidth(), inputImage.GetHeight())
 {
 	const int width = inputImage.GetWidth();
@@ -223,7 +223,7 @@ labelBitArray(inputImage.GetWidth(), inputImage.GetHeight())
 #endif
 }
 
-LabelSet::Resolution::Resolution(const Resolution& resolutionToScaleDown) :
+PriorityBp::LabelSet::Resolution::Resolution(const Resolution& resolutionToScaleDown) :
 labelBitArray(resolutionToScaleDown.labelBitArray.GetWidth() / 2, resolutionToScaleDown.labelBitArray.GetHeight() / 2)
 {
 	// We're halving the resolution. Each 2x2 label quad is reduced to a
@@ -291,16 +291,19 @@ labelBitArray(resolutionToScaleDown.labelBitArray.GetWidth() / 2, resolutionToSc
 #endif
 }
 
-#if _DEBUG
-struct LabelLessThan : public std::binary_function<Label, Label, bool>
+namespace PriorityBp
 {
-	bool operator()(const Label& a, const Label& b) const
+	#if _DEBUG
+	struct LabelLessThan : public std::binary_function<Label, Label, bool>
 	{
-		return a.top < b.top || (a.top == b.top && a.left < b.left);
-	}
-};
+		bool operator()(const Label& a, const Label& b) const
+		{
+			return a.top < b.top || (a.top == b.top && a.left < b.left);
+		}
+	};
+}
 
-void LabelSet::Resolution::VerifyIntegrity()
+void PriorityBp::LabelSet::Resolution::VerifyIntegrity()
 {
 	std::set<Label, LabelLessThan> labelSet;
 	for (int i = 0, n = labels.size(); i < n; ++i)

@@ -136,7 +136,7 @@ void PriorityBp::CreateSoftMask(const Compositor::Input& input, std::vector<floa
 		{
 			if (mask.GetValue(x, y) == Mask::UNKNOWN)
 			{
-				const int maskIdx = GetRowMajorIndex(imageWidth, x, y);
+				const int maskIdx = Tech::GetRowMajorIndex(imageWidth, x, y);
 				wxASSERT(out[maskIdx] == 0.0f);
 			}
 		}

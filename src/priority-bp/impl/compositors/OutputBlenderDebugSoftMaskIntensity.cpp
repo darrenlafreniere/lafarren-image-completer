@@ -25,24 +25,21 @@
 #include "CompositorUtils.h"
 #include "ImageFloat.h"
 
-namespace PriorityBp
+void PriorityBp::OutputBlenderDebugSoftMaskIntensity::Blend(const Compositor::Input& input, const ImageFloat& patchesBlended, ImageFloat& outputImageFloat) const
 {
-	void OutputBlenderDebugSoftMaskIntensity::Blend(const Compositor::Input& input, const ImageFloat& patchesBlended, ImageFloat& outputImageFloat) const
+	std::vector<float> softMask;
+	CreateSoftMask(input, softMask);
+
+	const float* softMaskDataPtr = &softMask[0];
+	RgbFloat* destRgbDataPtr = outputImageFloat.GetRgb();
+
+	const int imageNumPixels = outputImageFloat.GetWidth() * outputImageFloat.GetHeight();
+	for (int i = 0; i < imageNumPixels; ++i, ++destRgbDataPtr, ++softMaskDataPtr)
 	{
-		std::vector<float> softMask;
-		CreateSoftMask(input, softMask);
-
-		const float* softMaskDataPtr = &softMask[0];
-		RgbFloat* destRgbDataPtr = outputImageFloat.GetRgb();
-
-		const int imageNumPixels = outputImageFloat.GetWidth() * outputImageFloat.GetHeight();
-		for (int i = 0; i < imageNumPixels; ++i, ++destRgbDataPtr, ++softMaskDataPtr)
-		{
-			// Blend s into d based on the inverse alpha
-			const float ia = 1.0f - *softMaskDataPtr;
-			const float intensity = (1.0f - ia);
-			RgbFloat& dest = *destRgbDataPtr;
-			dest.r = dest.g = dest.b = intensity;
-		}
+		// Blend s into d based on the inverse alpha
+		const float ia = 1.0f - *softMaskDataPtr;
+		const float intensity = (1.0f - ia);
+		RgbFloat& dest = *destRgbDataPtr;
+		dest.r = dest.g = dest.b = intensity;
 	}
 }

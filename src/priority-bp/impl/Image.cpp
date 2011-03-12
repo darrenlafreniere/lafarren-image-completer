@@ -60,22 +60,22 @@ namespace PriorityBp
 	};
 }
 
-ImageDelegateToHostImage::ImageDelegateToHostImage(const HostImage& hostImage) :
+PriorityBp::ImageDelegateToHostImage::ImageDelegateToHostImage(const HostImage& hostImage) :
 m_hostImage(hostImage)
 {
 }
 
-const Image::Rgb* ImageDelegateToHostImage::GetRgb() const
+const PriorityBp::Image::Rgb* PriorityBp::ImageDelegateToHostImage::GetRgb() const
 {
 	return m_hostImage.GetRgb();
 }
 
-int ImageDelegateToHostImage::GetWidth() const
+int PriorityBp::ImageDelegateToHostImage::GetWidth() const
 {
 	return m_hostImage.GetWidth();
 }
 
-int ImageDelegateToHostImage::GetHeight() const
+int PriorityBp::ImageDelegateToHostImage::GetHeight() const
 {
 	return m_hostImage.GetHeight();
 }
@@ -106,7 +106,7 @@ namespace PriorityBp
 	};
 }
 
-ImageScaledDown::ImageScaledDown(const Image& imageToScaleDown)
+PriorityBp::ImageScaledDown::ImageScaledDown(const Image& imageToScaleDown)
 {
 	// Alias to reduce wordiness.
 	const int otherWidth = imageToScaleDown.GetWidth();
@@ -126,15 +126,15 @@ ImageScaledDown::ImageScaledDown(const Image& imageToScaleDown)
 	for (int y = 0, otherY = 0; y < m_height; ++y, otherY += 2)
 	{
 		wxASSERT(otherY < otherHeight);
-		Rgb* rgbCurrent = GetRowMajorPointer(m_rgb, stride, 0, y);
+		Rgb* rgbCurrent = Tech::GetRowMajorPointer(m_rgb, stride, 0, y);
 
-		const Rgb* otherRgbCurrentUpper = GetRowMajorPointer(otherRgb, otherStride, 0, otherY);
+		const Rgb* otherRgbCurrentUpper = Tech::GetRowMajorPointer(otherRgb, otherStride, 0, otherY);
 
 		// If the bottom edge of the imageToScaleDown image has no lower row,
 		// point at the upper one; it'll average to the same value
 		// and avoids an extra conditional in the loop.
 		const Rgb* otherRgbCurrentLower = ((otherY + 1) < otherHeight)
-			? GetRowMajorPointer(otherRgb, otherStride, 0, otherY + 1)
+			? Tech::GetRowMajorPointer(otherRgb, otherStride, 0, otherY + 1)
 			: otherRgbCurrentUpper;
 
 		for (int x = 0, otherX = 0; x < m_width; ++x, ++rgbCurrent, otherX += 2, otherRgbCurrentUpper += 2, otherRgbCurrentLower += 2)
@@ -175,22 +175,22 @@ ImageScaledDown::ImageScaledDown(const Image& imageToScaleDown)
 	}
 }
 
-ImageScaledDown::~ImageScaledDown()
+PriorityBp::ImageScaledDown::~ImageScaledDown()
 {
 	delete [] m_rgb;
 }
 
-const Image::Rgb* ImageScaledDown::GetRgb() const
+const PriorityBp::Image::Rgb* PriorityBp::ImageScaledDown::GetRgb() const
 {
 	return m_rgb;
 }
 
-int ImageScaledDown::GetWidth() const
+int PriorityBp::ImageScaledDown::GetWidth() const
 {
 	return m_width;
 }
 
-int ImageScaledDown::GetHeight() const
+int PriorityBp::ImageScaledDown::GetHeight() const
 {
 	return m_height;
 }
@@ -198,14 +198,14 @@ int ImageScaledDown::GetHeight() const
 //
 // ImageScalable implementation
 //
-ImageScalable::ImageScalable(const HostImage& hostImage) :
+PriorityBp::ImageScalable::ImageScalable(const HostImage& hostImage) :
 m_depth(0)
 {
 	// Delegate to original resolution HostImage at depth 0.
 	m_resolutions.push_back(new ImageDelegateToHostImage(hostImage));
 }
 
-ImageScalable::~ImageScalable()
+PriorityBp::ImageScalable::~ImageScalable()
 {
 	for (int i = 0, n = m_resolutions.size(); i < n; ++i)
 	{
@@ -213,22 +213,22 @@ ImageScalable::~ImageScalable()
 	}
 }
 
-const Image::Rgb* ImageScalable::GetRgb() const
+const PriorityBp::Image::Rgb* PriorityBp::ImageScalable::GetRgb() const
 {
 	return GetCurrentResolution().GetRgb();
 }
 
-int ImageScalable::GetWidth() const
+int PriorityBp::ImageScalable::GetWidth() const
 {
 	return GetCurrentResolution().GetWidth();
 }
 
-int ImageScalable::GetHeight() const
+int PriorityBp::ImageScalable::GetHeight() const
 {
 	return GetCurrentResolution().GetHeight();
 }
 
-void ImageScalable::ScaleUp()
+void PriorityBp::ImageScalable::ScaleUp()
 {
 	wxASSERT(m_depth > 0);
 
@@ -241,7 +241,7 @@ void ImageScalable::ScaleUp()
 	--m_depth;
 }
 
-void ImageScalable::ScaleDown()
+void PriorityBp::ImageScalable::ScaleDown()
 {
 	wxASSERT(m_depth >= 0);
 
@@ -261,7 +261,7 @@ void ImageScalable::ScaleDown()
 	wxASSERT(m_resolutions[m_depth]);
 }
 
-int ImageScalable::GetScaleDepth() const
+int PriorityBp::ImageScalable::GetScaleDepth() const
 {
 	return m_depth;
 }

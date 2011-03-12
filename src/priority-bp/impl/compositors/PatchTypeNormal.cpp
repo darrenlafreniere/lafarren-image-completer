@@ -29,44 +29,40 @@
 
 #include "tech/DbgMem.h"
 
-namespace PriorityBp
+PriorityBp::CompositorRoot::PatchType* PriorityBp::PatchTypeNormal::Factory::Create(const Compositor::Input& input, ImageFloat& imageFloat) const
 {
+	return new PatchTypeNormal(input, imageFloat);
+}
 
-	CompositorRoot::PatchType* PatchTypeNormal::Factory::Create(const Compositor::Input& input, ImageFloat& imageFloat) const
-	{
-		return new PatchTypeNormal(input, imageFloat);
-	}
+PriorityBp::PatchTypeNormal::PatchTypeNormal(const Compositor::Input& input, ImageFloat& imageFloat)
+	: m_imageFloat(imageFloat)
+	, m_patchImage(input.settings.patchWidth, input.settings.patchHeight)
+{
+}
 
-	PatchTypeNormal::PatchTypeNormal(const Compositor::Input& input, ImageFloat& imageFloat)
-		: m_imageFloat(imageFloat)
-		, m_patchImage(input.settings.patchWidth, input.settings.patchHeight)
+const PriorityBp::ImageFloat& PriorityBp::PatchTypeNormal::Get(const Patch& patch) const
+{
+	// Copy patch data out of image.
 	{
-	}
+		const int imageWidth = m_imageFloat.GetWidth();
+		const int imageHeight = m_imageFloat.GetHeight();
+		const int patchWidth = m_patchImage.GetWidth();
+		const int patchHeight = m_patchImage.GetHeight();
+		const int patchNumPixels  = patchWidth * patchHeight;
 
-	const ImageFloat& PatchTypeNormal::Get(const Patch& patch) const
-	{
-		// Copy patch data out of image.
+		const RgbFloat* srcRgbData = m_imageFloat.GetRgb();
+		RgbFloat* patchImagePtr = m_patchImage.GetRgb();
+		for (int patchY = 0, patchSrcY = patch.srcTop; patchY < patchHeight; ++patchY, ++patchSrcY)
 		{
-			const int imageWidth = m_imageFloat.GetWidth();
-			const int imageHeight = m_imageFloat.GetHeight();
-			const int patchWidth = m_patchImage.GetWidth();
-			const int patchHeight = m_patchImage.GetHeight();
-			const int patchNumPixels  = patchWidth * patchHeight;
-
-			const RgbFloat* srcRgbData = m_imageFloat.GetRgb();
-			RgbFloat* patchImagePtr = m_patchImage.GetRgb();
-			for (int patchY = 0, patchSrcY = patch.srcTop; patchY < patchHeight; ++patchY, ++patchSrcY)
+			const RgbFloat* srcRgbPtr = srcRgbData + Tech::GetRowMajorIndex(imageWidth, patch.srcLeft, patchSrcY);
+			for (int patchX = 0; patchX < patchWidth; ++patchImagePtr, ++srcRgbPtr, ++patchX)
 			{
-				const RgbFloat* srcRgbPtr = srcRgbData + Tech::GetRowMajorIndex(imageWidth, patch.srcLeft, patchSrcY);
-				for (int patchX = 0; patchX < patchWidth; ++patchImagePtr, ++srcRgbPtr, ++patchX)
-				{
-					wxASSERT((srcRgbPtr - srcRgbData) < (imageWidth * imageHeight));
-					wxASSERT((patchImagePtr - m_patchImage.GetRgb()) < patchNumPixels);
-					*patchImagePtr = *srcRgbPtr;
-				}
+				wxASSERT((srcRgbPtr - srcRgbData) < (imageWidth * imageHeight));
+				wxASSERT((patchImagePtr - m_patchImage.GetRgb()) < patchNumPixels);
+				*patchImagePtr = *srcRgbPtr;
 			}
 		}
-
-		return m_patchImage;
 	}
+
+	return m_patchImage;
 }

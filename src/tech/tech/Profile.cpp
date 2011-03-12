@@ -35,22 +35,20 @@
 
 #include "tech/DbgMem.h"
 
-using namespace Tech;
-
 //
 // BaseProfiler
 //
-BaseProfiler::BaseProfiler(const char* name) :
+Tech::BaseProfiler::BaseProfiler(const char* name) :
 m_name(name),
 m_startCount(0)
 {
 }
 
-BaseProfiler::~BaseProfiler()
+Tech::BaseProfiler::~BaseProfiler()
 {
 }
 
-void BaseProfiler::Start()
+void Tech::BaseProfiler::Start()
 {
 	if (Atomic<>::Increment(&m_startCount) == 1)
 	{
@@ -58,7 +56,7 @@ void BaseProfiler::Start()
 	}
 }
 
-void BaseProfiler::Stop()
+void Tech::BaseProfiler::Stop()
 {
 	if (Atomic<>::Decrement(&m_startCount) == 0)
 	{
@@ -69,7 +67,7 @@ void BaseProfiler::Stop()
 //
 // TimeProfiler
 //
-TimeProfiler::TimeProfiler(const char* name, ReportMode report, int nthBlock) :
+Tech::TimeProfiler::TimeProfiler(const char* name, ReportMode report, int nthBlock) :
 BaseProfiler(name),
 m_reportAfterNumSamples(0),
 m_numSamples(0),
@@ -97,17 +95,17 @@ m_totalTime(0.0)
 	}
 }
 
-TimeProfiler::~TimeProfiler()
+Tech::TimeProfiler::~TimeProfiler()
 {
 	Report(ReportContextFinal, m_numSamples, m_totalTime);
 }
 
-void TimeProfiler::OnStart()
+void Tech::TimeProfiler::OnStart()
 {
 	m_startTime = CurrentTime();
 }
 
-void TimeProfiler::OnStop()
+void Tech::TimeProfiler::OnStop()
 {
 	const double delta = CurrentTime() - m_startTime;
 	if (delta >= 0.0f)
@@ -125,7 +123,7 @@ void TimeProfiler::OnStop()
 	}
 }
 
-void TimeProfiler::Report(ReportContext reportContext, int numBlocks, double time)
+void Tech::TimeProfiler::Report(ReportContext reportContext, int numBlocks, double time)
 {
 	const double timePerBlock = (numBlocks > 0)
 		? (time / double(numBlocks))
@@ -147,7 +145,7 @@ void TimeProfiler::Report(ReportContext reportContext, int numBlocks, double tim
 // MemProfiler
 //
 #ifdef _MSC_VER
-class MemProfiler::MemProfilerData
+class Tech::MemProfiler::MemProfilerData
 {
 public:
 	MemProfilerData()
@@ -180,8 +178,8 @@ private:
 	PROCESS_MEMORY_COUNTERS startMem;
 };
 #else
-#pragma message("Non-critical warning: MemProfiler::MemProfilerData is not implemented for this platform. Memory profiling is disabled.")
-class MemProfiler::MemProfilerData
+#pragma message("Non-critical warning: Tech::MemProfiler::MemProfilerData is not implemented for this platform. Memory profiling is disabled.")
+class Tech::MemProfiler::MemProfilerData
 {
 public:
 	int dummyForNonZeroSizeof;
@@ -201,23 +199,23 @@ public:
 };
 #endif
 
-MemProfiler::MemProfiler(const char* name) :
+Tech::MemProfiler::MemProfiler(const char* name) :
 BaseProfiler(name),
 m_data(new MemProfilerData)
 {
 }
 
-MemProfiler::~MemProfiler()
+Tech::MemProfiler::~MemProfiler()
 {
 	delete m_data;
 }
 
-void MemProfiler::OnStart()
+void Tech::MemProfiler::OnStart()
 {
 	m_data->OnStart();
 }
 
-void MemProfiler::OnStop()
+void Tech::MemProfiler::OnStop()
 {
 	unsigned int startUsage     = 0;
 	unsigned int startUsagePeak = 0;

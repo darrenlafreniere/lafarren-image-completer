@@ -27,7 +27,7 @@
 //
 // EnergyCalculatorContainer implementation
 //
-EnergyCalculatorContainer::EnergyCalculatorContainer(const Settings& settings, const Image& inputImage, const MaskLod& mask) :
+PriorityBp::EnergyCalculatorContainer::EnergyCalculatorContainer(const Settings& settings, const Image& inputImage, const MaskLod& mask) :
 energyCalculatorPerPixel(inputImage, mask)
 #if ENABLE_ENERGY_CALCULATOR_FFT
 ,

@@ -32,59 +32,56 @@
 
 #define DEBUG_DRAW_MASK_INTENSITY 0
 
-namespace PriorityBp
+//
+// CompositorRoot implementation
+//
+PriorityBp::CompositorRoot::CompositorRoot(
+	const PatchType::Factory* patchTypeFactory,
+	const PatchBlender::Factory* patchBlenderFactory,
+	const OutputBlender* outputBlender)
+	: m_patchTypeFactory(patchTypeFactory)
+	, m_patchBlenderFactory(patchBlenderFactory)
+	, m_outputBlender(outputBlender)
 {
-	//
-	// CompositorRoot implementation
-	//
-	CompositorRoot::CompositorRoot(
-		const PatchType::Factory* patchTypeFactory,
-		const PatchBlender::Factory* patchBlenderFactory,
-		const OutputBlender* outputBlender)
-		: m_patchTypeFactory(patchTypeFactory)
-		, m_patchBlenderFactory(patchBlenderFactory)
-		, m_outputBlender(outputBlender)
+	wxASSERT(m_patchTypeFactory.get());
+	wxASSERT(m_patchBlenderFactory.get());
+	wxASSERT(m_outputBlender.get());
+}
+
+bool PriorityBp::CompositorRoot::Compose(const Input& input, HostImage& outputImage) const
+{
+	bool result = false;
+
+	const Image& inputImage = input.inputImage;
+	const Settings& settings = input.settings;
+
+	ImageFloat outputImageFloat(inputImage);
 	{
-		wxASSERT(m_patchTypeFactory.get());
-		wxASSERT(m_patchBlenderFactory.get());
-		wxASSERT(m_outputBlender.get());
-	}
+		ImageFloat patchesBlended(inputImage.GetWidth(), inputImage.GetHeight(), RgbFloat(0.0f, 0.0f, 0.0f));
 
-	bool CompositorRoot::Compose(const Input& input, HostImage& outputImage) const
-	{
-		bool result = false;
-
-		const Image& inputImage = input.inputImage;
-		const Settings& settings = input.settings;
-
-		ImageFloat outputImageFloat(inputImage);
+		const int patchesNum = input.patches.size();
+		if (patchesNum > 0)
 		{
-			ImageFloat patchesBlended(inputImage.GetWidth(), inputImage.GetHeight(), RgbFloat(0.0f, 0.0f, 0.0f));
+			std::auto_ptr<const PatchType> patchTypeAutoPtr((*m_patchTypeFactory).Create(input, outputImageFloat));
+			const PatchType& patchType = *patchTypeAutoPtr;
 
-			const int patchesNum = input.patches.size();
-			if (patchesNum > 0)
+			std::auto_ptr<const PatchBlender> patchBlenderFactoryAutoPtr((*m_patchBlenderFactory).Create(input, outputImageFloat, patchesBlended));
+			const PatchBlender& patchBlender = *patchBlenderFactoryAutoPtr;
+
+			for (int patchIdx = 0; patchIdx < patchesNum; ++patchIdx)
 			{
-				std::auto_ptr<const PatchType> patchTypeAutoPtr((*m_patchTypeFactory).Create(input, outputImageFloat));
-				const PatchType& patchType = *patchTypeAutoPtr;
+				const Patch& patch = input.patches[patchIdx];
+				wxASSERT(patch.srcLeft >= 0 && (patch.srcLeft + settings.patchWidth - 1) < inputImage.GetWidth());
+				wxASSERT(patch.srcTop >= 0 && (patch.srcTop + settings.patchHeight - 1) < inputImage.GetHeight());
 
-				std::auto_ptr<const PatchBlender> patchBlenderFactoryAutoPtr((*m_patchBlenderFactory).Create(input, outputImageFloat, patchesBlended));
-				const PatchBlender& patchBlender = *patchBlenderFactoryAutoPtr;
-
-				for (int patchIdx = 0; patchIdx < patchesNum; ++patchIdx)
-				{
-					const Patch& patch = input.patches[patchIdx];
-					wxASSERT(patch.srcLeft >= 0 && (patch.srcLeft + settings.patchWidth - 1) < inputImage.GetWidth());
-					wxASSERT(patch.srcTop >= 0 && (patch.srcTop + settings.patchHeight - 1) < inputImage.GetHeight());
-
-					const ImageFloat& patchImage = patchType.Get(patch);
-					patchBlender.Blend(patch, patchImage);
-				}
+				const ImageFloat& patchImage = patchType.Get(patch);
+				patchBlender.Blend(patch, patchImage);
 			}
-
-			m_outputBlender->Blend(input, patchesBlended, outputImageFloat);
 		}
 
-		outputImageFloat.CopyTo(outputImage);
-		return result;
+		m_outputBlender->Blend(input, patchesBlended, outputImageFloat);
 	}
+
+	outputImageFloat.CopyTo(outputImage);
+	return result;
 }

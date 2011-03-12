@@ -24,24 +24,27 @@
 
 #include "tech/DbgMem.h"
 
-struct NeighborEdgeDirection
+namespace PriorityBp
 {
-	int x;
-	int y;
-};
+	struct NeighborEdgeDirection
+	{
+		int x;
+		int y;
+	};
 
-// Array must match size and order of NeighborEdge enum:
-static const NeighborEdgeDirection g_neighborEdgeDirection[] =
-{
-	{-1, 0},
-	{0, -1},
-	{1,  0},
-	{0,  1},
-};
+	// Array must match size and order of NeighborEdge enum:
+	static const NeighborEdgeDirection g_neighborEdgeDirection[] =
+	{
+		{-1, 0},
+		{0, -1},
+		{1,  0},
+		{0,  1},
+	};
 
-inline bool IsNeighborEdgeValid(NeighborEdge edge)
-{
-	return (edge >= FirstNeighborEdge && edge <= LastNeighborEdge);
+	inline bool IsNeighborEdgeValid(NeighborEdge edge)
+	{
+		return (edge >= FirstNeighborEdge && edge <= LastNeighborEdge);
+	}
 }
 
 bool PriorityBp::GetNeighborEdgeDirection(NeighborEdge edge, int& outX, int& outY)

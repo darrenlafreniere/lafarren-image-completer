@@ -24,18 +24,18 @@
 
 #include "tech/MathUtils.h"
 
-MaskWritable::MaskWritable(int width, int height, Value value)
+PriorityBp::MaskWritable::MaskWritable(int width, int height, Value value)
 	: m_values(width * height, value)
 	, m_width(width)
 {
 }
 
-MaskWritable::Value MaskWritable::GetValue(int x, int y) const
+PriorityBp::MaskWritable::Value PriorityBp::MaskWritable::GetValue(int x, int y) const
 {
-	return m_values[GetRowMajorIndex(m_width, x, y)];
+	return m_values[Tech::GetRowMajorIndex(m_width, x, y)];
 }
 
-void MaskWritable::SetValue(int x, int y, Value value)
+void PriorityBp::MaskWritable::SetValue(int x, int y, Value value)
 {
-	m_values[GetRowMajorIndex(m_width, x, y)] = value;
+	m_values[Tech::GetRowMajorIndex(m_width, x, y)] = value;
 }

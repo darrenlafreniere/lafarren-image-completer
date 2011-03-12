@@ -31,69 +31,69 @@
 #include "tech/DbgMem.h"
 
 //
-// Settings implementation
+// PriorityBp::Settings implementation
 //
-const int Settings::LATTICE_GAP_MIN = 4;
-const float Settings::PATCH_TO_LATTICE_RATIO = 2.0f;
-const int Settings::PATCH_SIDE_MIN = LATTICE_GAP_MIN * PATCH_TO_LATTICE_RATIO;
-const int64 Settings::PATCH_PIXELS_MAX = (IMAGE_DIMENSION_MAX * PATCH_TO_LATTICE_RATIO) * (IMAGE_DIMENSION_MAX * PATCH_TO_LATTICE_RATIO);
+const int PriorityBp::Settings::LATTICE_GAP_MIN = 4;
+const float PriorityBp::Settings::PATCH_TO_LATTICE_RATIO = 2.0f;
+const int PriorityBp::Settings::PATCH_SIDE_MIN = LATTICE_GAP_MIN * PATCH_TO_LATTICE_RATIO;
+const int64 PriorityBp::Settings::PATCH_PIXELS_MAX = (IMAGE_DIMENSION_MAX * PATCH_TO_LATTICE_RATIO) * (IMAGE_DIMENSION_MAX * PATCH_TO_LATTICE_RATIO);
 
-const Belief Settings::CONFIDENCE_BELIEF_THRESHOLD_MIN = BELIEF_MIN;
-const Belief Settings::CONFIDENCE_BELIEF_THRESHOLD_MAX = BELIEF_MAX;
+const PriorityBp::Belief PriorityBp::Settings::CONFIDENCE_BELIEF_THRESHOLD_MIN = BELIEF_MIN;
+const PriorityBp::Belief PriorityBp::Settings::CONFIDENCE_BELIEF_THRESHOLD_MAX = BELIEF_MAX;
 
-const Belief Settings::PRUNE_BELIEF_THRESHOLD_MIN = BELIEF_MIN;
-const Belief Settings::PRUNE_BELIEF_THRESHOLD_MAX = BELIEF_MAX;
+const PriorityBp::Belief PriorityBp::Settings::PRUNE_BELIEF_THRESHOLD_MIN = BELIEF_MIN;
+const PriorityBp::Belief PriorityBp::Settings::PRUNE_BELIEF_THRESHOLD_MAX = BELIEF_MAX;
 
-const Energy Settings::PRUNE_ENERGY_SIMILAR_THRESHOLD_MIN = ENERGY_MIN;
-const Energy Settings::PRUNE_ENERGY_SIMILAR_THRESHOLD_MAX = ENERGY_MAX;
+const PriorityBp::Energy PriorityBp::Settings::PRUNE_ENERGY_SIMILAR_THRESHOLD_MIN = ENERGY_MIN;
+const PriorityBp::Energy PriorityBp::Settings::PRUNE_ENERGY_SIMILAR_THRESHOLD_MAX = ENERGY_MAX;
 
-const int Settings::POST_PRUNE_LABEL_MIN = 3;
-const int Settings::POST_PRUNE_LABEL_MAX = INT_MAX;
+const int PriorityBp::Settings::POST_PRUNE_LABEL_MIN = 3;
+const int PriorityBp::Settings::POST_PRUNE_LABEL_MAX = INT_MAX;
 
 // Internal construct helper
-static void SettingsConstructHelper(Settings& out, int latticeGapX, int latticeGapY)
+static void SettingsConstructHelper(PriorityBp::Settings& out, int latticeGapX, int latticeGapY)
 {
 #if _DEBUG
-	const Energy maxRgbComponentEnergy = 255;
-	const Energy maxREnergy = maxRgbComponentEnergy;
-	const Energy maxGEnergy = maxRgbComponentEnergy;
-	const Energy maxBEnergy = maxRgbComponentEnergy;
-	const Energy maxPixelEnergy = (maxREnergy * maxREnergy) + (maxGEnergy * maxGEnergy) + (maxBEnergy * maxBEnergy);
-	const Energy maxPatchPixels = ENERGY_MAX / maxPixelEnergy;
-	wxASSERT(Settings::PATCH_PIXELS_MAX < maxPatchPixels);
+	const PriorityBp::Energy maxRgbComponentEnergy = 255;
+	const PriorityBp::Energy maxREnergy = maxRgbComponentEnergy;
+	const PriorityBp::Energy maxGEnergy = maxRgbComponentEnergy;
+	const PriorityBp::Energy maxBEnergy = maxRgbComponentEnergy;
+	const PriorityBp::Energy maxPixelEnergy = (maxREnergy * maxREnergy) + (maxGEnergy * maxGEnergy) + (maxBEnergy * maxBEnergy);
+	const PriorityBp::Energy maxPatchPixels = PriorityBp::ENERGY_MAX / maxPixelEnergy;
+	wxASSERT(PriorityBp::Settings::PATCH_PIXELS_MAX < maxPatchPixels);
 #endif
 
 	out.debugLowResolutionPasses = false;
 	out.lowResolutionPassesMax = 0;
-	out.numIterations = Settings::NUM_ITERATIONS_DEFAULT;
+	out.numIterations = PriorityBp::Settings::NUM_ITERATIONS_DEFAULT;
 
 	out.latticeGapX = latticeGapX;
 	out.latticeGapY = latticeGapY;
-	out.patchWidth  = out.latticeGapX * Settings::PATCH_TO_LATTICE_RATIO;
-	out.patchHeight = out.latticeGapY * Settings::PATCH_TO_LATTICE_RATIO;
+	out.patchWidth  = out.latticeGapX * PriorityBp::Settings::PATCH_TO_LATTICE_RATIO;
+	out.patchHeight = out.latticeGapY * PriorityBp::Settings::PATCH_TO_LATTICE_RATIO;
 
 	// Based on the patch size, 3 components (rgb), and an
 	// acceptable component difference (between 0.0 and 1.0),
 	// calculate an acceptable, mediocre ssd to base other
 	// settings on.
 	const float ssd0ComponentAcceptableDiff = 0.15f;
-	const Energy ssd0ComponentDiff = Energy(ssd0ComponentAcceptableDiff * 255.0f);
-	const Energy ssd0ComponentDiffSq = ssd0ComponentDiff * ssd0ComponentDiff;
-	const Energy ssd0RgbDiffSq = 3 * ssd0ComponentDiffSq;
-	const Energy ssd0 = out.patchWidth * out.patchHeight * ssd0RgbDiffSq;
+	const PriorityBp::Energy ssd0ComponentDiff = PriorityBp::Energy(ssd0ComponentAcceptableDiff * 255.0f);
+	const PriorityBp::Energy ssd0ComponentDiffSq = ssd0ComponentDiff * ssd0ComponentDiff;
+	const PriorityBp::Energy ssd0RgbDiffSq = 3 * ssd0ComponentDiffSq;
+	const PriorityBp::Energy ssd0 = out.patchWidth * out.patchHeight * ssd0RgbDiffSq;
 
 	out.confidenceBeliefThreshold = -ssd0;
-	out.pruneBeliefThreshold = -ssd0 * Energy(2);
-	out.pruneEnergySimilarThreshold = ssd0 / Energy(2);
-	out.postPruneLabelsMin = Settings::POST_PRUNE_LABEL_MIN;
-	out.postPruneLabelsMax = Settings::POST_PRUNE_LABEL_MIN * 4;
-	out.compositorPatchType = CompositorPatchTypeDefault;
-	out.compositorPatchBlender = CompositorPatchBlenderDefault;
+	out.pruneBeliefThreshold = -ssd0 * PriorityBp::Energy(2);
+	out.pruneEnergySimilarThreshold = ssd0 / PriorityBp::Energy(2);
+	out.postPruneLabelsMin = PriorityBp::Settings::POST_PRUNE_LABEL_MIN;
+	out.postPruneLabelsMax = PriorityBp::Settings::POST_PRUNE_LABEL_MIN * 4;
+	out.compositorPatchType = PriorityBp::CompositorPatchTypeDefault;
+	out.compositorPatchBlender = PriorityBp::CompositorPatchBlenderDefault;
 }
 
 void PriorityBp::SettingsConstruct(Settings& out)
 {
-	SettingsConstructHelper(out, Settings::LATTICE_GAP_MIN, Settings::LATTICE_GAP_MIN);
+	SettingsConstructHelper(out, PriorityBp::Settings::LATTICE_GAP_MIN, PriorityBp::Settings::LATTICE_GAP_MIN);
 }
 
 void PriorityBp::SettingsConstruct(Settings& out, const HostImage& inputImage)
@@ -102,8 +102,8 @@ void PriorityBp::SettingsConstruct(Settings& out, const HostImage& inputImage)
 	const int imageSizeAtGapMin = 100;
 	const float widthScale = float(inputImage.GetWidth()) / float(imageSizeAtGapMin);
 	const float heightScale = float(inputImage.GetHeight()) / float(imageSizeAtGapMin);
-	int latticeGapX = std::max(Lerp(0, Settings::LATTICE_GAP_MIN, widthScale), Settings::LATTICE_GAP_MIN);
-	int latticeGapY = std::max(Lerp(0, Settings::LATTICE_GAP_MIN, heightScale), Settings::LATTICE_GAP_MIN);
+	int latticeGapX = std::max(Tech::Lerp(0, Settings::LATTICE_GAP_MIN, widthScale), Settings::LATTICE_GAP_MIN);
+	int latticeGapY = std::max(Tech::Lerp(0, Settings::LATTICE_GAP_MIN, heightScale), Settings::LATTICE_GAP_MIN);
 
 	// If calculated gaps violate the maximum gap ratio, shink one of the
 	// components.
@@ -151,14 +151,14 @@ bool PriorityBp::AreSettingsValid(const Settings& settings, SettingsInvalidMembe
 	if (!(settings.member >= min)) \
 	{ \
 		valid = false; \
-		handler.OnInvalidMemberDetected(settings, offsetof(Settings, member), Str::Format("(%I64d) is less than %I64d", int64(settings.member), int64(min)).c_str()); \
+		handler.OnInvalidMemberDetected(settings, offsetof(Settings, member), Tech::Str::Format("(%I64d) is less than %I64d", int64(settings.member), int64(min)).c_str()); \
 	}
 
 #define VALIDATE_NOT_GREATER_THAN(member, max) \
 	if (!(settings.member <= max)) \
 	{ \
 		valid = false; \
-		handler.OnInvalidMemberDetected(settings, offsetof(Settings, member), Str::Format("(%I64d) is less than %I64d", int64(settings.member), int64(max)).c_str()); \
+		handler.OnInvalidMemberDetected(settings, offsetof(Settings, member), Tech::Str::Format("(%I64d) is less than %I64d", int64(settings.member), int64(max)).c_str()); \
 	}
 
 #define VALIDATE_IN_RANGE(member, min, max) \
@@ -178,7 +178,7 @@ bool PriorityBp::AreSettingsValid(const Settings& settings, SettingsInvalidMembe
 	{
 		valid = false;
 		const int memberOffset = (settings.patchWidth > settings.patchHeight) ? offsetof(Settings, patchWidth) : offsetof(Settings, patchHeight);
-		handler.OnInvalidMemberDetected(settings, memberOffset, Str::Format("is yielding too large of a patch (%d * %d > %I64d)", settings.patchWidth, settings.patchHeight, Settings::PATCH_PIXELS_MAX).c_str());
+		handler.OnInvalidMemberDetected(settings, memberOffset, Tech::Str::Format("is yielding too large of a patch (%d * %d > %I64d)", settings.patchWidth, settings.patchHeight, Settings::PATCH_PIXELS_MAX).c_str());
 	}
 
 	VALIDATE_IN_RANGE(confidenceBeliefThreshold, Settings::CONFIDENCE_BELIEF_THRESHOLD_MIN, Settings::CONFIDENCE_BELIEF_THRESHOLD_MAX);
@@ -206,13 +206,13 @@ bool PriorityBp::AreSettingsValid(const Settings& settings, SettingsInvalidMembe
 //
 // SettingsScalable implementation
 //
-SettingsScalable::SettingsScalable(const Settings& settings) :
+PriorityBp::SettingsScalable::SettingsScalable(const Settings& settings) :
 Settings(settings), // copy
 m_depth(0)
 {
 }
 
-void SettingsScalable::ScaleUp()
+void PriorityBp::SettingsScalable::ScaleUp()
 {
 	// Copy the last saved resolution settings and pop up.
 	wxASSERT(m_depth > 0);
@@ -221,7 +221,7 @@ void SettingsScalable::ScaleUp()
 	m_resolutions.pop_back();
 }
 
-void SettingsScalable::ScaleDown()
+void PriorityBp::SettingsScalable::ScaleDown()
 {
 	// Save the current resolution settings.
 	wxASSERT(static_cast<unsigned int>(m_depth) == m_resolutions.size());
@@ -247,7 +247,7 @@ void SettingsScalable::ScaleDown()
 	postPruneLabelsMax *= NUM_NODE_LABELS_KEPT_MULTIPLIER;
 }
 
-int SettingsScalable::GetScaleDepth() const
+int PriorityBp::SettingsScalable::GetScaleDepth() const
 {
 	return m_depth;
 }

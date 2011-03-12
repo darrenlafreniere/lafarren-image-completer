@@ -32,12 +32,12 @@
 
 #include "tech/DbgMem.h"
 
-CompositorRoot::PatchType* PatchTypePoisson::Factory::Create(const Compositor::Input& input, ImageFloat& imageFloat) const
+PriorityBp::CompositorRoot::PatchType* PriorityBp::PatchTypePoisson::Factory::Create(const Compositor::Input& input, ImageFloat& imageFloat) const
 {
 	return new PatchTypePoisson(input, imageFloat);
 }
 
-PatchTypePoisson::PatchTypePoisson(const Compositor::Input& input, ImageFloat& imageFloat)
+PriorityBp::PatchTypePoisson::PatchTypePoisson(const Compositor::Input& input, ImageFloat& imageFloat)
 	: PatchTypeNormal(input, imageFloat)
 {
 	Poisson::Complete(imageFloat, input.mask, imageFloat);
@@ -49,7 +49,7 @@ PatchTypePoisson::PatchTypePoisson(const Compositor::Input& input, ImageFloat& i
 	m_patchImagePoisson.reset(new ImageFloat(settings.patchWidth, settings.patchHeight));
 }
 
-const ImageFloat& PatchTypePoisson::Get(const Patch& patch) const
+const PriorityBp::ImageFloat& PriorityBp::PatchTypePoisson::Get(const Patch& patch) const
 {
 	Poisson::Cloner& poissonCloner = *m_poissonCloner;
 	const ImageFloat& patchImageNormal = PatchTypeNormal::Get(patch);

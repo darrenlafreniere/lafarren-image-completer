@@ -57,14 +57,14 @@
 //
 // Node implementation
 //
-Node::Context::Context(const Settings& settings, const LabelSet& labelSet, EnergyCalculatorContainer& energyCalculatorContainer) :
+PriorityBp::Node::Context::Context(const Settings& settings, const LabelSet& labelSet, EnergyCalculatorContainer& energyCalculatorContainer) :
 settings(settings),
 labelSet(labelSet),
 energyCalculatorContainer(energyCalculatorContainer)
 {
 }
 
-Node::Node(Context& context, const MaskLod& mask, int x, int y) :
+PriorityBp::Node::Node(Context& context, const MaskLod& mask, int x, int y) :
 m_context(&context),
 m_overlapsKnownRegion(false),
 m_hasPrunedOnce(false),
@@ -97,7 +97,7 @@ m_depth(0)
 
 		for (int row = rowStart, y = top; row < rowsNum; ++row, ++y)
 		{
-			const Mask::Value* maskBufferPtr = &maskData.buffer[GetRowMajorIndex(maskData.width, left, y)];
+			const Mask::Value* maskBufferPtr = &maskData.buffer[Tech::GetRowMajorIndex(maskData.width, left, y)];
 			for (int col = colStart; col < colsNum; ++col, ++maskBufferPtr)
 			{
 				if (*maskBufferPtr == Mask::KNOWN)
@@ -110,7 +110,7 @@ m_depth(0)
 	}
 }
 
-Node::Node(const Node& other) :
+PriorityBp::Node::Node(const Node& other) :
 m_context(other.m_context),
 m_overlapsKnownRegion(other.m_overlapsKnownRegion),
 m_hasPrunedOnce(other.m_hasPrunedOnce),
@@ -120,17 +120,17 @@ m_depth(other.m_depth)
 	memcpy(m_neighbors, other.m_neighbors, sizeof(m_neighbors));
 }
 
-int Node::GetX() const
+int PriorityBp::Node::GetX() const
 {
 	return GetCurrentResolution().x;
 }
 
-int Node::GetY() const
+int PriorityBp::Node::GetY() const
 {
 	return GetCurrentResolution().y;
 }
 
-bool Node::AddNeighbor(Node& neighbor, NeighborEdge edge)
+bool PriorityBp::Node::AddNeighbor(Node& neighbor, NeighborEdge edge)
 {
 #ifdef _DEBUG
 	wxASSERT(!m_neighbors[edge]);
@@ -152,14 +152,14 @@ bool Node::AddNeighbor(Node& neighbor, NeighborEdge edge)
 	return true;
 }
 
-Node* Node::GetNeighbor(NeighborEdge edge) const
+PriorityBp::Node* PriorityBp::Node::GetNeighbor(NeighborEdge edge) const
 {
 	wxASSERT(edge >= FirstNeighborEdge);
 	wxASSERT(edge <= LastNeighborEdge);
 	return m_neighbors[edge];
 }
 
-NeighborEdge Node::GetNeighborEdge(const Node& neighbor) const
+PriorityBp::NeighborEdge PriorityBp::Node::GetNeighborEdge(const Node& neighbor) const
 {
 	for (int i = 0; i < NumNeighborEdges; ++i)
 	{
@@ -169,11 +169,11 @@ NeighborEdge Node::GetNeighborEdge(const Node& neighbor) const
 		}
 	}
 
-	wxFAIL_MSG("Node::GetNeighborIndex: specified node is not a neighbor!");
+	wxFAIL_MSG("PriorityBp::Node::GetNeighborIndex: specified node is not a neighbor!");
 	return InvalidNeighborEdge;
 }
 
-void Node::SendMessages(Node& neighbor) const
+void PriorityBp::Node::SendMessages(Node& neighbor) const
 {
 	// At this point, this node must have its own label info set.
 	wxASSERT(m_labelInfoSet.size() > 0);
@@ -319,24 +319,27 @@ void Node::SendMessages(Node& neighbor) const
 	}
 }
 
-// TODO: move belief into LabelInfo?
-struct PruneInfo
+namespace PriorityBp
 {
-	int labelIndex;
-	Belief belief;
-};
+	// TODO: move belief into LabelInfo?
+	struct PruneInfo
+	{
+		int labelIndex;
+		Belief belief;
+	};
 
-// For sorting:
-bool operator <(const PruneInfo& a, const PruneInfo& b)
-{
-	// Use > to sort in descending order
-	return (a.belief > b.belief);
+	// For sorting:
+	bool operator <(const PruneInfo& a, const PruneInfo& b)
+	{
+		// Use > to sort in descending order
+		return (a.belief > b.belief);
+	}
 }
 
-void Node::PruneLabels()
+void PriorityBp::Node::PruneLabels()
 {
 #if PROFILE_MEM
-	TECH_MEM_PROFILE("Node::PruneLabels");
+	TECH_MEM_PROFILE("PriorityBp::Node::PruneLabels");
 #endif
 	ConstNodeLabels labelSet(*this);
 	const int labelNum = labelSet.size();
@@ -449,7 +452,7 @@ void Node::PruneLabels()
 	}
 }
 
-Priority Node::CalculatePriority() const
+PriorityBp::Priority PriorityBp::Node::CalculatePriority() const
 {
 	Priority priority = PRIORITY_MIN;
 
@@ -502,7 +505,7 @@ Priority Node::CalculatePriority() const
 	return priority;
 }
 
-Belief Node::CalculateBelief(Energy labelEnergy, const Energy messages[NumNeighborEdges]) const
+PriorityBp::Belief PriorityBp::Node::CalculateBelief(Energy labelEnergy, const Energy messages[NumNeighborEdges]) const
 {
 	Belief belief= Belief(-labelEnergy);
 	for (int i = 0; i < NumNeighborEdges; ++i)
@@ -514,7 +517,7 @@ Belief Node::CalculateBelief(Energy labelEnergy, const Energy messages[NumNeighb
 	return belief;
 }
 
-Belief Node::CalculateBelief(const Label& label, const Energy messages[NumNeighborEdges]) const
+PriorityBp::Belief PriorityBp::Node::CalculateBelief(const Label& label, const Energy messages[NumNeighborEdges]) const
 {
 	Energy e;
 	if (OverlapsKnownRegion())
@@ -534,10 +537,10 @@ Belief Node::CalculateBelief(const Label& label, const Energy messages[NumNeighb
 	return CalculateBelief(e, messages);
 }
 
-void Node::PopulateLabelInfoSetIfNeeded()
+void PriorityBp::Node::PopulateLabelInfoSetIfNeeded()
 {
 #if PROFILE_MEM
-	TECH_MEM_PROFILE("Node::PopulateLabelInfoSetIfNeeded");
+	TECH_MEM_PROFILE("PriorityBp::Node::PopulateLabelInfoSetIfNeeded");
 #endif
 	if (m_labelInfoSet.size() == 0)
 	{
@@ -553,22 +556,22 @@ void Node::PopulateLabelInfoSetIfNeeded()
 	}
 }
 
-int Node::GetLeft() const
+int PriorityBp::Node::GetLeft() const
 {
 	return GetCurrentResolution().x - (m_context->settings.patchWidth / 2);
 }
 
-int Node::GetTop() const
+int PriorityBp::Node::GetTop() const
 {
 	return GetCurrentResolution().y - (m_context->settings.patchHeight / 2);
 }
 
-bool Node::OverlapsKnownRegion() const
+bool PriorityBp::Node::OverlapsKnownRegion() const
 {
 	return m_overlapsKnownRegion;
 }
 
-void Node::ScaleUp()
+void PriorityBp::Node::ScaleUp()
 {
 	wxASSERT(m_depth > 0);
 
@@ -617,7 +620,7 @@ void Node::ScaleUp()
 	}
 }
 
-void Node::ScaleDown()
+void PriorityBp::Node::ScaleDown()
 {
 	wxASSERT(m_depth >= 0);
 
@@ -632,12 +635,12 @@ void Node::ScaleDown()
 	wxASSERT(m_labelInfoSet.size() == 0);
 }
 
-int Node::GetScaleDepth() const
+int PriorityBp::Node::GetScaleDepth() const
 {
 	return m_depth;
 }
 
-void Node::LabelInfo::SetLabelAndClearMessages(const Label& label)
+void PriorityBp::Node::LabelInfo::SetLabelAndClearMessages(const Label& label)
 {
 	this->label = label;
 	memset(messages, 0, sizeof(messages));
