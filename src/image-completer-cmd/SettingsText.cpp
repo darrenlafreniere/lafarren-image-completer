@@ -58,12 +58,12 @@ void SettingsText::Print(const PriorityBp::Settings& settings)
 	}
 	else
 	{
-		lowResolutionPassesMaxString = Tech::Str::Format("%d", settings.lowResolutionPassesMax);
+		lowResolutionPassesMaxString = LfnTech::Str::Format("%d", settings.lowResolutionPassesMax);
 	}
 
 #define DESC(member) GetMemberDescription(offsetof(PriorityBp::Settings, member))
 #define VAL_W "17" /* TODO: auto-size this as well? */
-#define VAL_X(fmt, x) Tech::Str::Format("%" VAL_W fmt, x)
+#define VAL_X(fmt, x) LfnTech::Str::Format("%" VAL_W fmt, x)
 #define VAL_S(s) VAL_X("s", s)
 #define VAL_I(i) VAL_X("d", i)
 

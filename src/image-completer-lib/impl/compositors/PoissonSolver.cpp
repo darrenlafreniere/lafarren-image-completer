@@ -332,7 +332,7 @@ namespace PriorityBp { namespace Poisson
 
 	float UnknownVars::GetFloatClamped0To1(int index) const
 	{
-		return Tech::Clamp0To1(static_cast<float>(m_uVars.get()[index]));
+		return LfnTech::Clamp0To1(static_cast<float>(m_uVars.get()[index]));
 	}
 
 	void UnknownVars::Solve(const AAndBVars& aAndBVars)
@@ -546,8 +546,8 @@ namespace PriorityBp { namespace Poisson
 				const int translatedY = y - sourceOffsetY;
 				if (translatedX >= 0 && translatedY >= 0 && translatedX < sourceWidth && translatedY < sourceHeight)
 				{
-					const int sourceIndex = Tech::GetRowMajorIndex(sourceWidth, translatedX, translatedY);
-					const int translatedIndex = Tech::GetRowMajorIndex(sourceImageTranslatedWidth, x, y);
+					const int sourceIndex = LfnTech::GetRowMajorIndex(sourceWidth, translatedX, translatedY);
+					const int translatedIndex = LfnTech::GetRowMajorIndex(sourceImageTranslatedWidth, x, y);
 					m_sourceImageTranslated.GetRgb()[translatedIndex] = sourceImage.GetRgb()[sourceIndex];
 					m_laplacianMask.SetValue(x, y, mask.GetValue(translatedX, translatedY));
 				}

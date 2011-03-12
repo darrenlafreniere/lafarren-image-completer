@@ -24,7 +24,7 @@
 
 #include "tech/DbgMem.h"
 
-std::string Tech::Str::Format(const char* format, ...)
+std::string LfnTech::Str::Format(const char* format, ...)
 {
 	static char buffer[1024 * 16];
 	va_list argptr;
@@ -34,7 +34,7 @@ std::string Tech::Str::Format(const char* format, ...)
 	return buffer;
 }
 
-std::string Tech::Str::Replace(const std::string& s, char replace, const char* with)
+std::string LfnTech::Str::Replace(const std::string& s, char replace, const char* with)
 {
 	std::string replaced;
 	for (int i = 0, n = s.length(); i < n; ++i)

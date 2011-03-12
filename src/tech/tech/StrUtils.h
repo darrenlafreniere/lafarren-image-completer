@@ -27,7 +27,7 @@
 
 #include <string>
 
-namespace Tech
+namespace LfnTech
 {
 	namespace Str
 	{

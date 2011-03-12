@@ -92,24 +92,24 @@ void PriorityBp::ImageFloat::CopyTo(HostImage& output) const
 		{
 			const RgbFloat& inRgb = m_data[i];
 			HostImage::Rgb& outRgb = outRgbData[i];
-			outRgb.r = (unsigned char)(Tech::Clamp0To1(inRgb.r) * 255);
-			outRgb.g = (unsigned char)(Tech::Clamp0To1(inRgb.g) * 255);
-			outRgb.b = (unsigned char)(Tech::Clamp0To1(inRgb.b) * 255);
+			outRgb.r = (unsigned char)(LfnTech::Clamp0To1(inRgb.r) * 255);
+			outRgb.g = (unsigned char)(LfnTech::Clamp0To1(inRgb.g) * 255);
+			outRgb.b = (unsigned char)(LfnTech::Clamp0To1(inRgb.b) * 255);
 		}
 	}
 }
 
 PriorityBp::RgbFloat& PriorityBp::ImageFloat::GetPixel(int x, int y)
 {
-	return m_data[Tech::GetRowMajorIndex(m_width, x, y)];
+	return m_data[LfnTech::GetRowMajorIndex(m_width, x, y)];
 }
 
 const PriorityBp::RgbFloat& PriorityBp::ImageFloat::GetPixel(int x, int y) const
 {
-	return m_data[Tech::GetRowMajorIndex(m_width, x, y)];
+	return m_data[LfnTech::GetRowMajorIndex(m_width, x, y)];
 }
 
 void PriorityBp::ImageFloat::SetPixel(int x, int y, const RgbFloat& pixel)
 {
-	m_data[Tech::GetRowMajorIndex(m_width, x, y)] = pixel;
+	m_data[LfnTech::GetRowMajorIndex(m_width, x, y)] = pixel;
 }

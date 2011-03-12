@@ -140,7 +140,7 @@ private:
 	static void CALLBACK OnTimerStatic(UINT wTimerID, UINT msg, DWORD dwUser, DWORD dw1, DWORD dw2)
 	{
 		Time* thisPtr = (Time*)dwUser;
-		Tech::Atomic<>::ExchangeAdd(&thisPtr->m_timeMs, INTERVAL_MS);
+		LfnTech::Atomic<>::ExchangeAdd(&thisPtr->m_timeMs, INTERVAL_MS);
 	}
 
 	UINT m_resolution;
@@ -153,7 +153,7 @@ private:
 Time Time::instance;
 #endif
 
-namespace Tech
+namespace LfnTech
 {
 	double CurrentTime()
 	{

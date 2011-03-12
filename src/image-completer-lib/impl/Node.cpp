@@ -97,7 +97,7 @@ m_depth(0)
 
 		for (int row = rowStart, y = top; row < rowsNum; ++row, ++y)
 		{
-			const Mask::Value* maskBufferPtr = &maskData.buffer[Tech::GetRowMajorIndex(maskData.width, left, y)];
+			const Mask::Value* maskBufferPtr = &maskData.buffer[LfnTech::GetRowMajorIndex(maskData.width, left, y)];
 			for (int col = colStart; col < colsNum; ++col, ++maskBufferPtr)
 			{
 				if (*maskBufferPtr == Mask::KNOWN)

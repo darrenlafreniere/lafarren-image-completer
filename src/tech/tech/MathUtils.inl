@@ -29,7 +29,7 @@
 #error "MathUtils.inl must only be included by MathUtils.h"
 #endif
 
-namespace Tech
+namespace LfnTech
 {
 	inline float Clamp(float f, float min, float max)
 	{

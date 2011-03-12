@@ -34,10 +34,10 @@
 #endif
 
 #define ASSERT_TECH_ATOMIC_SIZE(T) \
-	wxASSERT(Tech::AtomicForceLinkValidationTests()); \
+	wxASSERT(LfnTech::AtomicForceLinkValidationTests()); \
 	wxCOMPILE_TIME_ASSERT(sizeof(T) == sizeof(AtomicNativeType), TypeMustBeSizeofAtomicNativeType)
 
-namespace Tech
+namespace LfnTech
 {
 	bool AtomicForceLinkValidationTests();
 

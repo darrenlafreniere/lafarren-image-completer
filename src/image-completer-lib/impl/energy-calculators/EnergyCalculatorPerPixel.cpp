@@ -165,8 +165,8 @@ static inline PriorityBp::Energy CalculateEnergy(
 		const bool canFitInU32Bit = (width * height) <= MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY;
 
 		const PriorityBp::Image::Rgb* inputImageRgb = inputImage.GetRgb();
-		int aRowIndex = Tech::GetRowMajorIndex(imageWidth, aLeft, aTop);
-		int bRowIndex = Tech::GetRowMajorIndex(imageWidth, bLeft, bTop);
+		int aRowIndex = LfnTech::GetRowMajorIndex(imageWidth, aLeft, aTop);
+		int bRowIndex = LfnTech::GetRowMajorIndex(imageWidth, bLeft, bTop);
 		for (int y = 0; y < height; ++y, aRowIndex += imageWidth, bRowIndex += imageWidth)
 		{
 			const PriorityBp::Image::Rgb* aRow = inputImageRgb + aRowIndex;
@@ -434,7 +434,7 @@ wxThread::ExitCode PriorityBp::EnergyCalculatorPerPixel::WorkerThread::Entry()
 			// Set the paused state, and verify that the main thread's sync
 			// loop did its job by waiting.
 			{
-				const State previousState = State(Tech::Atomic<>::CompareExchange(&m_state, Paused, Pausing));
+				const State previousState = State(LfnTech::Atomic<>::CompareExchange(&m_state, Paused, Pausing));
 				wxASSERT(previousState == Pausing);
 			}
 
@@ -448,7 +448,7 @@ wxThread::ExitCode PriorityBp::EnergyCalculatorPerPixel::WorkerThread::Entry()
 			// main thread's sync loop did its job by waiting.
 			if (state == Resuming)
 			{
-				const State previousState = State(Tech::Atomic<>::CompareExchange(&m_state, Active, Resuming));
+				const State previousState = State(LfnTech::Atomic<>::CompareExchange(&m_state, Active, Resuming));
 				wxASSERT(previousState == Resuming);
 			}
 		}
@@ -466,7 +466,7 @@ void PriorityBp::EnergyCalculatorPerPixel::WorkerThread::ResumeAndStartProcessin
 {
 	wxASSERT(IsPaused());
 
-	const State previousState = State(Tech::Atomic<>::CompareExchange(&m_state, Resuming, Paused));
+	const State previousState = State(LfnTech::Atomic<>::CompareExchange(&m_state, Resuming, Paused));
 	wxASSERT(previousState == Paused);
 
 	wxThread::Resume();
@@ -482,7 +482,7 @@ void PriorityBp::EnergyCalculatorPerPixel::WorkerThread::FinishProcessingCalcula
 	// Sync: loop until state is Active, which is required to set the Pausing
 	// state. This is done in case ResumeAndStartProcessingCalculations()
 	// was just called and the thread hasn't had a chance to wake up.
-	while (Tech::Atomic<>::CompareExchange(&m_state, Pausing, Active) != Active)
+	while (LfnTech::Atomic<>::CompareExchange(&m_state, Pausing, Active) != Active)
 	{
 		wxThread::Yield();
 	}
@@ -501,7 +501,7 @@ void PriorityBp::EnergyCalculatorPerPixel::WorkerThread::ResumeAndQuit()
 {
 	wxASSERT(IsPaused());
 
-	const State previousState = State(Tech::Atomic<>::CompareExchange(&m_state, Quitting, Paused));
+	const State previousState = State(LfnTech::Atomic<>::CompareExchange(&m_state, Quitting, Paused));
 	wxASSERT(previousState == Paused);
 
 	wxThread::Resume();
@@ -513,5 +513,5 @@ void PriorityBp::EnergyCalculatorPerPixel::WorkerThread::ResumeAndQuit()
 PriorityBp::EnergyCalculatorPerPixel::WorkerThread::State PriorityBp::EnergyCalculatorPerPixel::WorkerThread::AtomicGetState() const
 {
 	// The exchange and comparand are dummies.
-	return State(Tech::Atomic<>::CompareExchange(&m_state, Invalid, Invalid));
+	return State(LfnTech::Atomic<>::CompareExchange(&m_state, Invalid, Invalid));
 }

@@ -32,10 +32,10 @@ PriorityBp::MaskWritable::MaskWritable(int width, int height, Value value)
 
 PriorityBp::MaskWritable::Value PriorityBp::MaskWritable::GetValue(int x, int y) const
 {
-	return m_values[Tech::GetRowMajorIndex(m_width, x, y)];
+	return m_values[LfnTech::GetRowMajorIndex(m_width, x, y)];
 }
 
 void PriorityBp::MaskWritable::SetValue(int x, int y, Value value)
 {
-	m_values[Tech::GetRowMajorIndex(m_width, x, y)] = value;
+	m_values[LfnTech::GetRowMajorIndex(m_width, x, y)] = value;
 }

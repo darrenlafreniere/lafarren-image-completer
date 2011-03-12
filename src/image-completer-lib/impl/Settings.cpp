@@ -102,8 +102,8 @@ void PriorityBp::SettingsConstruct(Settings& out, const HostImage& inputImage)
 	const int imageSizeAtGapMin = 100;
 	const float widthScale = float(inputImage.GetWidth()) / float(imageSizeAtGapMin);
 	const float heightScale = float(inputImage.GetHeight()) / float(imageSizeAtGapMin);
-	int latticeGapX = std::max(Tech::Lerp(0, Settings::LATTICE_GAP_MIN, widthScale), Settings::LATTICE_GAP_MIN);
-	int latticeGapY = std::max(Tech::Lerp(0, Settings::LATTICE_GAP_MIN, heightScale), Settings::LATTICE_GAP_MIN);
+	int latticeGapX = std::max(LfnTech::Lerp(0, Settings::LATTICE_GAP_MIN, widthScale), Settings::LATTICE_GAP_MIN);
+	int latticeGapY = std::max(LfnTech::Lerp(0, Settings::LATTICE_GAP_MIN, heightScale), Settings::LATTICE_GAP_MIN);
 
 	// If calculated gaps violate the maximum gap ratio, shink one of the
 	// components.
@@ -151,14 +151,14 @@ bool PriorityBp::AreSettingsValid(const Settings& settings, SettingsInvalidMembe
 	if (!(settings.member >= min)) \
 	{ \
 		valid = false; \
-		handler.OnInvalidMemberDetected(settings, offsetof(Settings, member), Tech::Str::Format("(%I64d) is less than %I64d", int64(settings.member), int64(min)).c_str()); \
+		handler.OnInvalidMemberDetected(settings, offsetof(Settings, member), LfnTech::Str::Format("(%I64d) is less than %I64d", int64(settings.member), int64(min)).c_str()); \
 	}
 
 #define VALIDATE_NOT_GREATER_THAN(member, max) \
 	if (!(settings.member <= max)) \
 	{ \
 		valid = false; \
-		handler.OnInvalidMemberDetected(settings, offsetof(Settings, member), Tech::Str::Format("(%I64d) is less than %I64d", int64(settings.member), int64(max)).c_str()); \
+		handler.OnInvalidMemberDetected(settings, offsetof(Settings, member), LfnTech::Str::Format("(%I64d) is less than %I64d", int64(settings.member), int64(max)).c_str()); \
 	}
 
 #define VALIDATE_IN_RANGE(member, min, max) \
@@ -178,7 +178,7 @@ bool PriorityBp::AreSettingsValid(const Settings& settings, SettingsInvalidMembe
 	{
 		valid = false;
 		const int memberOffset = (settings.patchWidth > settings.patchHeight) ? offsetof(Settings, patchWidth) : offsetof(Settings, patchHeight);
-		handler.OnInvalidMemberDetected(settings, memberOffset, Tech::Str::Format("is yielding too large of a patch (%d * %d > %I64d)", settings.patchWidth, settings.patchHeight, Settings::PATCH_PIXELS_MAX).c_str());
+		handler.OnInvalidMemberDetected(settings, memberOffset, LfnTech::Str::Format("is yielding too large of a patch (%d * %d > %I64d)", settings.patchWidth, settings.patchHeight, Settings::PATCH_PIXELS_MAX).c_str());
 	}
 
 	VALIDATE_IN_RANGE(confidenceBeliefThreshold, Settings::CONFIDENCE_BELIEF_THRESHOLD_MIN, Settings::CONFIDENCE_BELIEF_THRESHOLD_MAX);

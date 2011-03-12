@@ -54,7 +54,7 @@ const PriorityBp::ImageFloat& PriorityBp::PatchTypeNormal::Get(const Patch& patc
 		RgbFloat* patchImagePtr = m_patchImage.GetRgb();
 		for (int patchY = 0, patchSrcY = patch.srcTop; patchY < patchHeight; ++patchY, ++patchSrcY)
 		{
-			const RgbFloat* srcRgbPtr = srcRgbData + Tech::GetRowMajorIndex(imageWidth, patch.srcLeft, patchSrcY);
+			const RgbFloat* srcRgbPtr = srcRgbData + LfnTech::GetRowMajorIndex(imageWidth, patch.srcLeft, patchSrcY);
 			for (int patchX = 0; patchX < patchWidth; ++patchImagePtr, ++srcRgbPtr, ++patchX)
 			{
 				wxASSERT((srcRgbPtr - srcRgbData) < (imageWidth * imageHeight));

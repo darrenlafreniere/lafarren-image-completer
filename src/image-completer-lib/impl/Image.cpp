@@ -126,15 +126,15 @@ PriorityBp::ImageScaledDown::ImageScaledDown(const Image& imageToScaleDown)
 	for (int y = 0, otherY = 0; y < m_height; ++y, otherY += 2)
 	{
 		wxASSERT(otherY < otherHeight);
-		Rgb* rgbCurrent = Tech::GetRowMajorPointer(m_rgb, stride, 0, y);
+		Rgb* rgbCurrent = LfnTech::GetRowMajorPointer(m_rgb, stride, 0, y);
 
-		const Rgb* otherRgbCurrentUpper = Tech::GetRowMajorPointer(otherRgb, otherStride, 0, otherY);
+		const Rgb* otherRgbCurrentUpper = LfnTech::GetRowMajorPointer(otherRgb, otherStride, 0, otherY);
 
 		// If the bottom edge of the imageToScaleDown image has no lower row,
 		// point at the upper one; it'll average to the same value
 		// and avoids an extra conditional in the loop.
 		const Rgb* otherRgbCurrentLower = ((otherY + 1) < otherHeight)
-			? Tech::GetRowMajorPointer(otherRgb, otherStride, 0, otherY + 1)
+			? LfnTech::GetRowMajorPointer(otherRgb, otherStride, 0, otherY + 1)
 			: otherRgbCurrentUpper;
 
 		for (int x = 0, otherX = 0; x < m_width; ++x, ++rgbCurrent, otherX += 2, otherRgbCurrentUpper += 2, otherRgbCurrentLower += 2)

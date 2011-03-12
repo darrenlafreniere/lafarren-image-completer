@@ -24,7 +24,7 @@
 
 #include "tech/DbgMem.h"
 
-namespace Tech
+namespace LfnTech
 {
 	class AtomicValidationTests
 	{

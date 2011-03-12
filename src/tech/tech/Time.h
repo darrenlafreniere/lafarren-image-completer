@@ -25,7 +25,7 @@
 #ifndef TECH_TIME_H
 #define TECH_TIME_H
 
-namespace Tech
+namespace LfnTech
 {
 	// Returns a current time value in seconds.
 	double CurrentTime();

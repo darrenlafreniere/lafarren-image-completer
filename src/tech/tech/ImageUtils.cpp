@@ -37,7 +37,7 @@ static void Clip(const wxRect& bounds, wxPoint& point, wxSize& size, wxPoint& po
 	size = r.GetSize();
 }
 
-bool Tech::Copy(
+bool LfnTech::Copy(
 	void* destBase,
 	const void* srcBase,
 	const wxSize& destBounds,
@@ -60,7 +60,7 @@ bool Tech::Copy(
 		bytesPerPixel);
 }
 
-bool Tech::Copy(
+bool LfnTech::Copy(
 	void* destBase,
 	const void* srcBase,
 	const wxRect& destBounds,
@@ -91,7 +91,7 @@ bool Tech::Copy(
 	return result;
 }
 
-bool Tech::Copy(
+bool LfnTech::Copy(
 	void* destBase,
 	const void* srcBase,
 	const wxPoint& destPoint,

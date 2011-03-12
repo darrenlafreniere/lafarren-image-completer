@@ -44,6 +44,6 @@ void PriorityBp::OutputBlenderSoftMask::Blend(const Compositor::Input& input, co
 	{
 		// Blend s into d based on the inverse alpha
 		const float ia = 1.0f - *softMaskDataPtr;
-		Tech::BlendInto(destRgbDataPtr->channel, srcRgbDataPtr->channel, ia, HostImage::Rgb::NUM_CHANNELS);
+		LfnTech::BlendInto(destRgbDataPtr->channel, srcRgbDataPtr->channel, ia, HostImage::Rgb::NUM_CHANNELS);
 	}
 }

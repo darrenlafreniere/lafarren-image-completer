@@ -152,9 +152,9 @@ m_height(inputImageHeight)
 		for (int maskImageY = 0; maskImageY < maskImageHeight; ++maskImageY)
 		{
 			const int maskY = maskImageY + maskImageOffsetY;
-			Value* lod0RowLeft = &lodData0.buffer[Tech::GetRowMajorIndex(m_width, maskImageOffsetX, maskY)];
+			Value* lod0RowLeft = &lodData0.buffer[LfnTech::GetRowMajorIndex(m_width, maskImageOffsetX, maskY)];
 
-			const int maskImageRowLeftIndex = Tech::GetRowMajorIndex(maskImageWidth, 0, maskImageY);
+			const int maskImageRowLeftIndex = LfnTech::GetRowMajorIndex(maskImageWidth, 0, maskImageY);
 			const Image::Rgb* maskImageRowLeft = maskImage.GetRgb() + maskImageRowLeftIndex;
 
 			for (int maskImageX = 0; maskImageX < maskImageWidth; ++maskImageX)
@@ -205,7 +205,7 @@ PriorityBp::Mask::Value PriorityBp::MaskInternal::GetValue(int x, int y) const
 
 	if (x >= 0 && y >= 0 && x < m_width && y < m_height)
 	{
-		value = Value(m_lodSet[0].buffer[Tech::GetRowMajorIndex(m_width, x, y)]);
+		value = Value(m_lodSet[0].buffer[LfnTech::GetRowMajorIndex(m_width, x, y)]);
 	}
 
 	return value;
@@ -283,7 +283,7 @@ void PriorityBp::MaskInternal::CreateLowerLodsFromHighest()
 				const bool includeLodPrevOddEdgeY = (lodPrevY + 2 == lodPrevOddEdgeY);
 				const int nv = includeLodPrevOddEdgeY ? 3 : 2;
 
-				Value* lodRowLeft = lodBuffer + Tech::GetRowMajorIndex(lodWidth, 0, lodY);
+				Value* lodRowLeft = lodBuffer + LfnTech::GetRowMajorIndex(lodWidth, 0, lodY);
 				for (int lodX = 0; lodX < lodWidth; ++lodX)
 				{
 					// Determine value by sampling the previous lod's 2x2
@@ -302,7 +302,7 @@ void PriorityBp::MaskInternal::CreateLowerLodsFromHighest()
 							{
 								wxASSERT((lodPrevX + u) < lodPrevWidth);
 								wxASSERT((lodPrevY + v) < lodPrevHeight);
-								const Value prevLodValueAtUV = lodPrevBuffer[Tech::GetRowMajorIndex(lodPrevWidth, lodPrevX + u, lodPrevY + v)];
+								const Value prevLodValueAtUV = lodPrevBuffer[LfnTech::GetRowMajorIndex(lodPrevWidth, lodPrevX + u, lodPrevY + v)];
 								if (!hasSetInitialValue)
 								{
 									value = prevLodValueAtUV;
@@ -378,7 +378,7 @@ bool PriorityBp::MaskInternal::RegionLtrbSearch(int left, int top, int right, in
 	const bool finalReturnValue = (mode == REGION_SEARCH_ANY) ? false : true;
 
 	int lod;
-	lod = Tech::LogBase2(std::max(right - left, bottom - top) + 1);
+	lod = LfnTech::LogBase2(std::max(right - left, bottom - top) + 1);
 	lod = std::min(int(m_lodSet.size() - 1), lod);
 	wxASSERT(lod >= 0);
 	for (; lod >= 0; --lod)
@@ -396,7 +396,7 @@ bool PriorityBp::MaskInternal::RegionLtrbSearch(int left, int top, int right, in
 		bool foundIndeterminates = false;
 		for (int y = topAtLod; y <= bottomAtLod; ++y)
 		{
-			const Value* lodRow = lodBuffer + Tech::GetRowMajorIndex(lodWidth, 0, y);
+			const Value* lodRow = lodBuffer + LfnTech::GetRowMajorIndex(lodWidth, 0, y);
 			for (int x = leftAtLod; x <= rightAtLod; ++x)
 			{
 				const Value blockValue = (x >= 0 && y >= 0 && x < lodWidth && y < lodHeight) ? lodRow[x] : KNOWN;

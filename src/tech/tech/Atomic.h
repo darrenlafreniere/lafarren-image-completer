@@ -29,7 +29,7 @@
 #ifndef TECH_ATOMIC_H
 #define TECH_ATOMIC_H
 
-namespace Tech
+namespace LfnTech
 {
 #if defined(_MSC_VER) || defined(UNIX)
 	typedef long AtomicNativeType;

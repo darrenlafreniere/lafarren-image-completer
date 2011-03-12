@@ -181,7 +181,7 @@ bool PriorityBp::LabelSet::LabelBitArray::IsSet(int x, int y) const
 
 void PriorityBp::LabelSet::LabelBitArray::GetIndexAndShift(int x, int y, int& outIndex, int& outShift) const
 {
-	const int rowMajorIndex = Tech::GetRowMajorIndex(m_width, x, y);
+	const int rowMajorIndex = LfnTech::GetRowMajorIndex(m_width, x, y);
 	outIndex = rowMajorIndex / 8;
 	outShift = rowMajorIndex & 7;
 	wxASSERT(outIndex < m_dataNumUints);

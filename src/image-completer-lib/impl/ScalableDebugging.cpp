@@ -26,7 +26,7 @@ namespace PriorityBp
 			}
 
 			m_filePath = highResOutputFilePath.substr(0, lastDotIndex);
-			m_filePath += Tech::Str::Format("-scale-%d", depth);
+			m_filePath += LfnTech::Str::Format("-scale-%d", depth);
 			m_filePath += highResOutputFilePath.substr(lastDotIndex);
 		}
 

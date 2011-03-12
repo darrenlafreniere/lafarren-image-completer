@@ -163,7 +163,7 @@ PriorityBp::Node* PriorityBp::Lattice::GetNode(int col, int row) const
 
 	if (col >= 0 && row >= 0 && col < m_numCols && row < m_numRows)
 	{
-		const int pointIndex = Tech::GetRowMajorIndex(m_numCols, col, row);
+		const int pointIndex = LfnTech::GetRowMajorIndex(m_numCols, col, row);
 		wxASSERT(pointIndex >= 0 && pointIndex < int(m_pointNodeIndices.size()));
 
 		const int nodeIndex = m_pointNodeIndices[pointIndex];

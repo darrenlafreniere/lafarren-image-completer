@@ -25,7 +25,7 @@
 #ifndef TECH_MATH_UTILS_H
 #define TECH_MATH_UTILS_H
 
-namespace Tech
+namespace LfnTech
 {
 	const double PI = 3.1415926535897932384626433832795;
 

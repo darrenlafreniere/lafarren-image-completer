@@ -57,10 +57,10 @@ void PriorityBp::PatchBlenderNone::Blend(const Patch& patch, const ImageFloat& p
 	const int rowsNum = std::min(patchHeight, imageHeight - patch.destTop);
 	for (int row = rowClipOffset, patchDestY = patch.destTop + rowClipOffset; row < rowsNum; ++row, ++patchDestY)
 	{
-		const int patchRowMajorIndex = Tech::GetRowMajorIndex(patchWidth, colClipOffset, row);
+		const int patchRowMajorIndex = LfnTech::GetRowMajorIndex(patchWidth, colClipOffset, row);
 		const RgbFloat* patchImagePtr = patchImageData + patchRowMajorIndex;
 
-		const int imageRowMajorIndex = Tech::GetRowMajorIndex(imageWidth, patch.destLeft + colClipOffset, patchDestY);
+		const int imageRowMajorIndex = LfnTech::GetRowMajorIndex(imageWidth, patch.destLeft + colClipOffset, patchDestY);
 		RgbFloat* destRgbPtr = destRgbData + imageRowMajorIndex;
 
 		const int colsNum = std::min(patchWidth, imageWidth - patch.destLeft);

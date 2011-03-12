@@ -101,7 +101,7 @@ void PriorityBp::CreateSoftMask(const Compositor::Input& input, std::vector<floa
 			const int x = sampleLeadEdge - BLEND_SIZE;
 			if (x >= 0)
 			{
-				wxASSERT(maskIdx == Tech::GetRowMajorIndex(imageWidth, x, y));
+				wxASSERT(maskIdx == LfnTech::GetRowMajorIndex(imageWidth, x, y));
 				const float hardAlpha = MaskValueToAlpha(mask.GetValue(x, y));
 				out[maskIdx++] = std::min(hardAlpha, samples.Blend());
 			}
@@ -115,14 +115,14 @@ void PriorityBp::CreateSoftMask(const Compositor::Input& input, std::vector<floa
 		for (int sampleLeadEdge = 0, sampleEnd = imageHeight + BLEND_SIZE; sampleLeadEdge < sampleEnd; ++sampleLeadEdge)
 		{
 			{
-				const int maskIdx = Tech::GetRowMajorIndex(imageWidth, x, std::min(sampleLeadEdge, imageHeight - 1));
+				const int maskIdx = LfnTech::GetRowMajorIndex(imageWidth, x, std::min(sampleLeadEdge, imageHeight - 1));
 				samples.AddSample(out[maskIdx]);
 			}
 
 			const int y = sampleLeadEdge - BLEND_SIZE;
 			if (y >= 0)
 			{
-				const int maskIdx = Tech::GetRowMajorIndex(imageWidth, x, y);
+				const int maskIdx = LfnTech::GetRowMajorIndex(imageWidth, x, y);
 				out[maskIdx] *= samples.Blend();
 			}
 		}
@@ -136,7 +136,7 @@ void PriorityBp::CreateSoftMask(const Compositor::Input& input, std::vector<floa
 		{
 			if (mask.GetValue(x, y) == Mask::UNKNOWN)
 			{
-				const int maskIdx = Tech::GetRowMajorIndex(imageWidth, x, y);
+				const int maskIdx = LfnTech::GetRowMajorIndex(imageWidth, x, y);
 				wxASSERT(out[maskIdx] == 0.0f);
 			}
 		}
