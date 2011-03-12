@@ -340,47 +340,52 @@ int AppCmdHostImage::GetHeight() const
 //
 int main(int argc, char** argv)
 {
-	wxInitialize();
-
 	bool succeeded = false;
 	printf("\nlafarren.com\nImage Completion Using Efficient Belief Propagation\n");
 
-	TECH_MEM_PROFILE("main");
-	TECH_TIME_PROFILE("main");
-
-	wxMessageOutputStderr output;
-	wxMessageOutput::Set(&output);
-
-	wxLogStderr log;
-	wxLog::SetActiveTarget(&log);
-
-	wxInitAllImageHandlers();
-
-	const CommandLineOptions options(argc, argv);
-	if (options.IsValid())
+	wxInitializer initializer;
+	if (!initializer.IsOk())
 	{
-		AppCmdHost host(options);
-		if (host.IsValid())
+		printf("ERROR: couldn't initialize wxWidgets!\n");
+	}
+	else
+	{
+		TECH_MEM_PROFILE("main");
+		TECH_TIME_PROFILE("main");
+
+		// These arguments must be heap allocated, because wxUninitialize
+		// (called by wxInitializer's destructor) will delete them.
+		wxMessageOutput::Set(new wxMessageOutputStderr());
+		wxLog::SetActiveTarget(new wxLogStderr());
+
+		wxInitAllImageHandlers();
+
+		const CommandLineOptions options(argc, argv);
+		if (options.IsValid())
 		{
-			succeeded = true;
-
-			if (options.ShouldShowSettings())
+			AppCmdHost host(options);
+			if (host.IsValid())
 			{
-				SettingsText::Print(host.GetSettings());
-			}
+				succeeded = true;
 
-			if (options.ShouldRunImageCompletion())
-			{
-				if (PriorityBp::Complete(host))
+				if (options.ShouldShowSettings())
 				{
-					AppCmdHostImage& outputImage = host.GetOutputImageImpl();
-					outputImage.GetwxImage().SaveFile(outputImage.GetFilePath());
-					wxMessageOutput::Get()->Printf("Completed image and wrote %s.\n", outputImage.GetFilePath().c_str());
+					SettingsText::Print(host.GetSettings());
 				}
-				else
+
+				if (options.ShouldRunImageCompletion())
 				{
-					wxMessageOutput::Get()->Printf("Could not complete the image.\n");
-					succeeded = false;
+					if (PriorityBp::Complete(host))
+					{
+						AppCmdHostImage& outputImage = host.GetOutputImageImpl();
+						outputImage.GetwxImage().SaveFile(outputImage.GetFilePath());
+						wxMessageOutput::Get()->Printf("Completed image and wrote %s.\n", outputImage.GetFilePath().c_str());
+					}
+					else
+					{
+						wxMessageOutput::Get()->Printf("Could not complete the image.\n");
+						succeeded = false;
+					}
 				}
 			}
 		}

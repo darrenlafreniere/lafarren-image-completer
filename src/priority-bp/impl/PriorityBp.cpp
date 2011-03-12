@@ -172,6 +172,13 @@ namespace PriorityBp
 		const HostImage& maskImage = host.GetMaskImage();
 		if (ValidateImage(inputImage) && ValidateImage(maskImage))
 		{
+			// In Windows, this project is compiled into its own dll, with its
+			// own global memory space, and statically links against wxWidgets.
+			// Therefore, even if the host application contains its own
+			// wxInitializer, this dll needs one as well. For other project
+			// configurations, where this is statically built into the host,
+			// it's safe to have multiple wxInitializer instances; they're
+			// internally ref counted by wxWidgets.
 			wxInitializer initializer;
 			HostImage& outputImage = host.GetOutputImage();
 
