@@ -291,9 +291,9 @@ labelBitArray(resolutionToScaleDown.labelBitArray.GetWidth() / 2, resolutionToSc
 #endif
 }
 
+#if _DEBUG
 namespace LfnIc
 {
-	#if _DEBUG
 	struct LabelLessThan : public std::binary_function<Label, Label, bool>
 	{
 		bool operator()(const Label& a, const Label& b) const
