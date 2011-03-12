@@ -19,12 +19,12 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef SETTINGS_UI_H
-#define SETTINGS_UI_H
+#ifndef SETTINGS_TEXT_H
+#define SETTINGS_TEXT_H
 
 #include "PriorityBpSettings.h"
 
-class SettingsUi
+class SettingsText
 {
 public:
 	// Prints the user-tweakable settings to wxMessageOutput.
@@ -53,7 +53,7 @@ public:
 			{
 				joined += ", ";
 			}
-			joined += SettingsUi::GetEnumDescription(T(e));
+			joined += SettingsText::GetEnumDescription(T(e));
 		}
 
 		return joined;
@@ -73,4 +73,4 @@ public:
 	};
 };
 
-#endif // SETTINGS_UI_H
+#endif // SETTINGS_TEXT_H

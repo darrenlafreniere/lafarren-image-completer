@@ -98,12 +98,12 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pch.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="SettingsUi.cpp" />
+    <ClCompile Include="SettingsText.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommandLineOptions.h" />
     <ClInclude Include="Pch.h" />
-    <ClInclude Include="SettingsUi.h" />
+    <ClInclude Include="SettingsText.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\priority-bp\impl\priority-bp.vcxproj">

@@ -23,7 +23,7 @@
 #include "CommandLineOptions.h"
 
 #include "tech/StrUtils.h"
-#include "SettingsUi.h"
+#include "SettingsText.h"
 
 #include "tech/DbgMem.h"
 
@@ -33,7 +33,7 @@ namespace Tech
 	template<>
 	void CmdLine::ParamOption<CommandLineOptions::LowResolutionPassesMax>::ReadOption(const char* option)
 	{
-		if (std::string(option).compare(SettingsUi::GetLowResolutionPassesAutoDescription().c_str()) == 0)
+		if (std::string(option).compare(SettingsText::GetLowResolutionPassesAutoDescription().c_str()) == 0)
 		{
 			this->value = PriorityBp::Settings::LOW_RESOLUTION_PASSES_AUTO;
 		}
@@ -50,7 +50,7 @@ namespace Tech
 		for (int e = PriorityBp::CompositorPatchTypeInvalid + 1; e < PriorityBp::CompositorPatchTypeNum; ++e)
 		{
 			const PriorityBp::CompositorPatchType compositorPatchType = PriorityBp::CompositorPatchType(e);
-			const std::string desc(SettingsUi::GetEnumDescription(compositorPatchType));
+			const std::string desc(SettingsText::GetEnumDescription(compositorPatchType));
 			if (std::string(option).compare(desc.c_str()) == 0)
 			{
 				this->value = compositorPatchType;
@@ -66,7 +66,7 @@ namespace Tech
 		for (int e = PriorityBp::CompositorPatchBlenderInvalid + 1; e < PriorityBp::CompositorPatchBlenderNum; ++e)
 		{
 			const PriorityBp::CompositorPatchBlender compositorPatchBlender = PriorityBp::CompositorPatchBlender(e);
-			const std::string desc(SettingsUi::GetEnumDescription(compositorPatchBlender));
+			const std::string desc(SettingsText::GetEnumDescription(compositorPatchBlender));
 			if (std::string(option).compare(desc.c_str()) == 0)
 			{
 				this->value = compositorPatchBlender;
@@ -86,14 +86,14 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 	, m_outputImagePath("-io", "--image-output", "The output image file path.")
 	, m_shouldShowSettings("-ss", "--settings-show", "Show the settings for the input image and exit.")
 	, m_debugLowResolutionPasses("-sd", "--settings-debug-low-res-passes", "Output separate images for each low resolution pass.")
-	, m_lowResolutionPassesMax("-sp", "--settings-low-res-passes", std::string("Max low resolution passes to perform.\n\t(") + SettingsUi::GetLowResolutionPassesAutoDescription() + ", or any integer value greater than 0)")
+	, m_lowResolutionPassesMax("-sp", "--settings-low-res-passes", std::string("Max low resolution passes to perform.\n\t(") + SettingsText::GetLowResolutionPassesAutoDescription() + ", or any integer value greater than 0)")
 	, m_numIterations("-si", "--settings-num-iterations", "Number of Priority-BP iterations per pass.")
 	, m_latticeGapX("-sw", "--settings-lattice-width", "Width of each gap in the lattice.")
 	, m_latticeGapY("-sh", "--settings-lattice-height", "Height of each gap in the lattice.")
 	, m_postPruneLabelsMin("-smn", "--settings-patches-min", "Min patches after pruning.")
 	, m_postPruneLabelsMax("-smx", "--settings-patches-max", "Max patches after pruning.")
-	, m_compositorPatchType("-sct", "--settings-compositor-patch-type", std::string("Compositor patch source type.\n\t(") + SettingsUi::JoinEnumDescriptions<PriorityBp::CompositorPatchType>() + ")")
-	, m_compositorPatchBlender("-scb", "--settings-compositor-patch-blender", std::string("Compositor patch blender style.\n\t(") + SettingsUi::JoinEnumDescriptions<PriorityBp::CompositorPatchBlender>() + ")")
+	, m_compositorPatchType("-sct", "--settings-compositor-patch-type", std::string("Compositor patch source type.\n\t(") + SettingsText::JoinEnumDescriptions<PriorityBp::CompositorPatchType>() + ")")
+	, m_compositorPatchBlender("-scb", "--settings-compositor-patch-blender", std::string("Compositor patch blender style.\n\t(") + SettingsText::JoinEnumDescriptions<PriorityBp::CompositorPatchBlender>() + ")")
 #if ENABLE_PATCHES_INPUT_OUTPUT
 	, m_inputPatchesPath("-pi", "--patches-input", "The input patches file path.")
 	, m_outputPatchesPath("-po", "--patches-output", "The output patches file path.")

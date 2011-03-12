@@ -27,7 +27,7 @@
 #include "PriorityBp.h"
 #include "PriorityBpHost.h"
 #include "PriorityBpSettings.h"
-#include "SettingsUi.h"
+#include "SettingsText.h"
 
 #include "tech/DbgMem.h"
 
@@ -150,8 +150,8 @@ AppCmdHost::AppCmdHost(const CommandLineOptions& options)
 		PriorityBp::SettingsConstruct(m_settings, m_inputImage);
 
 		ApplyCommandLineOptionsToSettings(options);
-		SettingsUi::PrintInvalidMembers settingsUiPrintInvalidMembers;
-		if (PriorityBp::AreSettingsValid(m_settings, &settingsUiPrintInvalidMembers))
+		SettingsText::PrintInvalidMembers settingsTextPrintInvalidMembers;
+		if (PriorityBp::AreSettingsValid(m_settings, &settingsTextPrintInvalidMembers))
 		{
 			m_isValid = true;
 
@@ -366,7 +366,7 @@ int main(int argc, char** argv)
 
 			if (options.ShouldShowSettings())
 			{
-				SettingsUi::Print(host.GetSettings());
+				SettingsText::Print(host.GetSettings());
 			}
 
 			if (options.ShouldRunImageCompletion())

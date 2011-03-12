@@ -20,7 +20,7 @@
 //
 
 #include "Pch.h"
-#include "SettingsUi.h"
+#include "SettingsText.h"
 
 #include "tech/StrUtils.h"
 
@@ -44,9 +44,9 @@ struct Member
 };
 
 //
-// SettingsUi
+// SettingsText
 //
-void SettingsUi::Print(const PriorityBp::Settings& settings)
+void SettingsText::Print(const PriorityBp::Settings& settings)
 {
 	wxASSERT(PriorityBp::AreSettingsValid(settings));
 	wxMessageOutput& msgOut = *wxMessageOutput::Get();
@@ -122,7 +122,7 @@ void SettingsUi::Print(const PriorityBp::Settings& settings)
 // Returns a user friendly string describing the specified settings
 // member. settingsMemberOffset is the offset in byte of the settings
 // member (e.g., offsetof(PriorityBp::Settings, latticeGapX))
-std::string SettingsUi::GetMemberDescription(int settingsMemberOffset)
+std::string SettingsText::GetMemberDescription(int settingsMemberOffset)
 {
 	std::string desc;
 
@@ -186,12 +186,12 @@ std::string SettingsUi::GetMemberDescription(int settingsMemberOffset)
 	return desc;
 }
 
-std::string SettingsUi::GetLowResolutionPassesAutoDescription()
+std::string SettingsText::GetLowResolutionPassesAutoDescription()
 {
 	return "auto";
 }
 
-std::string SettingsUi::GetEnumDescription(PriorityBp::CompositorPatchType e)
+std::string SettingsText::GetEnumDescription(PriorityBp::CompositorPatchType e)
 {
 	std::string desc;
 	switch (e)
@@ -207,7 +207,7 @@ std::string SettingsUi::GetEnumDescription(PriorityBp::CompositorPatchType e)
 	return desc;
 }
 
-std::string SettingsUi::GetEnumDescription(PriorityBp::CompositorPatchBlender e)
+std::string SettingsText::GetEnumDescription(PriorityBp::CompositorPatchBlender e)
 {
 	std::string desc;
 	switch (e)
@@ -221,15 +221,15 @@ std::string SettingsUi::GetEnumDescription(PriorityBp::CompositorPatchBlender e)
 }
 
 //
-// SettingsUi::PrintInvalidMembers
+// SettingsText::PrintInvalidMembers
 //
-SettingsUi::PrintInvalidMembers::PrintInvalidMembers()
+SettingsText::PrintInvalidMembers::PrintInvalidMembers()
 	: m_msgOut(*wxMessageOutput::Get())
 	, m_hasPrintedHeader(false)
 {
 }
 
-void SettingsUi::PrintInvalidMembers::OnInvalidMemberDetected(const PriorityBp::Settings& settings, int memberOffset, const char* message)
+void SettingsText::PrintInvalidMembers::OnInvalidMemberDetected(const PriorityBp::Settings& settings, int memberOffset, const char* message)
 {
 	if (!m_hasPrintedHeader)
 	{
@@ -237,6 +237,6 @@ void SettingsUi::PrintInvalidMembers::OnInvalidMemberDetected(const PriorityBp::
 		m_hasPrintedHeader = true;
 	}
 
-	const std::string member(SettingsUi::GetMemberDescription(memberOffset));
+	const std::string member(SettingsText::GetMemberDescription(memberOffset));
 	m_msgOut.Printf("\t- %s %s\n", member.c_str(), message);
 }
