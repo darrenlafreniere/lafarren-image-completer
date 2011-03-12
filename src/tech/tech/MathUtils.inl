@@ -66,22 +66,6 @@ namespace LfnTech
 			: 1.0f;
 	}
 
-	inline bool IsPowerOf2(int n)
-	{
-		return (n > 0) && ((n & (n - 1)) == 0);
-	}
-
-	inline unsigned int NextPowerOf2(unsigned int n)
-	{
-		static const int MANTISSA_MASK = (1 << 23) - 1;
-
-		(*(float*)&n) = (float) n;
-		n = n + MANTISSA_MASK & ~MANTISSA_MASK;
-		n = (unsigned) (*(float*)&n);
-
-		return n;
-	}
-
 	inline unsigned int LogBase2(unsigned int n)
 	{
 		// TODO: use one of the other techniques found here if more speed is needed:

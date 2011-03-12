@@ -57,28 +57,12 @@ namespace LfnTech
 	template<typename T>
 	inline float InverseLerp(T value, T min, T max);
 
-	// Returns true if n is a power of 2.
-	inline bool IsPowerOf2(int n);
-
-	// Returns the next closest power of 2 to n.
-	inline unsigned int NextPowerOf2(unsigned int n);
-	
 	// Returns the log base 2 of n.
 	inline unsigned int LogBase2(unsigned int n);
 
 	// Not a math function, move this someday.
 	template<typename T>
 	inline void Swap(T& a, T& b);
-
-	// Clips a span, defined by a start value and a length, to a minimum value.
-	// Returns true if the span was clipped.
-	template<typename T>
-	inline bool ClipSpanToMin(T& start, T& length, T min);
-
-	// Clips a span, defined by a start value and a length, to a maximum value.
-	// Returns true if the span was clipped.
-	template<typename T>
-	inline bool ClipSpanToMax(T& start, T& length, T max);
 }
 
 //
