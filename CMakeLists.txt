@@ -25,7 +25,7 @@ set(ImageCompleterSources
 
 ${cmdsrc}/CommandLineOptions.cpp
 ${cmdsrc}/Pch.cpp
-${cmdsrc}/SettingsUi.cpp
+${cmdsrc}/SettingsText.cpp
 
 ${prioritybp}/Compositor.cpp
 ${prioritybp}/ConstNodeLabels.cpp
@@ -60,7 +60,6 @@ ${prioritybp}/energy-calculators/EnergyCalculatorPerPixel.cpp
 
 ${tech}/Pch.cpp
 ${tech}/tech/Atomic.cpp
-${tech}/tech/CmdLine.cpp
 ${tech}/tech/Core.cpp
 ${tech}/tech/ImageUtils.cpp
 ${tech}/tech/Profile.cpp
