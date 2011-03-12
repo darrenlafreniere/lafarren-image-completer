@@ -22,9 +22,10 @@
 #ifndef PATCH_IMAGE_SOURCE_POISSON_H
 #define PATCH_IMAGE_SOURCE_POISSON_H
 
+#ifdef USE_POISSON
+
 #include "PatchTypeNormal.h"
 
-#ifdef USE_POISSON
 namespace PriorityBp
 {
 	class ImageFloat;

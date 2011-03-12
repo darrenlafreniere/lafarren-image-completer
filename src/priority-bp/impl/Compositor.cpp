@@ -63,20 +63,19 @@ Compositor* CompositorFactory::Create(CompositorPatchType patchType, CompositorP
 	case CompositorPatchTypeNormal:
 		patchimageSourceFactory = new PatchTypeNormal::Factory;
 		break;
-	case CompositorPatchTypePoisson:
 #ifdef USE_POISSON
+	case CompositorPatchTypePoisson:
 		patchimageSourceFactory = new PatchTypePoisson::Factory;
-#else
-        #pragma message("Not built with Poisson blending enabled!")
-#endif
 		break;
+#else
+		#pragma message("Not built with Poisson blending enabled (USE_POISSON is undefined)!")
+#endif
 	case CompositorPatchTypeDebugOrder:
 		patchimageSourceFactory = new PatchTypeDebugPatchOrder::Factory;
 		break;
-    default:
-        std::cout << "Warning: patchType did not match any of the handled types. Using Normal." << std::endl;
-        patchimageSourceFactory = new PatchTypeNormal::Factory;
-        break;
+	default:
+		wxASSERT("Invalid patchType");
+		break;
 	}
 
 	switch (patchBlender)
@@ -87,10 +86,9 @@ Compositor* CompositorFactory::Create(CompositorPatchType patchType, CompositorP
 	case CompositorPatchBlenderNone:
 		patchBlenderFactory = new PatchBlenderNone::Factory;
 		break;
-    default:
-        std::cout << "Warning: patchBlender did not match any of the handled types. Using None." << std::endl;
-        patchBlenderFactory = new PatchBlenderNone::Factory;
-        break;
+	default:
+		wxASSERT("Invalid patchBlender");
+		break;
 	}
 
 	if (patchimageSourceFactory && patchBlenderFactory && outputBlender)

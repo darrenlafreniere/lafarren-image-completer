@@ -38,22 +38,23 @@ CmdLine::Param::Param(const std::string& shortName, const std::string& longName,
 
 namespace Tech
 {
-  // CmdLine::ParamOption<std::string> partial specialization.
-  template<>
-  void CmdLine::ParamOption<std::string>::ReadOption(const char* option)
-  {
-      value = option;
-  }
+	// CmdLine::ParamOption<std::string> partial specialization.
+	template<>
+	void CmdLine::ParamOption<std::string>::ReadOption(const char* option)
+	{
+		value = option;
+	}
 
-  // CmdLine::ParamOption<int> partial specialization.
-  template<>
-  void Tech::CmdLine::ParamOption<int>::ReadOption(const char* option)
-  {
-      value = atoi(option);
-  }
-} // end namespace Tech
+	// CmdLine::ParamOption<int> partial specialization.
+	template<>
+	void Tech::CmdLine::ParamOption<int>::ReadOption(const char* option)
+	{
+		value = atoi(option);
+	}
+}
 
-void CmdLine::Param::Set(){
+void CmdLine::Param::Set()
+{
 	isSet = true;
 }
 

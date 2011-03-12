@@ -52,10 +52,12 @@ namespace PriorityBp
 		// directly from the input image.
 		CompositorPatchTypeNormal,
 
+#ifdef USE_POISSON
 		// Given a patch rectangle, this patch type copies the pixels directly
 		// from the input image, then perform a Poisson blend on them according
 		// to the patch's destination in the output image.
 		CompositorPatchTypePoisson,
+#endif
 
 		// Given a patch being applied to the output image, this patch type
 		// solid-fills the pixels based on the order of the patch. Patches

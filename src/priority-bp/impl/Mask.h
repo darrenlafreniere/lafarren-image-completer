@@ -94,7 +94,7 @@ namespace PriorityBp
 
 		// The region is specified by an inclusive upper left x,y, and by an
 		// exclusive width and height. This method properly handles regions
-		// outside of the
+		// outside of the mask boundaries, and treats that area as KNOWN.
 		virtual bool RegionXywhHasAny(int x, int y, int w, int h, Value value) const = 0;
 		virtual bool RegionXywhHasAll(int x, int y, int w, int h, Value value) const = 0;
 

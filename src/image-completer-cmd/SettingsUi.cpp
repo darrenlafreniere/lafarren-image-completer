@@ -87,7 +87,9 @@ void SettingsUi::Print(const PriorityBp::Settings& settings)
 			&completerMembers,
 			&compositorMembers,
 		};
-		for (int memberVectorIdx = 0; static_cast<unsigned int>(memberVectorIdx) < sizeof(memberVectors) / sizeof(memberVectors[0]); ++memberVectorIdx)
+		const int memberVectorNum = sizeof(memberVectors) / sizeof(memberVectors[0]);
+
+		for (int memberVectorIdx = 0; memberVectorIdx < memberVectorNum; ++memberVectorIdx)
 		{
 			const std::vector<Member>& members = *memberVectors[memberVectorIdx];
 			for (int i = 0, n = members.size(); i < n; ++i)
@@ -195,7 +197,9 @@ std::string SettingsUi::GetEnumDescription(PriorityBp::CompositorPatchType e)
 	switch (e)
 	{
 	case PriorityBp::CompositorPatchTypeNormal:        desc = "normal"; break;
+#ifdef USE_POISSON
 	case PriorityBp::CompositorPatchTypePoisson:       desc = "poisson"; break;
+#endif
 	case PriorityBp::CompositorPatchTypeDebugOrder:    desc = "debug-patch-order"; break;
 	default:                                           desc = "unknown"; break;
 	}

@@ -40,13 +40,13 @@
 
 // See comments for EnergyCalculator::BatchQueued::QueueCalculation.
 #define ASSERT_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, index) \
-	wxASSERT(handle == index)
+	wxASSERT(handle == static_cast<uint>(index))
 
 // Similar to ASSERT_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX, except for use with
 // ScopedNodeEnergyBatchQueued objects, which can validly return an invalid
 // handle if the node doesn't overlap a known region.
 #define ASSERT_NODE_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, index) \
-	wxASSERT(handle == index || handle == EnergyCalculator::BatchQueued::INVALID_HANDLE)
+	wxASSERT(handle == static_cast<uint>(index) || handle == EnergyCalculator::BatchQueued::INVALID_HANDLE)
 
 // If set, when the node scales up and maps from a lower resolution label to
 // its higher resolution labels, a single, random one of those higher
@@ -233,7 +233,7 @@ void Node::SendMessages(Node& neighbor) const
 		{
 			const Label& label = m_labelInfoSet[pi].label;
 			const EnergyCalculator::BatchQueued::Handle handle = energyBatch.QueueCalculation(label.left, label.top);
-			ASSERT_NODE_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, static_cast<unsigned int>(pi));
+			ASSERT_NODE_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, pi);
 		}
 
 		energyBatch.ProcessCalculations();
@@ -279,7 +279,7 @@ void Node::SendMessages(Node& neighbor) const
 			const int qOverlapTop = qLabel.top + qOverlapTopOffset;
 
 			const EnergyCalculator::BatchQueued::Handle handle = energyBatch.QueueCalculation(qOverlapLeft, qOverlapTop);
-			ASSERT_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, static_cast<unsigned int>(qi));
+			ASSERT_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, qi);
 		}
 
 		energyBatch.ProcessCalculations();
@@ -352,7 +352,7 @@ void Node::PruneLabels()
 		{
 			const Label& label = labelSet.GetLabel(i);
 			const EnergyCalculator::BatchQueued::Handle handle = energyBatch.QueueCalculation(label.left, label.top);
-			ASSERT_NODE_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, static_cast<unsigned int>(i));
+			ASSERT_NODE_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, i);
 		}
 
 		energyBatch.ProcessCalculations();
@@ -467,7 +467,7 @@ Priority Node::CalculatePriority() const
 	{
 		const Label& label = labelSet.GetLabel(i);
 		const EnergyCalculator::BatchQueued::Handle handle = energyBatch.QueueCalculation(label.left, label.top);
-		ASSERT_NODE_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, static_cast<unsigned int>(i));
+		ASSERT_NODE_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, i);
 	}
 
 	energyBatch.ProcessCalculations();

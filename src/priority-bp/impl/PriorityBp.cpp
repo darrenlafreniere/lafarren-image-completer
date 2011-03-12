@@ -194,9 +194,7 @@ namespace PriorityBp
 				}
 				else
 				{
-                    #if defined(_MSC_VER)
-                      TECH_TIME_PROFILE("ImageCompleter::Complete - Priority-BP");
-                    #endif
+					TECH_TIME_PROFILE("ImageCompleter::Complete - Priority-BP");
 
 					// Construct priority-bp related data, passing in the required dependencies.
 					EnergyCalculatorContainer energyCalculatorContainer(settingsScalable, imageScalable, maskScalable);
@@ -234,9 +232,7 @@ namespace PriorityBp
 					}
 
 					{
-                        #if defined(_MSC_VER)
-                          TECH_TIME_PROFILE("ImageCompleter::Complete - Compositing");
-                        #endif
+						TECH_TIME_PROFILE("ImageCompleter::Complete - Compositing");
 						std::auto_ptr<Compositor> compositor(CompositorFactory::Create(settingsScalable.compositorPatchType, settingsScalable.compositorPatchBlender));
 						if (compositor.get())
 						{

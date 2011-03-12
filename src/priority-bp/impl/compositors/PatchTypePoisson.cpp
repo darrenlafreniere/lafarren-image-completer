@@ -20,6 +20,7 @@
 //
 
 #include "Pch.h"
+#ifdef USE_POISSON
 #include "PatchTypePoisson.h"
 
 #include "tech/MathUtils.h"
@@ -58,3 +59,5 @@ const ImageFloat& PatchTypePoisson::Get(const Patch& patch) const
 	poissonCloner.Clone(patchImageNormal, patchMask, patch.destLeft, patch.destTop, patchImagePoisson, 0, 0);
 	return patchImagePoisson;
 }
+
+#endif // USE_POISSON

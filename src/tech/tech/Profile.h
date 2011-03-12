@@ -154,7 +154,7 @@ namespace Tech
 //
 // The TECH_PROFILE preprocessor flag must be set to 1
 
-#if TECH_PROFILE_MACROS
+#if TECH_PROFILE_MACROS && defined(_MSC_VER)
 
 // Reports the final profile:
 #define TECH_TIME_PROFILE(__name__) \
@@ -197,7 +197,7 @@ namespace Tech
 //
 // The TECH_PROFILE preprocessor flag must be set to 1
 
-#if TECH_PROFILE_MACROS
+#if TECH_PROFILE_MACROS && defined(_MSC_VER)
 
 #define TECH_MEM_PROFILE(__name__) \
 	TECH_MEM_PROFILE_INDIRECT1(__LINE__, __name__)
@@ -212,9 +212,7 @@ namespace Tech
 
 #else
 
-#define TECH_TIME_PROFILE(__name__)
-#define TECH_TIME_PROFILE_EVERY_SAMPLE(__name__)
-#define TECH_TIME_PROFILE_EVERY_NTH_SAMPLE(__name__, __nthBlock__)
+#define TECH_MEM_PROFILE(__name__)
 
 #endif // #if TECH_PROFILE_MACROS
 

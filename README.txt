@@ -31,13 +31,20 @@ file that can be uncommented to achieve this.
 ///////////////////////////////////////////////////////////////////////////////
 
 // Examples
-There are .bat files (for Windows) and .sh files (for Linux) in the test-data directory. They demonstrate the running the code is as easy as:
+There are .bat files (for Windows) and .sh files (for Linux) in the test-data directory. They demonstrate how to run the program.
 
-Windows:
-image-completer-cmd.exe -ii elephant-input.png -im elephant-mask.png -io elephant-output.png -sp auto
 
-Linux:
-./ImageCompleter -ii elephant-input.png -im elephant-mask.png -io elephant-output.png -sp auto
+    Windows:
+    image-completer-cmd.exe -ii elephant-input.png -im elephant-mask.png -io elephant-output.png
+
+    Linux:
+    ./ImageCompleter -ii elephant-input.png -im elephant-mask.png -io elephant-output.png
+
+
+NOTE: to quickly complete an image, add this to the command line: -sp auto
+The final output image quality may be reduced, but this will automatically, internally scale the image down to a quickly solvable size.
+
+For a full list of options, run the executable without any additional arguments.
 
 ///////////////////////////////////////////////////////////////////////////////
 

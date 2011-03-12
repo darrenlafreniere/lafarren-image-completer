@@ -122,7 +122,7 @@ static bool LoadAndValidateImage(const char* imageTypeName, const std::string& i
 	bool result = false;
 	wxMessageOutput& msgOut = *wxMessageOutput::Get();
 
-    if (!image.GetwxImage().LoadFile(imagePath))
+	if (!image.GetwxImage().LoadFile(imagePath))
 	{
 		// If LoadFile fails, it already prints an wxMessageOutput error for us.
 	}
@@ -340,15 +340,13 @@ int AppCmdHostImage::GetHeight() const
 //
 int main(int argc, char** argv)
 {
-    wxInitialize();
+	wxInitialize();
 
 	bool succeeded = false;
 	printf("\nlafarren.com\nImage Completion Using Efficient Belief Propagation\n");
 
-#if defined(_MSC_VER)
 	TECH_MEM_PROFILE("main");
 	TECH_TIME_PROFILE("main");
-#endif
 
 	wxMessageOutputStderr output;
 	wxMessageOutput::Set(&output);
