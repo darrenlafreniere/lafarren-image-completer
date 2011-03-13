@@ -27,7 +27,7 @@
 
 namespace LfnIc
 {
-	// Forward declaration. Defined in Image.cpp.
+	// Forward declaration. Defined in ImageScalable.cpp.
 	class ImageConstInternal;
 
 	//
