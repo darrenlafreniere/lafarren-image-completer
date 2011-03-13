@@ -40,9 +40,6 @@
     <ClCompile Include="compositors\PoissonSolver.cpp">
       <Filter>compositors</Filter>
     </ClCompile>
-    <ClCompile Include="compositors\TaucsMatrix.cpp">
-      <Filter>compositors</Filter>
-    </ClCompile>
     <ClCompile Include="compositors\ImageFloat.cpp">
       <Filter>compositors</Filter>
     </ClCompile>
@@ -111,12 +108,6 @@
     <ClInclude Include="Scalable.h" />
     <ClInclude Include="Settings.h" />
     <ClInclude Include="compositors\PoissonSolver.h">
-      <Filter>compositors</Filter>
-    </ClInclude>
-    <ClInclude Include="compositors\TaucsGuarded.h">
-      <Filter>compositors</Filter>
-    </ClInclude>
-    <ClInclude Include="compositors\TaucsMatrix.h">
       <Filter>compositors</Filter>
     </ClInclude>
     <ClInclude Include="compositors\ImageFloat.h">
