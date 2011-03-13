@@ -343,7 +343,11 @@ bool LfnIc::MaskInternal::RegionLtrbSearch(int left, int top, int right, int bot
 			const Value* lodRow = lodBuffer + LfnTech::GetRowMajorIndex(lodWidth, 0, y);
 			for (int x = leftAtLod; x <= rightAtLod; ++x)
 			{
-				const Value blockValue = (x >= 0 && y >= 0 && x < lodWidth && y < lodHeight) ? lodRow[x] : KNOWN;
+				Value blockValue = KNOWN;
+				if (x >= 0 && y >= 0 && x < lodWidth && y < lodHeight)
+				{
+					blockValue = lodRow[x];
+				}
 
 				if (blockValue == INDETERMINATE)
 				{
