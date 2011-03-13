@@ -26,7 +26,7 @@
 
 #include "Compositor.h"
 #include "EnergyCalculatorContainer.h"
-#include "Image.h"
+#include "ImageScalable.h"
 #include "Label.h"
 #include "Mask.h"
 #include "NodeSet.h"

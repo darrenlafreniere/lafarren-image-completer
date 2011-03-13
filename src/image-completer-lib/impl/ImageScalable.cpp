@@ -20,7 +20,7 @@
 //
 
 #include "Pch.h"
-#include "Image.h"
+#include "ImageScalable.h"
 
 #include "tech/ImageUtils.h"
 

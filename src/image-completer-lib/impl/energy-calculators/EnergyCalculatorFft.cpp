@@ -30,7 +30,7 @@
 #include "EnergyCalculatorPerPixel.h"
 #endif
 #include "EnergyCalculatorUtils.h"
-#include "Image.h"
+#include "ImageConst.h"
 #include "Mask.h"
 #include "PriorityBpSettings.h"
 

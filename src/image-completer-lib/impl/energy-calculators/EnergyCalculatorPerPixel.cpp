@@ -27,7 +27,7 @@
 #include "tech/MathUtils.h"
 
 #include "EnergyCalculatorUtils.h"
-#include "Image.h"
+#include "ImageConst.h"
 #include "Mask.h"
 #include "PriorityBpSettings.h"
 

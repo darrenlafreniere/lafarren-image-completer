@@ -24,7 +24,7 @@
 
 #include "tech/MathUtils.h"
 
-#include "Image.h"
+#include "ImageConst.h"
 #include "ImageFloat.h"
 #include "PriorityBpSettings.h"
 

@@ -19,8 +19,8 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef IMAGE_H
-#define IMAGE_H
+#ifndef IMAGE_SCALABLE_H
+#define IMAGE_SCALABLE_H
 
 #include "ImageConst.h"
 #include "Scalable.h"

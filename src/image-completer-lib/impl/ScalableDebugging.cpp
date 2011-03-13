@@ -4,7 +4,7 @@
 #include "tech/StrUtils.h"
 
 #include "Compositor.h"
-#include "Image.h"
+#include "ImageScalable.h"
 #include "Mask.h"
 #include "PriorityBpHost.h"
 #include "PriorityBpRunner.h"

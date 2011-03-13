@@ -29,7 +29,7 @@
 #include "tech/Profile.h"
 
 #include "EnergyCalculatorFftUtils.h"
-#include "Image.h"
+#include "ImageConst.h"
 #include "Mask.h"
 
 #include "tech/DbgMem.h"

@@ -25,7 +25,7 @@
 #include "tech/Core.h"
 #include "tech/MathUtils.h"
 
-#include "Image.h"
+#include "ImageConst.h"
 #include "Mask.h"
 #include "PriorityBpSettings.h"
 
