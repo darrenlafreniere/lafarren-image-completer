@@ -39,14 +39,14 @@ namespace LfnIc
 }
 
 //
-// Extends ImageInternal by delegating all calls to a HostImage instance.
+// Extends ImageInternal by delegating all calls to a Image instance.
 //
 namespace LfnIc
 {
 	class ImageDelegateToHostImage : public ImageInternal
 	{
 	public:
-		ImageDelegateToHostImage(const HostImage& hostImage);
+		ImageDelegateToHostImage(const Image& hostImage);
 
 		virtual const Rgb* GetRgb() const;
 		virtual int GetWidth() const;
@@ -54,13 +54,13 @@ namespace LfnIc
 
 	private:
 		// Hide copy constructor.
-		ImageDelegateToHostImage(const ImageDelegateToHostImage&) : m_hostImage(*reinterpret_cast<const HostImage*>(0xCDCDCDCD)) {}
+		ImageDelegateToHostImage(const ImageDelegateToHostImage&) : m_hostImage(*reinterpret_cast<const Image*>(0xCDCDCDCD)) {}
 
-		const HostImage& m_hostImage;
+		const Image& m_hostImage;
 	};
 }
 
-LfnIc::ImageDelegateToHostImage::ImageDelegateToHostImage(const HostImage& hostImage) :
+LfnIc::ImageDelegateToHostImage::ImageDelegateToHostImage(const Image& hostImage) :
 m_hostImage(hostImage)
 {
 }
@@ -226,10 +226,10 @@ LfnIc::ImageConst::Rgb* LfnIc::ImageConst::GetRgb()
 //
 // ImageScalable implementation
 //
-LfnIc::ImageScalable::ImageScalable(const HostImage& hostImage) :
+LfnIc::ImageScalable::ImageScalable(const Image& hostImage) :
 m_depth(0)
 {
-	// Delegate to original resolution HostImage at depth 0.
+	// Delegate to original resolution Image at depth 0.
 	m_resolutions.push_back(new ImageDelegateToHostImage(hostImage));
 }
 
@@ -276,7 +276,7 @@ void LfnIc::ImageScalable::ScaleDown()
 	// If there's no mask for the next lower depth, create one from the current resolution.
 	if (static_cast<unsigned int>(m_depth) == m_resolutions.size() - 1)
 	{
-		const Image& imageToScaleDown = GetCurrentResolution();
+		const ImageConst& imageToScaleDown = GetCurrentResolution();
 		m_resolutions.push_back(new ImageScaledDown(imageToScaleDown));
 	}
 

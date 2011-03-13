@@ -44,7 +44,7 @@ inline void GetCoordinatesToIncludeOddEdge(int width, int height, int& outInclud
 	outIncludeOddEdgeAtY = heightIsOdd ? (height - 3) : -1;
 }
 
-LfnIc::LabelSet::LabelSet(const Settings& settings, const Image& inputImage, const MaskLod& mask) :
+LfnIc::LabelSet::LabelSet(const Settings& settings, const ImageConst& inputImage, const MaskLod& mask) :
 m_inputImage(inputImage),
 m_depth(0)
 {
@@ -187,7 +187,7 @@ void LfnIc::LabelSet::LabelBitArray::GetIndexAndShift(int x, int y, int& outInde
 	wxASSERT(outIndex < m_dataNumUints);
 }
 
-LfnIc::LabelSet::Resolution::Resolution(const Settings& settings, const Image& inputImage, const MaskLod& mask) :
+LfnIc::LabelSet::Resolution::Resolution(const Settings& settings, const ImageConst& inputImage, const MaskLod& mask) :
 labelBitArray(inputImage.GetWidth(), inputImage.GetHeight())
 {
 	const int width = inputImage.GetWidth();

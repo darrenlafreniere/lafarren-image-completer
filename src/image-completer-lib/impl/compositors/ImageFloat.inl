@@ -80,14 +80,14 @@ namespace LfnIc
 	//
 	// CopyRgbValue functions
 	//
-	inline void CopyRgbValue(RgbFloat& to, const HostImage::Rgb& from)
+	inline void CopyRgbValue(RgbFloat& to, const Image::Rgb& from)
 	{
 		to.r = static_cast<float>(from.r) / 255.0f;
 		to.g = static_cast<float>(from.g) / 255.0f;
 		to.b = static_cast<float>(from.b) / 255.0f;
 	}
 
-	inline void CopyRgbValue(HostImage::Rgb& to, const RgbFloat& from)
+	inline void CopyRgbValue(Image::Rgb& to, const RgbFloat& from)
 	{
 		to.r = static_cast<unsigned char>(from.r * 255.0f);
 		to.g = static_cast<unsigned char>(from.g * 255.0f);

@@ -28,7 +28,7 @@
 namespace LfnIc
 {
 	// Forward declarations
-	class HostImage;
+	class Image;
 
 	//
 	// Image completion settings; provided by the client code that is using
@@ -120,7 +120,7 @@ namespace LfnIc
 
 	// Constructs appropriate default settings given a variety of inputs
 	EXPORT void SettingsConstruct(Settings& out);
-	EXPORT void SettingsConstruct(Settings& out, const HostImage& inputImage);
+	EXPORT void SettingsConstruct(Settings& out, const Image& inputImage);
 	EXPORT void SettingsConstruct(Settings& out, int latticeGapX, int latticeGapY);
 
 	// Validity tests; if invalid and a InvalidMemberHandler instance is

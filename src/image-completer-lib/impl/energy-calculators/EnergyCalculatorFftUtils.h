@@ -29,12 +29,12 @@
 
 // Debugging flag. If enabled, verifies the fft-based energy results against
 // the per-pixel energy calculator results.
-#define FFT_VALIDATION_ENABLED 0
+#define FFT_VALIDATION_ENABLED 1
 
 namespace LfnIc
 {
 	// Forward declarations
-	class Image;
+	class ImageConst;
 	class MaskLod;
 
 	//
@@ -61,9 +61,9 @@ namespace LfnIc
 		// The brute force methods calculate one of the 3 terms in either
 		// the expanded masked equation or the expanded unmasked equation.
 		//
-		static Energy BruteForceCalculate1stTerm(const Image& image, int width, int height, int aLeft, int aTop, const MaskLod* aMask);
-		static Energy BruteForceCalculate2ndTerm(const Image& image, int width, int height, int aLeft, int aTop, const MaskLod* aMask, int bLeft, int bTop);
-		static Energy BruteForceCalculate3rdTerm(const Image& image, int width, int height, int aLeft, int aTop, const MaskLod* aMask, int bLeft, int bTop);
+		static Energy BruteForceCalculate1stTerm(const ImageConst& image, int width, int height, int aLeft, int aTop, const MaskLod* aMask);
+		static Energy BruteForceCalculate2ndTerm(const ImageConst& image, int width, int height, int aLeft, int aTop, const MaskLod* aMask, int bLeft, int bTop);
+		static Energy BruteForceCalculate3rdTerm(const ImageConst& image, int width, int height, int aLeft, int aTop, const MaskLod* aMask, int bLeft, int bTop);
 #endif // FFT_VALIDATION_ENABLED
 	};
 }

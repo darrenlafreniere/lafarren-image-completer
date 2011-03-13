@@ -48,7 +48,7 @@ LfnIc::CompositorRoot::CompositorRoot(
 	wxASSERT(m_outputBlender.get());
 }
 
-bool LfnIc::CompositorRoot::Compose(const Input& input, HostImage& outputImage) const
+bool LfnIc::CompositorRoot::Compose(const Input& input, Image& outputImage) const
 {
 	bool result = false;
 

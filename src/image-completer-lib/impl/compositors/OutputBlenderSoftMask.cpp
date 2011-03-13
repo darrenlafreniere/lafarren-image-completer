@@ -44,6 +44,6 @@ void LfnIc::OutputBlenderSoftMask::Blend(const Compositor::Input& input, const I
 	{
 		// Blend s into d based on the inverse alpha
 		const float ia = 1.0f - *softMaskDataPtr;
-		LfnTech::BlendInto(destRgbDataPtr->channel, srcRgbDataPtr->channel, ia, HostImage::Rgb::NUM_CHANNELS);
+		LfnTech::BlendInto(destRgbDataPtr->channel, srcRgbDataPtr->channel, ia, Image::Rgb::NUM_CHANNELS);
 	}
 }

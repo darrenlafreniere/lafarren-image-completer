@@ -36,7 +36,7 @@
 //
 // Compositor::Input implementation
 //
-LfnIc::Compositor::Input::Input(const Settings& settings, const Image& inputImage, const Mask& mask)
+LfnIc::Compositor::Input::Input(const Settings& settings, const ImageConst& inputImage, const Mask& mask)
 	: settings(settings)
 	, inputImage(inputImage)
 	, mask(mask)

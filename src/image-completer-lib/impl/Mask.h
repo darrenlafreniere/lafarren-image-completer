@@ -113,7 +113,7 @@ namespace LfnIc
 	class MaskScalable : public MaskLod, public Scalable
 	{
 	public:
-		MaskScalable(int inputImageWidth, int inputImageHeight, const HostImage& maskImage, int maskImageOffsetX = 0, int maskImageOffsetY = 0);
+		MaskScalable(int inputImageWidth, int inputImageHeight, const Image& maskImage, int maskImageOffsetX = 0, int maskImageOffsetY = 0);
 		~MaskScalable();
 
 		virtual int GetLowestLod() const;

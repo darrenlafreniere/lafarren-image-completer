@@ -121,7 +121,7 @@ namespace LfnIc
 
 		struct Resolution
 		{
-			Resolution(const Settings& settings, const Image& inputImage, const MaskLod& mask);
+			Resolution(const Settings& settings, const ImageConst& inputImage, const MaskLod& mask);
 			Resolution(const Resolution& resolutionToScaleDown);
 
 #if _DEBUG
@@ -134,7 +134,7 @@ namespace LfnIc
 
 		inline Resolution& GetCurrentResolution() const { return *m_resolutions[m_depth]; }
 
-		const Image& m_inputImage;
+		const ImageConst& m_inputImage;
 		std::vector<Resolution*> m_resolutions;
 		int m_depth;
 	};

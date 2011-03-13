@@ -38,7 +38,7 @@ namespace LfnIc
 	//
 	// Helper functions
 	//
-	inline Mask::Value RgbToMaskValue(const Image::Rgb& rgb)
+	inline Mask::Value RgbToMaskValue(const ImageConst::Rgb& rgb)
 	{
 		// Convert to grayscale using whole integer percentages, then determine
 		// the closest intensity-to-mask-value. Uses the 30/59/11 rgb -> grayscale
@@ -94,7 +94,7 @@ namespace LfnIc
 class LfnIc::MaskInternal : public MaskLod
 {
 public:
-	MaskInternal(int inputImageWidth, int inputImageHeight, const HostImage& maskImage, int maskImageOffsetX, int maskImageOffsetY);
+	MaskInternal(int inputImageWidth, int inputImageHeight, const Image& maskImage, int maskImageOffsetX, int maskImageOffsetY);
 	MaskInternal(const MaskLod& maskToScaleDown);
 
 	virtual int GetLowestLod() const;
@@ -139,7 +139,7 @@ private:
 	LodSet m_lodSet;
 };
 
-LfnIc::MaskInternal::MaskInternal(int inputImageWidth, int inputImageHeight, const HostImage& maskImage, int maskImageOffsetX, int maskImageOffsetY) :
+LfnIc::MaskInternal::MaskInternal(int inputImageWidth, int inputImageHeight, const Image& maskImage, int maskImageOffsetX, int maskImageOffsetY) :
 m_width(inputImageWidth),
 m_height(inputImageHeight)
 {
@@ -155,7 +155,7 @@ m_height(inputImageHeight)
 			Value* lod0RowLeft = &lodData0.buffer[LfnTech::GetRowMajorIndex(m_width, maskImageOffsetX, maskY)];
 
 			const int maskImageRowLeftIndex = LfnTech::GetRowMajorIndex(maskImageWidth, 0, maskImageY);
-			const Image::Rgb* maskImageRowLeft = maskImage.GetRgb() + maskImageRowLeftIndex;
+			const ImageConst::Rgb* maskImageRowLeft = maskImage.GetRgb() + maskImageRowLeftIndex;
 
 			for (int maskImageX = 0; maskImageX < maskImageWidth; ++maskImageX)
 			{
@@ -424,7 +424,7 @@ bool LfnIc::MaskInternal::RegionLtrbSearch(int left, int top, int right, int bot
 //
 // MaskScalable implementation
 //
-LfnIc::MaskScalable::MaskScalable(int inputImageWidth, int inputImageHeight, const HostImage& maskImage, int maskImageOffsetX, int maskImageOffsetY) :
+LfnIc::MaskScalable::MaskScalable(int inputImageWidth, int inputImageHeight, const Image& maskImage, int maskImageOffsetX, int maskImageOffsetY) :
 m_depth(0)
 {
 	// Create original resolution mask.

@@ -14,7 +14,7 @@
 
 namespace LfnIc
 {
-	class OutputHostImage : public LfnIc::HostImage
+	class OutputHostImage : public LfnIc::Image
 	{
 	public:
 		OutputHostImage(const std::string& highResOutputFilePath, int depth)
@@ -47,12 +47,12 @@ namespace LfnIc
 			}
 		}
 
-		// LfnIc::HostImage interface
+		// LfnIc::Image interface
 		virtual bool Init(int width, int height) { return m_wxImage.Create(width, height, false); }
 		virtual bool IsValid() const { return m_wxImage.Ok(); }
 		virtual const std::string& GetFilePath() const { return m_filePath; }
-		virtual Rgb* GetRgb() { return reinterpret_cast<LfnIc::HostImage::Rgb*>(m_wxImage.GetData()); }
-		virtual const Rgb* GetRgb() const { return reinterpret_cast<const LfnIc::HostImage::Rgb*>(m_wxImage.GetData()); }
+		virtual Rgb* GetRgb() { return reinterpret_cast<LfnIc::Image::Rgb*>(m_wxImage.GetData()); }
+		virtual const Rgb* GetRgb() const { return reinterpret_cast<const LfnIc::Image::Rgb*>(m_wxImage.GetData()); }
 		virtual int GetWidth() const { return m_wxImage.GetWidth(); }
 		virtual int GetHeight() const { return m_wxImage.GetHeight(); }
 

@@ -156,7 +156,7 @@ namespace LfnIc
 		}
 	}
 
-	bool ValidateImage(const HostImage& image)
+	bool ValidateImage(const Image& image)
 	{
 		return
 			image.IsValid() &&
@@ -166,9 +166,9 @@ namespace LfnIc
 
 	bool Complete(
 		const Settings& settings,
-		const HostImage& inputImage,
-		const HostImage& maskImage,
-		HostImage& outputImage,
+		const Image& inputImage,
+		const Image& maskImage,
+		Image& outputImage,
 		std::istream* patchesIstream,
 		std::ostream* patchesOstream)
 	{

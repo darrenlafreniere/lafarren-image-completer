@@ -33,195 +33,198 @@
 
 #include "tech/DbgMem.h"
 
-// If the batch has maxCalculations has >= this value and there are worker
-// threads, queued calculations will be processed over all available hardware
-// threads. Attempting asynchronous batches with fewer calculations than this
-// might actually be slower due to synchronization overhead.
-//
-// NOTE: value is arbitrary. Do some tests to find the sweet spot.
-const int MIN_CALCULATIONS_FOR_ASYNC_BATCH = 30;
-
-// MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY is how many pixels a uint32 energy
-// variable can safely capture without overflowing, assuming the worst case of
-// a pure black patch vs pure white patch, where each component difference is
-// 255. This is a 32-bit application, but the Energy typedef is 64-bit because
-// of how large the patches can be. Performing the energy calculations in
-// 64-bit has a big performance penalty, so calculate in 32-bit batches,
-// dumping the batch result into the 64-bit energy result before reaching
-// overflow.
-const int MAX_ENERGY_PER_PIXEL = (255 * 255) + (255 * 255) + (255 * 255);
-const int MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY = UINT_MAX / MAX_ENERGY_PER_PIXEL;
-
-//
-// PolicyNoMask - handles straight pixel SSD calculations without any masking.
-//
-class PolicyNoMask
+namespace LfnIc
 {
-public:
-	inline void OnPreLoop(const LfnIc::Mask* mask) {}
-	inline void OnARow(int aSrcIndex) {}
-	inline void OnBRow(int bSrcIndex) {}
+	// If the batch has maxCalculations has >= this value and there are worker
+	// threads, queued calculations will be processed over all available hardware
+	// threads. Attempting asynchronous batches with fewer calculations than this
+	// might actually be slower due to synchronization overhead.
+	//
+	// NOTE: value is arbitrary. Do some tests to find the sweet spot.
+	const int MIN_CALCULATIONS_FOR_ASYNC_BATCH = 30;
 
-	// See MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY for why this uses uint32.
-	FORCE_INLINE uint32 CalculateSquaredDifference(const LfnIc::Image::Rgb* aSrcRow, const LfnIc::Image::Rgb* bSrcRow, int x)
+	// MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY is how many pixels a uint32 energy
+	// variable can safely capture without overflowing, assuming the worst case of
+	// a pure black patch vs pure white patch, where each component difference is
+	// 255. This is a 32-bit application, but the Energy typedef is 64-bit because
+	// of how large the patches can be. Performing the energy calculations in
+	// 64-bit has a big performance penalty, so calculate in 32-bit batches,
+	// dumping the batch result into the 64-bit energy result before reaching
+	// overflow.
+	const int MAX_ENERGY_PER_PIXEL = (255 * 255) + (255 * 255) + (255 * 255);
+	const int MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY = UINT_MAX / MAX_ENERGY_PER_PIXEL;
+
+	//
+	// PolicyNoMask - handles straight pixel SSD calculations without any masking.
+	//
+	class PolicyNoMask
 	{
-		const LfnIc::Image::Rgb& a = aSrcRow[x];
-		const LfnIc::Image::Rgb& b = bSrcRow[x];
+	public:
+		inline void OnPreLoop(const Mask* mask) {}
+		inline void OnARow(int aSrcIndex) {}
+		inline void OnBRow(int bSrcIndex) {}
 
-		// d[x] = component delta
-		// e = dr^2 + dg^2 + db^2
-		const uint32 dr = a.red   - b.red;
-		const uint32 dg = a.green - b.green;
-		const uint32 db = a.blue  - b.blue;
-		return (dr * dr) + (dg * dg) + (db * db);
-	}
-};
-
-//
-// PolicyMask - base class for testing one of the regions against the mask
-//
-class PolicyMask : public PolicyNoMask
-{
-public:
-	typedef PolicyNoMask Super;
-
-	inline void OnPreLoop(const LfnIc::MaskLod* mask)
-	{
-		m_lodBuffer = mask ? mask->GetLodBuffer(mask->GetHighestLod()) : NULL;
-	}
-
-	// See MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY for why this uses uint32.
-	inline uint32 CalculateSquaredDifference(const LfnIc::Image::Rgb* aSrcRow, const LfnIc::Image::Rgb* bSrcRow, int x)
-	{
-		return (!m_lodRow || m_lodRow[x] == LfnIc::Mask::KNOWN)
-			? Super::CalculateSquaredDifference(aSrcRow, bSrcRow, x)
-			: 0;
-	}
-
-protected:
-	const LfnIc::Mask::Value* m_lodBuffer;
-	const LfnIc::Mask::Value* m_lodRow;
-};
-
-//
-// PolicyMaskA - tests region A against the mask
-//
-class PolicyMaskA : public PolicyMask
-{
-public:
-	typedef PolicyMask Super;
-
-	inline void OnARow(int aSrcIndex)
-	{
-		m_lodRow = m_lodBuffer ? (m_lodBuffer + aSrcIndex) : NULL;
-	}
-};
-
-//
-// PolicyMaskA - tests region B against the mask
-//
-class PolicyMaskB : public PolicyMask
-{
-public:
-	typedef PolicyMask Super;
-
-	inline void OnBRow(int bSrcIndex)
-	{
-		m_lodRow = m_lodBuffer ? (m_lodBuffer + bSrcIndex) : NULL;
-	}
-};
-
-//
-// General purpose energy calculation template. Performs masking via a policy
-// template parameter. Because the policy is resolved at compile time, the
-// mask testing is compiled out when it's not needed.
-//
-template<typename POLICY>
-static inline LfnIc::Energy CalculateEnergy(
-	const LfnIc::Image& inputImage, const LfnIc::MaskLod* mask,
-	int width, int height,
-	int aLeft, int aTop,
-	int bLeft, int bTop)
-{
-	LfnIc::Energy energy64Bit = LfnIc::Energy(0);
-
-	const int imageWidth = inputImage.GetWidth();
-	const int imageHeight = inputImage.GetHeight();
-
-	LfnIc::EnergyCalculatorUtils::ClampToMinBoundary(aLeft, bLeft, width, 0);
-	LfnIc::EnergyCalculatorUtils::ClampToMinBoundary(aTop, bTop, height, 0);
-	LfnIc::EnergyCalculatorUtils::ClampToMaxBoundary(aLeft, bLeft, width, imageWidth);
-	LfnIc::EnergyCalculatorUtils::ClampToMaxBoundary(aTop, bTop, height, imageHeight);
-
-	if (width > 0 && height > 0)
-	{
-		POLICY policy;
-		policy.OnPreLoop(mask);
-
-		// See MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY for why energy calculation is
-		// divided into potentially multiple batches using uint32.
-		uint32 energyU32Bit = 0;
-		int numPixelsInBatch = 0;
-		const bool canFitInU32Bit = (width * height) <= MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY;
-
-		const LfnIc::Image::Rgb* inputImageRgb = inputImage.GetRgb();
-		int aRowIndex = LfnTech::GetRowMajorIndex(imageWidth, aLeft, aTop);
-		int bRowIndex = LfnTech::GetRowMajorIndex(imageWidth, bLeft, bTop);
-		for (int y = 0; y < height; ++y, aRowIndex += imageWidth, bRowIndex += imageWidth)
+		// See MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY for why this uses uint32.
+		FORCE_INLINE uint32 CalculateSquaredDifference(const ImageConst::Rgb* aSrcRow, const ImageConst::Rgb* bSrcRow, int x)
 		{
-			const LfnIc::Image::Rgb* aRow = inputImageRgb + aRowIndex;
-			const LfnIc::Image::Rgb* bRow = inputImageRgb + bRowIndex;
-			policy.OnARow(aRowIndex);
-			policy.OnBRow(bRowIndex);
+			const ImageConst::Rgb& a = aSrcRow[x];
+			const ImageConst::Rgb& b = bSrcRow[x];
 
-			if (canFitInU32Bit)
-			{
-				for (int x = 0; x < width; ++x)
-				{
-					energyU32Bit += policy.CalculateSquaredDifference(aRow, bRow, x++);
-				}
-			}
-			else
-			{
-				int x = 0;
-				do
-				{
-					const int remainingPixelsInRow = width - x;
-					const bool shouldDumpBatchAfterStrip = (remainingPixelsInRow > MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY);
-					const int stripWidth = shouldDumpBatchAfterStrip ? MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY : remainingPixelsInRow;
+			// d[x] = component delta
+			// e = dr^2 + dg^2 + db^2
+			const uint32 dr = a.red   - b.red;
+			const uint32 dg = a.green - b.green;
+			const uint32 db = a.blue  - b.blue;
+			return (dr * dr) + (dg * dg) + (db * db);
+		}
+	};
 
-					while (x < stripWidth)
+	//
+	// PolicyMask - base class for testing one of the regions against the mask
+	//
+	class PolicyMask : public PolicyNoMask
+	{
+	public:
+		typedef PolicyNoMask Super;
+
+		inline void OnPreLoop(const MaskLod* mask)
+		{
+			m_lodBuffer = mask ? mask->GetLodBuffer(mask->GetHighestLod()) : NULL;
+		}
+
+		// See MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY for why this uses uint32.
+		inline uint32 CalculateSquaredDifference(const ImageConst::Rgb* aSrcRow, const ImageConst::Rgb* bSrcRow, int x)
+		{
+			return (!m_lodRow || m_lodRow[x] == Mask::KNOWN)
+				? Super::CalculateSquaredDifference(aSrcRow, bSrcRow, x)
+				: 0;
+		}
+
+	protected:
+		const Mask::Value* m_lodBuffer;
+		const Mask::Value* m_lodRow;
+	};
+
+	//
+	// PolicyMaskA - tests region A against the mask
+	//
+	class PolicyMaskA : public PolicyMask
+	{
+	public:
+		typedef PolicyMask Super;
+
+		inline void OnARow(int aSrcIndex)
+		{
+			m_lodRow = m_lodBuffer ? (m_lodBuffer + aSrcIndex) : NULL;
+		}
+	};
+
+	//
+	// PolicyMaskA - tests region B against the mask
+	//
+	class PolicyMaskB : public PolicyMask
+	{
+	public:
+		typedef PolicyMask Super;
+
+		inline void OnBRow(int bSrcIndex)
+		{
+			m_lodRow = m_lodBuffer ? (m_lodBuffer + bSrcIndex) : NULL;
+		}
+	};
+
+	//
+	// General purpose energy calculation template. Performs masking via a policy
+	// template parameter. Because the policy is resolved at compile time, the
+	// mask testing is compiled out when it's not needed.
+	//
+	template<typename POLICY>
+	static inline Energy CalculateEnergy(
+		const ImageConst& inputImage, const MaskLod* mask,
+		int width, int height,
+		int aLeft, int aTop,
+		int bLeft, int bTop)
+	{
+		Energy energy64Bit = Energy(0);
+
+		const int imageWidth = inputImage.GetWidth();
+		const int imageHeight = inputImage.GetHeight();
+
+		EnergyCalculatorUtils::ClampToMinBoundary(aLeft, bLeft, width, 0);
+		EnergyCalculatorUtils::ClampToMinBoundary(aTop, bTop, height, 0);
+		EnergyCalculatorUtils::ClampToMaxBoundary(aLeft, bLeft, width, imageWidth);
+		EnergyCalculatorUtils::ClampToMaxBoundary(aTop, bTop, height, imageHeight);
+
+		if (width > 0 && height > 0)
+		{
+			POLICY policy;
+			policy.OnPreLoop(mask);
+
+			// See MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY for why energy calculation is
+			// divided into potentially multiple batches using uint32.
+			uint32 energyU32Bit = 0;
+			int numPixelsInBatch = 0;
+			const bool canFitInU32Bit = (width * height) <= MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY;
+
+			const ImageConst::Rgb* inputImageRgb = inputImage.GetRgb();
+			int aRowIndex = LfnTech::GetRowMajorIndex(imageWidth, aLeft, aTop);
+			int bRowIndex = LfnTech::GetRowMajorIndex(imageWidth, bLeft, bTop);
+			for (int y = 0; y < height; ++y, aRowIndex += imageWidth, bRowIndex += imageWidth)
+			{
+				const ImageConst::Rgb* aRow = inputImageRgb + aRowIndex;
+				const ImageConst::Rgb* bRow = inputImageRgb + bRowIndex;
+				policy.OnARow(aRowIndex);
+				policy.OnBRow(bRowIndex);
+
+				if (canFitInU32Bit)
+				{
+					for (int x = 0; x < width; ++x)
 					{
 						energyU32Bit += policy.CalculateSquaredDifference(aRow, bRow, x++);
 					}
-
-					if (shouldDumpBatchAfterStrip)
-					{
-						energy64Bit += energyU32Bit;
-						energyU32Bit = 0;
-						numPixelsInBatch = 0;
-					}
-					else
-					{
-						numPixelsInBatch += stripWidth;
-					}
 				}
-				while (x < width);
+				else
+				{
+					int x = 0;
+					do
+					{
+						const int remainingPixelsInRow = width - x;
+						const bool shouldDumpBatchAfterStrip = (remainingPixelsInRow > MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY);
+						const int stripWidth = shouldDumpBatchAfterStrip ? MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY : remainingPixelsInRow;
+
+						while (x < stripWidth)
+						{
+							energyU32Bit += policy.CalculateSquaredDifference(aRow, bRow, x++);
+						}
+
+						if (shouldDumpBatchAfterStrip)
+						{
+							energy64Bit += energyU32Bit;
+							energyU32Bit = 0;
+							numPixelsInBatch = 0;
+						}
+						else
+						{
+							numPixelsInBatch += stripWidth;
+						}
+					}
+					while (x < width);
+				}
 			}
+
+			// Add what's left in the batch.
+			energy64Bit += energyU32Bit;
 		}
 
-		// Add what's left in the batch.
-		energy64Bit += energyU32Bit;
+		wxASSERT(energy64Bit >= ENERGY_MIN && energy64Bit <= ENERGY_MAX);
+		return energy64Bit;
 	}
-
-	wxASSERT(energy64Bit >= LfnIc::ENERGY_MIN && energy64Bit <= LfnIc::ENERGY_MAX);
-	return energy64Bit;
 }
 
 //
 // EnergyCalculatorPerPixel implementation
 //
-LfnIc::EnergyCalculatorPerPixel::EnergyCalculatorPerPixel(const Image& inputImage, const MaskLod& mask) :
+LfnIc::EnergyCalculatorPerPixel::EnergyCalculatorPerPixel(const ImageConst& inputImage, const MaskLod& mask) :
 m_inputImage(inputImage),
 	m_mask(mask),
 	m_batchState(BatchStateClosed),

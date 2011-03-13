@@ -27,11 +27,11 @@
 namespace LfnIc
 {
 	//
-	// Implements LfnIc::HostImage using heap memory. Intended for local
+	// Implements LfnIc::Image using heap memory. Intended for local
 	// temporary image buffers. PriorityBp is considered the "host" of this
 	// image implementation.
 	//
-	class HostImageLocal : public HostImage
+	class HostImageLocal : public Image
 	{
 	public:
 		HostImageLocal();

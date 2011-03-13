@@ -32,14 +32,14 @@
 #include "tech/DbgMem.h"
 
 #if FFT_VALIDATION_ENABLED
-LfnIc::Energy LfnIc::EnergyCalculatorFftUtils::BruteForceCalculate1stTerm(const Image& image, int width, int height, int aLeft, int aTop, const MaskLod* aMask)
+LfnIc::Energy LfnIc::EnergyCalculatorFftUtils::BruteForceCalculate1stTerm(const ImageConst& image, int width, int height, int aLeft, int aTop, const MaskLod* aMask)
 {
 	Energy e = Energy(0);
 
 	const int imageWidth = image.GetWidth();
 	const int imageHeight = image.GetHeight();
 	const Mask::Value* maskBuffer = aMask ? aMask->GetLodBuffer(aMask->GetHighestLod()) : NULL;
-	const Image::Rgb* imageRgb = image.GetRgb();
+	const ImageConst::Rgb* imageRgb = image.GetRgb();
 
 	for (int y = 0; y < height; ++y)
 	{
@@ -50,7 +50,7 @@ LfnIc::Energy LfnIc::EnergyCalculatorFftUtils::BruteForceCalculate1stTerm(const 
 				const int idx = LfnTech::GetRowMajorIndex(imageWidth, aLeft + x, aTop + y);
 				if (!aMask || maskBuffer[idx] == Mask::KNOWN)
 				{
-					const Image::Rgb& rgb = imageRgb[idx];
+					const ImageConst::Rgb& rgb = imageRgb[idx];
 					e += Energy((rgb.red * rgb.red) + (rgb.green * rgb.green) + (rgb.blue * rgb.blue));
 				}
 			}
@@ -60,14 +60,14 @@ LfnIc::Energy LfnIc::EnergyCalculatorFftUtils::BruteForceCalculate1stTerm(const 
 	return e;
 }
 
-LfnIc::Energy LfnIc::EnergyCalculatorFftUtils::BruteForceCalculate2ndTerm(const Image& image, int width, int height, int aLeft, int aTop, const MaskLod* aMask, int bLeft, int bTop)
+LfnIc::Energy LfnIc::EnergyCalculatorFftUtils::BruteForceCalculate2ndTerm(const ImageConst& image, int width, int height, int aLeft, int aTop, const MaskLod* aMask, int bLeft, int bTop)
 {
 	Energy e = Energy(0);
 
 	const int imageWidth = image.GetWidth();
 	const int imageHeight = image.GetHeight();
 	const Mask::Value* maskBuffer = aMask ? aMask->GetLodBuffer(aMask->GetHighestLod()) : NULL;
-	const Image::Rgb* imageRgb = image.GetRgb();
+	const ImageConst::Rgb* imageRgb = image.GetRgb();
 
 	for (int j = 0; j < height; ++j)
 	{
@@ -84,8 +84,8 @@ LfnIc::Energy LfnIc::EnergyCalculatorFftUtils::BruteForceCalculate2ndTerm(const 
 					const int aIdx = LfnTech::GetRowMajorIndex(imageWidth, ax, ay);
 					if (!aMask || maskBuffer[aIdx] == Mask::KNOWN)
 					{
-						const Image::Rgb& aRgb = imageRgb[aIdx];
-						const Image::Rgb& bRgb = imageRgb[LfnTech::GetRowMajorIndex(imageWidth, bx, by)];
+						const ImageConst::Rgb& aRgb = imageRgb[aIdx];
+						const ImageConst::Rgb& bRgb = imageRgb[LfnTech::GetRowMajorIndex(imageWidth, bx, by)];
 						const int scalar = 2;
 						const int rmult = scalar * aRgb.red * bRgb.red;
 						const int gmult = scalar * aRgb.green * bRgb.green;
@@ -100,7 +100,7 @@ LfnIc::Energy LfnIc::EnergyCalculatorFftUtils::BruteForceCalculate2ndTerm(const 
 	return -e;
 }
 
-LfnIc::Energy LfnIc::EnergyCalculatorFftUtils::BruteForceCalculate3rdTerm(const Image& image, int width, int height, int aLeft, int aTop, const MaskLod* aMask, int bLeft, int bTop)
+LfnIc::Energy LfnIc::EnergyCalculatorFftUtils::BruteForceCalculate3rdTerm(const ImageConst& image, int width, int height, int aLeft, int aTop, const MaskLod* aMask, int bLeft, int bTop)
 {
 	Energy e = Energy(0);
 	return e;

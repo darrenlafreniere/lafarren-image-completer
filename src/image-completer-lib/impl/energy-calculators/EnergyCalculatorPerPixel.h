@@ -143,7 +143,7 @@ namespace LfnIc
 		//
 		// Data
 		//
-		const Image& m_inputImage;
+		const ImageConst& m_inputImage;
 		const MaskLod& m_mask;
 		BatchState m_batchState;
 		BatchParams m_batchParams;

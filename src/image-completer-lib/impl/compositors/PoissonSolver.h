@@ -27,7 +27,7 @@
 
 namespace LfnIc
 {
-	class HostImage;
+	class Image;
 	class Mask;
 
 	namespace Poisson

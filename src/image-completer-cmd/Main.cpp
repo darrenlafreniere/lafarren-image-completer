@@ -35,9 +35,9 @@
 // PriorityBp host interface implementations
 //
 
-// Make sure that wxWidgets wxImage::RGBValue and LfnIc::HostImage::Rgb
+// Make sure that wxWidgets wxImage::RGBValue and LfnIc::Image::Rgb
 // have identical size, since we perform no conversion.
-wxCOMPILE_TIME_ASSERT(sizeof(wxImage::RGBValue) == sizeof(LfnIc::HostImage::Rgb), INVALID_RGB_SIZE);
+wxCOMPILE_TIME_ASSERT(sizeof(wxImage::RGBValue) == sizeof(LfnIc::Image::Rgb), INVALID_RGB_SIZE);
 #ifdef __WXDEBUG__
 class AssertIdenticalRgbLayout
 {
@@ -45,7 +45,7 @@ public:
 	AssertIdenticalRgbLayout()
 	{
 		wxImage::RGBValue rgb1(0, 0, 0);
-		LfnIc::HostImage::Rgb& rgb2 = reinterpret_cast<LfnIc::HostImage::Rgb&>(rgb1);
+		LfnIc::Image::Rgb& rgb2 = reinterpret_cast<LfnIc::Image::Rgb&>(rgb1);
 		rgb2.red = 1;
 		rgb2.green = 2;
 		rgb2.blue = 3;
@@ -57,7 +57,7 @@ public:
 static const AssertIdenticalRgbLayout g_assertIdenticalRgbLayout;
 #endif
 
-class AppCmdHostImage : public LfnIc::HostImage
+class AppCmdHostImage : public LfnIc::Image
 {
 public:
 	// AppCmdHostImage interface
@@ -65,7 +65,7 @@ public:
 	wxImage& GetwxImage();
 	const wxImage& GetwxImage() const;
 
-	// LfnIc::HostImage interface
+	// LfnIc::Image interface
 	virtual bool Init(int width, int height);
 	virtual bool IsValid() const;
 	virtual const std::string& GetFilePath() const;
@@ -92,10 +92,10 @@ public:
 
 	// LfnIc::Host interface
 	const LfnIc::Settings& GetSettings();
-	const LfnIc::HostImage& GetInputImage();
-	const LfnIc::HostImage& GetMaskImage();
-	LfnIc::HostImage& GetOutputImage();
-	const LfnIc::HostImage& GetOutputImage() const;
+	const LfnIc::Image& GetInputImage();
+	const LfnIc::Image& GetMaskImage();
+	LfnIc::Image& GetOutputImage();
+	const LfnIc::Image& GetOutputImage() const;
 	std::istream* GetPatchesIstream();
 	std::ostream* GetPatchesOstream();
 
@@ -215,22 +215,22 @@ const LfnIc::Settings& AppCmdHost::GetSettings()
 	return m_settings;
 }
 
-const LfnIc::HostImage& AppCmdHost::GetInputImage()
+const LfnIc::Image& AppCmdHost::GetInputImage()
 {
 	return m_inputImage;
 }
 
-const LfnIc::HostImage& AppCmdHost::GetMaskImage()
+const LfnIc::Image& AppCmdHost::GetMaskImage()
 {
 	return m_maskImage;
 }
 
-LfnIc::HostImage& AppCmdHost::GetOutputImage()
+LfnIc::Image& AppCmdHost::GetOutputImage()
 {
 	return m_outputImage;
 }
 
-const LfnIc::HostImage& AppCmdHost::GetOutputImage() const
+const LfnIc::Image& AppCmdHost::GetOutputImage() const
 {
 	return m_outputImage;
 }
@@ -315,14 +315,14 @@ bool AppCmdHostImage::Init(int width, int height)
 	return m_wxImage.Create(width, height, false);
 }
 
-LfnIc::HostImage::Rgb* AppCmdHostImage::GetRgb()
+LfnIc::Image::Rgb* AppCmdHostImage::GetRgb()
 {
-	return reinterpret_cast<LfnIc::HostImage::Rgb*>(m_wxImage.GetData());
+	return reinterpret_cast<LfnIc::Image::Rgb*>(m_wxImage.GetData());
 }
 
-const LfnIc::HostImage::Rgb* AppCmdHostImage::GetRgb() const
+const LfnIc::Image::Rgb* AppCmdHostImage::GetRgb() const
 {
-	return reinterpret_cast<const LfnIc::HostImage::Rgb*>(m_wxImage.GetData());
+	return reinterpret_cast<const LfnIc::Image::Rgb*>(m_wxImage.GetData());
 }
 
 int AppCmdHostImage::GetWidth() const

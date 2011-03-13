@@ -79,7 +79,7 @@ namespace LfnIc
 	class FillPolicyChannel
 	{
 	public:
-		FillPolicyChannel(const Image& inputImage, int channel) :
+		FillPolicyChannel(const ImageConst& inputImage, int channel) :
 		m_imageRgb(inputImage.GetRgb()),
 		m_channel(channel)
 		{
@@ -92,7 +92,7 @@ namespace LfnIc
 		}
 
 	protected:
-		const Image::Rgb* m_imageRgb;
+		const ImageConst::Rgb* m_imageRgb;
 		const int m_channel;
 	};
 
@@ -101,7 +101,7 @@ namespace LfnIc
 	public:
 		typedef FillPolicyChannel Super;
 
-		FillPolicyChannelScaled(const Image& inputImage, int channel, FftReal scalar) :
+		FillPolicyChannelScaled(const ImageConst& inputImage, int channel, FftReal scalar) :
 		Super(inputImage, channel),
 		m_scalar(scalar)
 		{
@@ -122,7 +122,7 @@ namespace LfnIc
 	public:
 		typedef FillPolicyChannelScaled Super;
 
-		FillPolicyChannelMaskedScaled(const Image& inputImage, const MaskLod& mask, int channel, FftReal scalar) :
+		FillPolicyChannelMaskedScaled(const ImageConst& inputImage, const MaskLod& mask, int channel, FftReal scalar) :
 		Super(inputImage, channel, scalar),
 		m_maskBuffer(mask.GetLodBuffer(mask.GetHighestLod()))
 		{
@@ -195,7 +195,7 @@ namespace LfnIc
 //
 LfnIc::EnergyCalculatorFft::EnergyCalculatorFft(
 	const Settings& settings,
-	const Image& inputImage,
+	const ImageConst& inputImage,
 	const MaskLod& mask
 #if FFT_VALIDATION_ENABLED
 	, EnergyCalculatorPerPixel energyCalculatorPerPixel

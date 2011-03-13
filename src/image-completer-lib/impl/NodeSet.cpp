@@ -39,7 +39,7 @@ namespace LfnIc
 	class Lattice
 	{
 	public:
-		Lattice(const Image& inputImage, const MaskLod& mask, Node::Context& nodeContext, std::vector<Node>& nodeStorage);
+		Lattice(const ImageConst& inputImage, const MaskLod& mask, Node::Context& nodeContext, std::vector<Node>& nodeStorage);
 
 		void CreateUnknownRegionNodes();
 		void ConnectNeighboringNodes();
@@ -54,7 +54,7 @@ namespace LfnIc
 	private:
 		static const int INVALID_INDEX = -1;
 
-		const Image& m_inputImage;
+		const ImageConst& m_inputImage;
 		const MaskLod& m_mask;
 		Node::Context& m_nodeContext;
 		std::vector<Node>& m_nodeStorage;
@@ -64,7 +64,7 @@ namespace LfnIc
 	};
 }
 
-LfnIc::Lattice::Lattice(const Image& inputImage, const MaskLod& mask, Node::Context& nodeContext, std::vector<Node>& nodeStorage) :
+LfnIc::Lattice::Lattice(const ImageConst& inputImage, const MaskLod& mask, Node::Context& nodeContext, std::vector<Node>& nodeStorage) :
 m_inputImage(inputImage),
 m_mask(mask),
 m_nodeContext(nodeContext),
@@ -181,7 +181,7 @@ LfnIc::Node* LfnIc::Lattice::GetNode(int col, int row) const
 //
 LfnIc::NodeSet::NodeSet(
 	const Settings& settings,
-	const Image& inputImage,
+	const ImageConst& inputImage,
 	const MaskLod& mask,
 	const LabelSet& labelSet,
 	EnergyCalculatorContainer& energyCalculatorContainer) :

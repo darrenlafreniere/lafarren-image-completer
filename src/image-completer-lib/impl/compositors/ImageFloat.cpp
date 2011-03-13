@@ -28,7 +28,7 @@
 
 #include "tech/DbgMem.h"
 
-wxCOMPILE_TIME_ASSERT(LfnIc::HostImage::Rgb::NUM_CHANNELS == LfnIc::RgbFloat::NUM_CHANNELS, RgbNumChannelsMismatch);
+wxCOMPILE_TIME_ASSERT(LfnIc::Image::Rgb::NUM_CHANNELS == LfnIc::RgbFloat::NUM_CHANNELS, RgbNumChannelsMismatch);
 
 LfnIc::ImageFloat::ImageFloat()
 	: m_width(0)
@@ -42,11 +42,11 @@ LfnIc::ImageFloat::ImageFloat(const ImageConst& input)
 	const int height = input.GetHeight();
 	Create(width, height);
 
-	const HostImage::Rgb* rgbData = input.GetRgb();
+	const Image::Rgb* rgbData = input.GetRgb();
 	const int numPixels = width * height;
 	for (int i = 0; i < numPixels; ++i)
 	{
-		const HostImage::Rgb& inRgb = rgbData[i];
+		const Image::Rgb& inRgb = rgbData[i];
 		RgbFloat& outRgb = m_data[i];
 		outRgb.r = float(inRgb.r) / 255.0f;
 		outRgb.g = float(inRgb.g) / 255.0f;
@@ -81,17 +81,17 @@ void LfnIc::ImageFloat::CopyTo(ImageFloat& output) const
 	memcpy(&output.m_data[0], &m_data[0], m_width * m_height * sizeof(RgbFloat));
 }
 
-void LfnIc::ImageFloat::CopyTo(HostImage& output) const
+void LfnIc::ImageFloat::CopyTo(Image& output) const
 {
 	output.Init(m_width, m_height);
 
-	HostImage::Rgb* outRgbData = output.GetRgb();
+	Image::Rgb* outRgbData = output.GetRgb();
 	for (int y = 0, i = 0; y < m_height; ++y)
 	{
 		for (int x = 0; x < m_width; ++x, ++i)
 		{
 			const RgbFloat& inRgb = m_data[i];
-			HostImage::Rgb& outRgb = outRgbData[i];
+			Image::Rgb& outRgb = outRgbData[i];
 			outRgb.r = (unsigned char)(LfnTech::Clamp0To1(inRgb.r) * 255);
 			outRgb.g = (unsigned char)(LfnTech::Clamp0To1(inRgb.g) * 255);
 			outRgb.b = (unsigned char)(LfnTech::Clamp0To1(inRgb.b) * 255);

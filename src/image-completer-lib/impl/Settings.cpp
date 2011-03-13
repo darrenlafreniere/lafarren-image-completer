@@ -96,7 +96,7 @@ void LfnIc::SettingsConstruct(Settings& out)
 	SettingsConstructHelper(out, LfnIc::Settings::LATTICE_GAP_MIN, LfnIc::Settings::LATTICE_GAP_MIN);
 }
 
-void LfnIc::SettingsConstruct(Settings& out, const HostImage& inputImage)
+void LfnIc::SettingsConstruct(Settings& out, const Image& inputImage)
 {
 	// Calculate a suggested lattice gap x and y
 	const int imageSizeAtGapMin = 100;

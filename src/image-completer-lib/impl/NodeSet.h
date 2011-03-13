@@ -44,7 +44,7 @@ namespace LfnIc
 	public:
 		NodeSet(
 			const Settings& settings,
-			const Image& inputImage,
+			const ImageConst& inputImage,
 			const MaskLod& mask,
 			const LabelSet& labelSet,
 			EnergyCalculatorContainer& energyCalculatorContainer);

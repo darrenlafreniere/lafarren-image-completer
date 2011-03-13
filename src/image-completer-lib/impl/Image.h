@@ -28,11 +28,11 @@
 namespace LfnIc
 {
 	//
-	// Partially implements HostImage under the assumption that the image is
+	// Partially implements Image under the assumption that the image is
 	// const. Used internally to access read-only image data, including scaled
 	// down data, during completion.
 	//
-	class ImageConst : public HostImage
+	class ImageConst : public Image
 	{
 	public:
 		// Partial implementation. The non-const methods will assert.
@@ -61,12 +61,12 @@ namespace LfnIc
 
 	//
 	// Implements both the Image and Scalable interfaces and provides an in
-	// place scalable image. Initializes the image from the input HostImage.
+	// place scalable image. Initializes the image from the input Image.
 	//
 	class ImageScalable : public ImageConst, public Scalable
 	{
 	public:
-		ImageScalable(const HostImage& hostImage);
+		ImageScalable(const Image& hostImage);
 		virtual ~ImageScalable();
 
 		virtual const Rgb* GetRgb() const;

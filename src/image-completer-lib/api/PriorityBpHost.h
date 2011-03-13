@@ -27,12 +27,12 @@
 namespace LfnIc
 {
 	// Forward declarations
-	class HostImage;
+	class Image;
 	struct Settings;
 
-	// HostImage interface. Used for both reading the input image and
+	// Image interface. Used for both reading the input image and
 	// writing the output image.
-	class HostImage
+	class Image
 	{
 	public:
 		struct Rgb;
@@ -97,9 +97,9 @@ namespace LfnIc
 		};
 
 	protected:
-		// Instances cannot be destroyed through a base HostImage pointer
+		// Instances cannot be destroyed through a base Image pointer
 		// using delete.
-		virtual ~HostImage() {}
+		virtual ~Image() {}
 	};
 }
 

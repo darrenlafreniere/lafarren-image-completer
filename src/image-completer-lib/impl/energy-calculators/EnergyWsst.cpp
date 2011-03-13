@@ -39,7 +39,7 @@
 //
 // EnergyWsst implementation
 //
-LfnIc::EnergyWsst::EnergyWsst(const Image& inputImage, int blockWidth, int blockHeight) :
+LfnIc::EnergyWsst::EnergyWsst(const ImageConst& inputImage, int blockWidth, int blockHeight) :
 m_blockWidth(blockWidth),
 m_blockHeight(blockHeight),
 m_tableWidth(blockWidth + inputImage.GetWidth()),
@@ -49,7 +49,7 @@ m_table(NULL)
 	Construct(inputImage, NULL);
 }
 
-LfnIc::EnergyWsst::EnergyWsst(const Image& inputImage, const MaskLod& mask, int blockWidth, int blockHeight) :
+LfnIc::EnergyWsst::EnergyWsst(const ImageConst& inputImage, const MaskLod& mask, int blockWidth, int blockHeight) :
 m_blockWidth(blockWidth),
 m_blockHeight(blockHeight),
 m_tableWidth(blockWidth + inputImage.GetWidth()),
@@ -111,11 +111,11 @@ LfnIc::Energy LfnIc::EnergyWsst::Calculate(int left, int top, int width, int hei
 	}
 }
 
-void LfnIc::EnergyWsst::Construct(const Image& inputImage, const MaskLod* mask)
+void LfnIc::EnergyWsst::Construct(const ImageConst& inputImage, const MaskLod* mask)
 {
 	const int imageWidth = inputImage.GetWidth();
 	const int imageHeight = inputImage.GetHeight();
-	const Image::Rgb* imageRgb = inputImage.GetRgb();
+	const ImageConst::Rgb* imageRgb = inputImage.GetRgb();
 	const Mask::Value* maskBuffer = mask ? mask->GetLodBuffer(mask->GetHighestLod()) : NULL;
 
 	m_table = new Energy[m_tableWidth * m_tableHeight];
@@ -150,14 +150,14 @@ void LfnIc::EnergyWsst::Construct(const Image& inputImage, const MaskLod* mask)
 		}
 
 		// x and y are in image space
-		FORCE_INLINE Energy Get(const Image::Rgb* imageRgb, const Mask::Value* maskBuffer, int x, int y) const
+		FORCE_INLINE Energy Get(const ImageConst::Rgb* imageRgb, const Mask::Value* maskBuffer, int x, int y) const
 		{
 			if (x >= 0 && y >= 0 && x < m_imageWidth && y < m_imageHeight)
 			{
 				const int imageIdx = LfnTech::GetRowMajorIndex(m_imageWidth, x, y);
 				if (!maskBuffer || maskBuffer[imageIdx] == Mask::KNOWN)
 				{
-					const Image::Rgb& rgb = imageRgb[imageIdx];
+					const ImageConst::Rgb& rgb = imageRgb[imageIdx];
 					return Energy((rgb.red * rgb.red) + (rgb.green * rgb.green) + (rgb.blue * rgb.blue));
 				}
 			}

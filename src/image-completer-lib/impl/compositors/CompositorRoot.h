@@ -74,7 +74,7 @@ namespace LfnIc
 			const OutputBlender* outputBlender);
 
 		// Compositor interface:
-		virtual bool Compose(const Input& input, HostImage& outputImage) const;
+		virtual bool Compose(const Input& input, Image& outputImage) const;
 
 	private:
 		std::auto_ptr<const PatchType::Factory> m_patchTypeFactory;

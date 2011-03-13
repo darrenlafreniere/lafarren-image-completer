@@ -55,7 +55,7 @@ namespace LfnIc
 		// Clones the input image into an output image, and applies the
 		// input patches to the output according to the specific
 		// compositor's blend strategy.
-		virtual bool Compose(const Input& input, HostImage& outputImage) const = 0;
+		virtual bool Compose(const Input& input, Image& outputImage) const = 0;
 	};
 
 	//

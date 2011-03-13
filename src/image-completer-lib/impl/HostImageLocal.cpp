@@ -52,12 +52,12 @@ bool LfnIc::HostImageLocal::IsValid() const
 	return IsValidInternal();
 }
 
-LfnIc::HostImage::Rgb* LfnIc::HostImageLocal::GetRgb()
+LfnIc::Image::Rgb* LfnIc::HostImageLocal::GetRgb()
 {
 	return m_rgb;
 }
 
-const LfnIc::HostImage::Rgb* LfnIc::HostImageLocal::GetRgb() const
+const LfnIc::Image::Rgb* LfnIc::HostImageLocal::GetRgb() const
 {
 	return m_rgb;
 }

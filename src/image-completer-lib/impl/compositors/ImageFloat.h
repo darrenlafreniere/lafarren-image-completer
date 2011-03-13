@@ -32,7 +32,7 @@ namespace LfnIc
 	class RgbFloat
 	{
 	public:
-		static const int NUM_CHANNELS = HostImage::Rgb::NUM_CHANNELS;
+		static const int NUM_CHANNELS = Image::Rgb::NUM_CHANNELS;
 		union
 		{
 			struct
@@ -68,7 +68,7 @@ namespace LfnIc
 		void Create(int width, int height);
 
 		void CopyTo(ImageFloat& output) const;
-		void CopyTo(HostImage& output) const;
+		void CopyTo(Image& output) const;
 
 		inline int GetWidth() const { return m_width; }
 		inline int GetHeight() const { return m_height; }
@@ -90,9 +90,9 @@ namespace LfnIc
 		std::vector<RgbFloat> m_data;
 	};
 
-	// HostImage::Rgb <=> RgbFloat conversions.
-	inline void CopyRgbValue(RgbFloat& to, const HostImage::Rgb& from);
-	inline void CopyRgbValue(HostImage::Rgb& to, const RgbFloat& from);
+	// Image::Rgb <=> RgbFloat conversions.
+	inline void CopyRgbValue(RgbFloat& to, const Image::Rgb& from);
+	inline void CopyRgbValue(Image::Rgb& to, const RgbFloat& from);
 }
 
 //
