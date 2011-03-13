@@ -375,7 +375,7 @@ int main(int argc, char** argv)
 
 				if (options.ShouldRunImageCompletion())
 				{
-					if (LfnIc::Complete(host))
+					if (LfnIc::Complete(host.GetSettings(), host.GetInputImage(), host.GetMaskImage(), host.GetOutputImage(), host.GetPatchesIstream(), host.GetPatchesOstream()))
 					{
 						AppCmdHostImage& outputImage = host.GetOutputImageImpl();
 						outputImage.GetwxImage().SaveFile(outputImage.GetFilePath());

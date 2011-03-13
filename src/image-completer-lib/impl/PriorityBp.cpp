@@ -164,12 +164,16 @@ namespace LfnIc
 			image.GetHeight() <= LfnIc::Settings::IMAGE_HEIGHT_MAX;
 	}
 
-	bool Complete(Host& host)
+	bool Complete(
+		const Settings& settings,
+		const HostImage& inputImage,
+		const HostImage& maskImage,
+		HostImage& outputImage,
+		std::istream* patchesIstream,
+		std::ostream* patchesOstream)
 	{
 		bool succeeded = false;
 
-		const HostImage& inputImage = host.GetInputImage();
-		const HostImage& maskImage = host.GetMaskImage();
 		if (ValidateImage(inputImage) && ValidateImage(maskImage))
 		{
 			// In Windows, this project is compiled into its own dll, with its
@@ -180,13 +184,9 @@ namespace LfnIc
 			// it's safe to have multiple wxInitializer instances; they're
 			// internally ref counted by wxWidgets.
 			wxInitializer initializer;
-			HostImage& outputImage = host.GetOutputImage();
 
 			{
-				std::istream* patchesIstream = host.GetPatchesIstream();
-				std::ostream* patchesOstream = host.GetPatchesOstream();
-
-				SettingsScalable settingsScalable(host.GetSettings());
+				SettingsScalable settingsScalable(settings);
 				ImageScalable imageScalable(inputImage);
 				MaskScalable maskScalable(imageScalable.GetWidth(), imageScalable.GetHeight(), maskImage);
 				Compositor::Input compositorInput(settingsScalable, imageScalable, maskScalable);
@@ -220,7 +220,7 @@ namespace LfnIc
 						labelSet,
 						nodeSet,
 						priorityBpRunner,
-						host.GetOutputImage().GetFilePath(),
+						outputImage.GetFilePath(),
 						1);
 
 					// Original resolution pass

@@ -26,12 +26,14 @@
 #ifndef PRIORITY_BP_H
 #define PRIORITY_BP_H
 
+#include <iostream>
 #include "tech/Core.h"
 
 namespace LfnIc
 {
 	// Forward declarations
-	class Host;
+	class HostImage;
+	struct Settings;
 
 	//
 	// Performs image completion on a given input image and mask, and returns
@@ -44,7 +46,13 @@ namespace LfnIc
 	// If a valid patches ostream is provided, then the patches will be written
 	// to that stream.
 	//
-	extern EXPORT bool Complete(Host& host);
+	extern EXPORT bool Complete(
+		const Settings& settings,
+		const HostImage& inputImage,
+		const HostImage& maskImage,
+		HostImage& outputImage,
+		std::istream* patchesIstream = NULL,
+		std::ostream* patchesOstream = NULL);
 }
 
 #endif
