@@ -124,9 +124,14 @@ LfnIc::MaskInternal::MaskInternal(const MaskLod& maskToScaleDown)
 			// resolution passes must err on the side of performing image
 			// completion when working with reduced data.
 			const Value otherLod1Value = *otherLod1Current;
-			*lod0Current = (otherLod1Value == Mask::INDETERMINATE)
-				? Mask::UNKNOWN
-				: otherLod1Value;
+			if (otherLod1Value == INDETERMINATE)
+			{
+				*lod0Current = UNKNOWN;
+			}
+			else
+			{
+				*lod0Current = otherLod1Value;
+			}
 		}
 	}
 
