@@ -29,7 +29,7 @@
 
 namespace LfnIc
 {
-	class Image;
+	class ImageConst;
 	class MaskLod;
 
 	//
@@ -42,8 +42,8 @@ namespace LfnIc
 	public:
 		// Calculates sums across blockWidth * blockHeight areas. The second
 		// constructor applies the mask to the input image.
-		EnergyWsst(const Image& inputImage, int blockWidth, int blockHeight);
-		EnergyWsst(const Image& inputImage, const MaskLod& mask, int blockWidth, int blockHeight);
+		EnergyWsst(const ImageConst& inputImage, int blockWidth, int blockHeight);
+		EnergyWsst(const ImageConst& inputImage, const MaskLod& mask, int blockWidth, int blockHeight);
 		~EnergyWsst();
 
 		int GetBlockWidth() const;
@@ -57,7 +57,7 @@ namespace LfnIc
 		//
 		// Internal methods
 		//
-		void Construct(const Image& inputImage, const MaskLod* mask);
+		void Construct(const ImageConst& inputImage, const MaskLod* mask);
 
 		//
 		// Data

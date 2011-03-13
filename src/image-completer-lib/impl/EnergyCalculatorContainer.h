@@ -31,14 +31,14 @@
 
 namespace LfnIc
 {
-	class Image;
+	class ImageConst;
 	class MaskLod;
 	struct Settings;
 
 	class EnergyCalculatorContainer
 	{
 	public:
-		EnergyCalculatorContainer(const Settings& settings, const Image& inputImage, const MaskLod& mask);
+		EnergyCalculatorContainer(const Settings& settings, const ImageConst& inputImage, const MaskLod& mask);
 
 		// TODO: temp method, expand into an EnergyManager class.
 		// Returns a reference to an energy calculator that's suitable for

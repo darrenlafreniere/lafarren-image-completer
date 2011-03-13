@@ -26,7 +26,7 @@
 
 namespace LfnIc
 {
-	class Image;
+	class ImageConst;
 
 	// An rgb tuple of floats, where each component is [0.0, 1.0].
 	class RgbFloat
@@ -61,7 +61,7 @@ namespace LfnIc
 	{
 	public:
 		ImageFloat();
-		ImageFloat(const Image& input);
+		ImageFloat(const ImageConst& input);
 		ImageFloat(int width, int height);
 		ImageFloat(int width, int height, const RgbFloat& initialRgb);
 

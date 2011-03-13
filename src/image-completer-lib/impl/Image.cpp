@@ -31,7 +31,7 @@
 //
 namespace LfnIc
 {
-	class ImageInternal : public Image
+	class ImageInternal : public ImageConst
 	{
 	public:
 		virtual ~ImageInternal() {}
@@ -65,7 +65,7 @@ m_hostImage(hostImage)
 {
 }
 
-const LfnIc::Image::Rgb* LfnIc::ImageDelegateToHostImage::GetRgb() const
+const LfnIc::ImageDelegateToHostImage::Rgb* LfnIc::ImageDelegateToHostImage::GetRgb() const
 {
 	return m_hostImage.GetRgb();
 }
@@ -89,7 +89,7 @@ namespace LfnIc
 	class ImageScaledDown : public ImageInternal
 	{
 	public:
-		ImageScaledDown(const Image& imageToScaleDown);
+		ImageScaledDown(const ImageConst& imageToScaleDown);
 		virtual ~ImageScaledDown();
 
 		virtual const Rgb* GetRgb() const;
@@ -106,7 +106,7 @@ namespace LfnIc
 	};
 }
 
-LfnIc::ImageScaledDown::ImageScaledDown(const Image& imageToScaleDown)
+LfnIc::ImageScaledDown::ImageScaledDown(const ImageConst& imageToScaleDown)
 {
 	// Alias to reduce wordiness.
 	const int otherWidth = imageToScaleDown.GetWidth();
@@ -180,7 +180,7 @@ LfnIc::ImageScaledDown::~ImageScaledDown()
 	delete [] m_rgb;
 }
 
-const LfnIc::Image::Rgb* LfnIc::ImageScaledDown::GetRgb() const
+const LfnIc::ImageScaledDown::Rgb* LfnIc::ImageScaledDown::GetRgb() const
 {
 	return m_rgb;
 }
@@ -193,6 +193,34 @@ int LfnIc::ImageScaledDown::GetWidth() const
 int LfnIc::ImageScaledDown::GetHeight() const
 {
 	return m_height;
+}
+
+//
+// ImageConst implementation
+//
+bool LfnIc::ImageConst::Init(int width, int height)
+{
+	// Not supported, and not expected to be called.
+	wxASSERT(false);
+	return false;
+}
+
+bool LfnIc::ImageConst::IsValid() const
+{
+	return true;
+}
+
+const std::string& LfnIc::ImageConst::GetFilePath() const
+{
+	static const std::string empty("");
+	return empty;
+}
+
+LfnIc::ImageConst::Rgb* LfnIc::ImageConst::GetRgb()
+{
+	// Not supported, and not expected to be called.
+	wxASSERT(false);
+	return NULL;
 }
 
 //
@@ -213,7 +241,7 @@ LfnIc::ImageScalable::~ImageScalable()
 	}
 }
 
-const LfnIc::Image::Rgb* LfnIc::ImageScalable::GetRgb() const
+const LfnIc::ImageScalable::Rgb* LfnIc::ImageScalable::GetRgb() const
 {
 	return GetCurrentResolution().GetRgb();
 }

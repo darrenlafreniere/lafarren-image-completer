@@ -28,28 +28,42 @@
 namespace LfnIc
 {
 	//
-	// Defines an interface to an image.
+	// Partially implements HostImage under the assumption that the image is
+	// const. Used internally to access read-only image data, including scaled
+	// down data, during completion.
 	//
-	class Image
+	class ImageConst : public HostImage
 	{
 	public:
-		// Semantics are identical to those of LfnIc::HostImage. See that
-		// class for more info.
-		typedef HostImage::Rgb Rgb;
+		// Partial implementation. The non-const methods will assert.
+		// See base class for more info.
+		virtual bool Init(int width, int height);
+		virtual bool IsValid() const;
+		virtual const std::string& GetFilePath() const;
+		virtual Rgb* GetRgb();
+
+		// Unimplemented. These are defined in the base, but GetRgb() const
+		// must be redefined here as well, because otherwise, calling GetRgb()
+		// on a const Image& confuses the compile, and it tries calling the
+		// non-const version of GetRgb() above, and generates an error.
+		// Redefined the other two methods here just for completeness.
 		virtual const Rgb* GetRgb() const = 0;
 		virtual int GetWidth() const = 0;
 		virtual int GetHeight() const = 0;
 
 	protected:
 		// Instances cannot be destroyed through a base Image pointer.
-		virtual ~Image() {}
+		virtual ~ImageConst() {}
 	};
+
+	// Forward declaration. Defined in Image.cpp.
+	class ImageInternal;
 
 	//
 	// Implements both the Image and Scalable interfaces and provides an in
 	// place scalable image. Initializes the image from the input HostImage.
 	//
-	class ImageScalable : public Image, public Scalable
+	class ImageScalable : public ImageConst, public Scalable
 	{
 	public:
 		ImageScalable(const HostImage& hostImage);
@@ -64,9 +78,9 @@ namespace LfnIc
 		virtual int GetScaleDepth() const;
 
 	private:
-		inline class ImageInternal& GetCurrentResolution() const { return *m_resolutions[m_depth]; }
+		inline ImageInternal& GetCurrentResolution() const { return *m_resolutions[m_depth]; }
 
-		std::vector<class ImageInternal*> m_resolutions;
+		std::vector<ImageInternal*> m_resolutions;
 		int m_depth;
 	};
 }

@@ -41,7 +41,7 @@ inline float MaskValueToAlpha(LfnIc::Mask::Value maskValue)
 
 void LfnIc::CreateSoftMask(const Compositor::Input& input, std::vector<float>& out)
 {
-	const Image& inputImage = input.inputImage;
+	const ImageConst& inputImage = input.inputImage;
 	const Mask& mask = input.mask;
 	const int imageWidth = inputImage.GetWidth();
 	const int imageHeight = inputImage.GetHeight();

@@ -29,7 +29,7 @@ namespace LfnIc
 {
 	// Forward declarations
 	class EnergyCalculatorContainer;
-	class Image;
+	class ImageConst;
 	class LabelSet;
 	class MaskLod;
 	class Node;

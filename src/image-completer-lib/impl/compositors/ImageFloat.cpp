@@ -28,7 +28,7 @@
 
 #include "tech/DbgMem.h"
 
-wxCOMPILE_TIME_ASSERT(LfnIc::Image::Rgb::NUM_CHANNELS == LfnIc::RgbFloat::NUM_CHANNELS, RgbNumChannelsMismatch);
+wxCOMPILE_TIME_ASSERT(LfnIc::HostImage::Rgb::NUM_CHANNELS == LfnIc::RgbFloat::NUM_CHANNELS, RgbNumChannelsMismatch);
 
 LfnIc::ImageFloat::ImageFloat()
 	: m_width(0)
@@ -36,7 +36,7 @@ LfnIc::ImageFloat::ImageFloat()
 {
 }
 
-LfnIc::ImageFloat::ImageFloat(const Image& input)
+LfnIc::ImageFloat::ImageFloat(const ImageConst& input)
 {
 	const int width = input.GetWidth();
 	const int height = input.GetHeight();

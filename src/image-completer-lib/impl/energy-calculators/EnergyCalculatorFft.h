@@ -38,7 +38,7 @@ namespace LfnIc
 #if FFT_VALIDATION_ENABLED
 	class EnergyCalculatorPerPixel;
 #endif
-	class Image;
+	class ImageConst;
 	class MaskLod;
 	struct Settings;
 
@@ -75,7 +75,7 @@ namespace LfnIc
 		//
 		EnergyCalculatorFft(
 			const Settings& settings,
-			const Image& inputImage,
+			const ImageConst& inputImage,
 			const MaskLod& mask
 #if FFT_VALIDATION_ENABLED
 			, EnergyCalculatorPerPixel m_energyCalculatorPerPixel
@@ -158,7 +158,7 @@ namespace LfnIc
 		// list dependencies.
 		//
 		const Settings& m_settings;
-		const Image& m_inputImage;
+		const ImageConst& m_inputImage;
 		const MaskLod& m_mask;
 #if FFT_VALIDATION_ENABLED
 		EnergyCalculatorPerPixel& m_energyCalculatorPerPixel;

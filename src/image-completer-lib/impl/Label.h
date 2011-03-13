@@ -29,7 +29,7 @@
 namespace LfnIc
 {
 	// Forward declarations
-	class Image;
+	class ImageConst;
 	class MaskLod;
 	struct Settings;
 
@@ -55,7 +55,7 @@ namespace LfnIc
 	class LabelSet : public Scalable
 	{
 	public:
-		LabelSet(const Settings& settings, const Image& inputImage, const MaskLod& mask);
+		LabelSet(const Settings& settings, const ImageConst& inputImage, const MaskLod& mask);
 		~LabelSet();
 
 		const Label& operator[](int i) const;

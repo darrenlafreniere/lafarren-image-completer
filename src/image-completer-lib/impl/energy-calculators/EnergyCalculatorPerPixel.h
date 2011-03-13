@@ -27,7 +27,7 @@
 namespace LfnIc
 {
 	// Forward declarations
-	class Image;
+	class ImageConst;
 	class MaskLod;
 
 	// Calculates the energy between two regions of the input image by doing
@@ -35,7 +35,7 @@ namespace LfnIc
 	class EnergyCalculatorPerPixel : public EnergyCalculator
 	{
 	public:
-		EnergyCalculatorPerPixel(const Image& inputImage, const MaskLod& mask);
+		EnergyCalculatorPerPixel(const ImageConst& inputImage, const MaskLod& mask);
 		virtual ~EnergyCalculatorPerPixel();
 
 		// EnergyCalculator interface

@@ -52,7 +52,7 @@ bool LfnIc::CompositorRoot::Compose(const Input& input, HostImage& outputImage) 
 {
 	bool result = false;
 
-	const Image& inputImage = input.inputImage;
+	const ImageConst& inputImage = input.inputImage;
 	const Settings& settings = input.settings;
 
 	ImageFloat outputImageFloat(inputImage);

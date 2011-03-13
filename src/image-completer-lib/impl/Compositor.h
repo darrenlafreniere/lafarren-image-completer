@@ -27,7 +27,7 @@
 
 namespace LfnIc
 {
-	class Image;
+	class ImageConst;
 	class Mask;
 
 	//
@@ -38,11 +38,11 @@ namespace LfnIc
 	public:
 		struct Input
 		{
-			Input(const Settings& settings, const Image& inputImage, const Mask& mask);
+			Input(const Settings& settings, const ImageConst& inputImage, const Mask& mask);
 
 			// Public properties:
 			const Settings& settings;
-			const Image& inputImage;
+			const ImageConst& inputImage;
 			const Mask& mask;
 
 			// The patches are sorted by a recommended order in which they
