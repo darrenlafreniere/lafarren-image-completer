@@ -1,19 +1,19 @@
 //
 // Copyright 2010, Darren Lafreniere
 // <http://www.lafarren.com/image-completer/>
-// 
+//
 // This file is part of lafarren.com's Image Completer.
-// 
+//
 // Image Completer is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Image Completer is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with Image Completer, named License.txt. If not, see
 // <http://www.gnu.org/licenses/>.
@@ -56,7 +56,7 @@
 //
 // Permission is hereby granted to use, copy, modify, and distribute this
 // source code, or portions hereof, for any purpose, including commercial
-// applications, freely and without fee, subject to the following restrictions: 
+// applications, freely and without fee, subject to the following restrictions:
 //
 // 1. The origin of this software must not be misrepresented; you must not
 //    claim that you wrote the original software. If you use this software
@@ -77,9 +77,15 @@
 #include "HostImageLocal.h"
 #include "ImageFloat.h"
 #include "PriorityBpHost.h"
-#include "TaucsMatrix.h"
+//#include "TaucsMatrix.h"
 
 #include "tech/DbgMem.h"
+
+#ifdef USE_POISSON
+  #include <Eigen/Sparse>
+  #include <Eigen/UmfPackSupport>
+  #include <Eigen/SparseExtra>
+#endif
 
 namespace LfnIc { namespace Poisson
 {
@@ -126,17 +132,18 @@ namespace LfnIc { namespace Poisson
 	public:
 		AAndBVars(const ImageFloat& inputImage, const Mask& mask, const BVarInitializer& bVarInitializer, const UnknownVars& unknownVars);
 
-		inline const TaucsMatrix& GetA() const;
-		inline double* GetBVars() const;
+		inline const Eigen::SparseMatrix<double>& GetA() const;
+		inline Eigen::VectorXd& GetBVars();
+        inline Eigen::VectorXd GetBVarsConst() const;
 
 	private:
-		void Evaluate(const ImageFloat& inputImage, const Mask& mask, const UnknownVars& unknownVars, int x, int y, int& inOutColumnStartIndex, RgbFloat& inOutPixel);
+		void Evaluate(const ImageFloat& inputImage, const Mask& mask, const UnknownVars& unknownVars, int x, int y, RgbFloat& inOutPixel, const unsigned int variableId);
 
-		// Each Evaluate call is made only if a bool is true. Yhis overload declutters the call(s).
-		inline void Evaluate(bool shouldEvaluate, const ImageFloat& inputImage, const Mask& mask, const UnknownVars& unknownVars, int x, int y, int& inOutColumnStartIndex, RgbFloat& inOutPixel);
+		// Each Evaluate call is made only if a bool is true. This overload declutters the call(s).
+		inline void Evaluate(bool shouldEvaluate, const ImageFloat& inputImage, const Mask& mask, const UnknownVars& unknownVars, int x, int y, RgbFloat& inOutPixel, const unsigned int variableId);
 
-		TaucsMatrix m_a;
-		std::auto_ptr<double> m_bVars;
+        Eigen::SparseMatrix<double> m_a;
+        Eigen::VectorXd m_b;
 	};
 
 	//
@@ -159,11 +166,11 @@ namespace LfnIc { namespace Poisson
 		typedef unsigned int Key;
 
 		inline Key GetKeyFromXy(int x, int y) const;
-		
+
 		int m_width;
 		int m_height;
 		std::map<Key, int> m_xyToUnknownIndexMap;
-		std::auto_ptr<double> m_uVars;
+		Eigen::VectorXd m_u;
 	};
 
 	//
@@ -197,19 +204,16 @@ namespace LfnIc { namespace Poisson
 namespace LfnIc { namespace Poisson
 {
 	AAndBVars::AAndBVars(const ImageFloat& inputImage, const Mask& mask, const BVarInitializer& bVarInitializer, const UnknownVars& unknownVars)
-		// Create the sparse 'a' matrix, we have at least 5 non-zero elements
-		// per column
-		: m_a(unknownVars.GetNum(), unknownVars.GetNum(), unknownVars.GetNum() * 5, TAUCS_DOUBLE)
-		// The 'b' values, 3 channels per.
-		, m_bVars(new double[unknownVars.GetNum() * 3])
 	{
+        // The A matrix is 3N * 3N where N is the number of masked pixels
+        m_a.resize(unknownVars.GetNum() * 3, unknownVars.GetNum() * 3);
+
+        // The 'b' values
+        m_b.resize(unknownVars.GetNum() * 3, 1);
+
 		const int width = inputImage.GetWidth();
 		const int height = inputImage.GetHeight();
-		const int numUnknowns = unknownVars.GetNum();
-		double* bVars = m_bVars.get();
 
-		int column = 0;
-		int columnStartIndex = 0;
 		for (int y = 0; y < height; ++y)
 		{
 			for (int x = 0; x < width; ++x)
@@ -217,46 +221,47 @@ namespace LfnIc { namespace Poisson
 				if (mask.GetValue(x, y) == Mask::UNKNOWN)
 				{
 					const PixelNeighbors neighbors(width, height, x, y);
-					m_a.GetColPtr(column) = columnStartIndex;
 
 					RgbFloat pixel;
 					bVarInitializer.GetInitialValue(x, y, pixel);
 
-					Evaluate(neighbors.HasTop(), inputImage, mask, unknownVars, x, y - 1, columnStartIndex, pixel);
-					Evaluate(neighbors.HasLeft(), inputImage, mask, unknownVars, x - 1, y, columnStartIndex, pixel);
+                    const int unknownIndex = unknownVars.GetIndex(x, y);
 
-					m_a.GetValue(columnStartIndex) = -neighbors.GetNum();
-					m_a.GetRowIndex(columnStartIndex) = unknownVars.GetIndex(x, y);
-					++columnStartIndex;
+					Evaluate(neighbors.HasTop(), inputImage, mask, unknownVars, x, y - 1, pixel, unknownIndex);
+					Evaluate(neighbors.HasLeft(), inputImage, mask, unknownVars, x - 1, y, pixel, unknownIndex);
+					Evaluate(neighbors.HasRight(), inputImage, mask, unknownVars, x + 1, y, pixel, unknownIndex);
+					Evaluate(neighbors.HasBottom(), inputImage, mask, unknownVars, x, y + 1, pixel, unknownIndex);
 
-					Evaluate(neighbors.HasRight(), inputImage, mask, unknownVars, x + 1, y, columnStartIndex, pixel);
-					Evaluate(neighbors.HasBottom(), inputImage, mask, unknownVars, x, y + 1, columnStartIndex, pixel);
+                    // This is the center pixel, so the corresponding entry should be on the diagonal
+                    m_a.insert(unknownIndex + unknownVars.GetNum() * 0, unknownIndex + unknownVars.GetNum() * 0) = -neighbors.GetNum();
+                    m_a.insert(unknownIndex + unknownVars.GetNum() * 1, unknownIndex + unknownVars.GetNum() * 1) = -neighbors.GetNum();
+                    m_a.insert(unknownIndex + unknownVars.GetNum() * 2, unknownIndex + unknownVars.GetNum() * 2) = -neighbors.GetNum();
 
-					const int unknownIndex = unknownVars.GetIndex(x, y);
-					bVars[unknownIndex + numUnknowns * 0] = pixel.r;
-					bVars[unknownIndex + numUnknowns * 1] = pixel.g;
-					bVars[unknownIndex + numUnknowns * 2] = pixel.b;
-
-					++column;
+					m_b(unknownIndex + unknownVars.GetNum() * 0) = pixel.r;
+					m_b(unknownIndex + unknownVars.GetNum() * 1) = pixel.g;
+					m_b(unknownIndex + unknownVars.GetNum() * 2) = pixel.b;
 				}
 			}
 		}
 
-		wxASSERT(column == unknownVars.GetNum());
-		m_a.GetColPtr(column) = columnStartIndex;
 	}
 
-	const TaucsMatrix& AAndBVars::GetA() const
+	const Eigen::SparseMatrix<double>& AAndBVars::GetA() const
 	{
 		return m_a;
 	}
 
-	double* AAndBVars::GetBVars() const
+	Eigen::VectorXd& AAndBVars::GetBVars()
 	{
-		return m_bVars.get();
+		return m_b;
 	}
 
-	void AAndBVars::Evaluate(const ImageFloat& inputImage, const Mask& mask, const UnknownVars& unknownVars, int x, int y, int& inOutColumnStartIndex, RgbFloat& inOutPixel)
+    Eigen::VectorXd AAndBVars::GetBVarsConst() const
+    {
+        return m_b;
+    }
+
+	void AAndBVars::Evaluate(const ImageFloat& inputImage, const Mask& mask, const UnknownVars& unknownVars, int x, int y, RgbFloat& inOutPixel, const unsigned int variableId)
 	{
 		wxASSERT(x >= 0);
 		wxASSERT(y >= 0);
@@ -265,9 +270,9 @@ namespace LfnIc { namespace Poisson
 		if (mask.GetValue(x, y) == Mask::UNKNOWN)
 		{
 			// Unknown pixel
-			m_a.GetValue(inOutColumnStartIndex) = 1.0f;
-			m_a.GetRowIndex(inOutColumnStartIndex) = unknownVars.GetIndex(x, y);
-			++inOutColumnStartIndex;
+			m_a.insert(variableId + unknownVars.GetNum() * 0, unknownVars.GetIndex(x,y) + unknownVars.GetNum() * 0) = 1.0f;
+            m_a.insert(variableId + unknownVars.GetNum() * 1, unknownVars.GetIndex(x,y) + unknownVars.GetNum() * 1) = 1.0f;
+            m_a.insert(variableId + unknownVars.GetNum() * 2, unknownVars.GetIndex(x,y) + unknownVars.GetNum() * 2) = 1.0f;
 		}
 		else
 		{
@@ -276,11 +281,11 @@ namespace LfnIc { namespace Poisson
 		}
 	}
 
-	void AAndBVars::Evaluate(bool shouldEvaluate, const ImageFloat& inputImage, const Mask& mask, const UnknownVars& unknownVars, int x, int y, int& inOutColumnStartIndex, RgbFloat& inOutPixel)
+	void AAndBVars::Evaluate(bool shouldEvaluate, const ImageFloat& inputImage, const Mask& mask, const UnknownVars& unknownVars, int x, int y, RgbFloat& inOutPixel, const unsigned int variableId)
 	{
 		if (shouldEvaluate)
 		{
-			Evaluate(inputImage, mask, unknownVars, x, y, inOutColumnStartIndex, inOutPixel);
+			Evaluate(inputImage, mask, unknownVars, x, y, inOutPixel, variableId);
 		}
 	}
 }}
@@ -307,7 +312,7 @@ namespace LfnIc { namespace Poisson
 			}
 		}
 
-		m_uVars.reset(new double[GetNum() * 3]);
+		m_u.resize(GetNum() * 3, 1);
 	}
 
 	int UnknownVars::GetWidth() const
@@ -332,23 +337,20 @@ namespace LfnIc { namespace Poisson
 
 	float UnknownVars::GetFloatClamped0To1(int index) const
 	{
-		return LfnTech::Clamp0To1(static_cast<float>(m_uVars.get()[index]));
+		return LfnTech::Clamp0To1(static_cast<float>(m_u[index]));
 	}
 
 	void UnknownVars::Solve(const AAndBVars& aAndBVars)
 	{
-		char* options[] = { "taucs.factor.LU=true", NULL }; 
-		const int result = taucs_linsolve(
-			aAndBVars.GetA().GetTranspose(TaucsMatrix()),
-			NULL,
-			3,
-			m_uVars.get(),
-			aAndBVars.GetBVars(),
-			options,
-			NULL);
-		wxASSERT(result == TAUCS_SUCCESS);
+      // solve Ax = b using UmfPack:
+      Eigen::SparseMatrix<double> A = aAndBVars.GetA();
+      A.transpose();
+      Eigen::SparseLU<Eigen::SparseMatrix<double>,Eigen::UmfPack> lu_of_A(A);
+      wxASSERT(lu_of_A.succeeded());
+      bool success = lu_of_A.solve(aAndBVars.GetBVarsConst(),&m_u);
+      wxASSERT(success);
 	}
-	
+
 	UnknownVars::Key UnknownVars::GetKeyFromXy(int x, int y) const
 	{
 		wxASSERT(x >= 0);
