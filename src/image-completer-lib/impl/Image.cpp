@@ -31,22 +31,22 @@
 //
 namespace LfnIc
 {
-	class ImageInternal : public ImageConst
+	class ImageConstInternal : public ImageConst
 	{
 	public:
-		virtual ~ImageInternal() {}
+		virtual ~ImageConstInternal() {}
 	};
 }
 
 //
-// Extends ImageInternal by delegating all calls to a Image instance.
+// Extends ImageConstInternal by delegating all calls to a Image instance.
 //
 namespace LfnIc
 {
-	class ImageDelegateToHostImage : public ImageInternal
+	class ImageConstDelegateToImage : public ImageConstInternal
 	{
 	public:
-		ImageDelegateToHostImage(const Image& hostImage);
+		ImageConstDelegateToImage(const Image& hostImage);
 
 		virtual const Rgb* GetRgb() const;
 		virtual int GetWidth() const;
@@ -54,39 +54,39 @@ namespace LfnIc
 
 	private:
 		// Hide copy constructor.
-		ImageDelegateToHostImage(const ImageDelegateToHostImage&) : m_hostImage(*reinterpret_cast<const Image*>(0xCDCDCDCD)) {}
+		ImageConstDelegateToImage(const ImageConstDelegateToImage&) : m_hostImage(*reinterpret_cast<const Image*>(0xCDCDCDCD)) {}
 
 		const Image& m_hostImage;
 	};
 }
 
-LfnIc::ImageDelegateToHostImage::ImageDelegateToHostImage(const Image& hostImage) :
+LfnIc::ImageConstDelegateToImage::ImageConstDelegateToImage(const Image& hostImage) :
 m_hostImage(hostImage)
 {
 }
 
-const LfnIc::Image::Rgb* LfnIc::ImageDelegateToHostImage::GetRgb() const
+const LfnIc::Image::Rgb* LfnIc::ImageConstDelegateToImage::GetRgb() const
 {
 	return m_hostImage.GetRgb();
 }
 
-int LfnIc::ImageDelegateToHostImage::GetWidth() const
+int LfnIc::ImageConstDelegateToImage::GetWidth() const
 {
 	return m_hostImage.GetWidth();
 }
 
-int LfnIc::ImageDelegateToHostImage::GetHeight() const
+int LfnIc::ImageConstDelegateToImage::GetHeight() const
 {
 	return m_hostImage.GetHeight();
 }
 
 //
-// Extends ImageInternal. Initializes its data from halving the resolution of
+// Extends ImageConstInternal. Initializes its data from halving the resolution of
 // an input Image instance
 //
 namespace LfnIc
 {
-	class ImageScaledDown : public ImageInternal
+	class ImageScaledDown : public ImageConstInternal
 	{
 	public:
 		ImageScaledDown(const ImageConst& imageToScaleDown);
@@ -230,7 +230,7 @@ LfnIc::ImageScalable::ImageScalable(const Image& hostImage) :
 m_depth(0)
 {
 	// Delegate to original resolution Image at depth 0.
-	m_resolutions.push_back(new ImageDelegateToHostImage(hostImage));
+	m_resolutions.push_back(new ImageConstDelegateToImage(hostImage));
 }
 
 LfnIc::ImageScalable::~ImageScalable()

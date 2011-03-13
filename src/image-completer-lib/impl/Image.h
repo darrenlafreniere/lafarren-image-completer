@@ -57,7 +57,7 @@ namespace LfnIc
 	};
 
 	// Forward declaration. Defined in Image.cpp.
-	class ImageInternal;
+	class ImageConstInternal;
 
 	//
 	// Implements both the Image and Scalable interfaces and provides an in
@@ -78,9 +78,9 @@ namespace LfnIc
 		virtual int GetScaleDepth() const;
 
 	private:
-		inline ImageInternal& GetCurrentResolution() const { return *m_resolutions[m_depth]; }
+		inline ImageConstInternal& GetCurrentResolution() const { return *m_resolutions[m_depth]; }
 
-		std::vector<ImageInternal*> m_resolutions;
+		std::vector<ImageConstInternal*> m_resolutions;
 		int m_depth;
 	};
 }
