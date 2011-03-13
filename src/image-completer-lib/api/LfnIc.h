@@ -20,11 +20,11 @@
 //
 
 //
-// Main API header for the Priority-BP image completer.
+// Main API header for the Priority-BP based image completer.
 // Based on http://www.csd.uoc.gr/~komod/publications/docs/TIP_07.pdf
 //
-#ifndef PRIORITY_BP_H
-#define PRIORITY_BP_H
+#ifndef LFN_IC_H
+#define LFN_IC_H
 
 #include <iostream>
 #include "tech/Core.h"

@@ -121,6 +121,7 @@
     <ClCompile Include="ImageConst.cpp" />
     <ClCompile Include="ImageScalable.cpp" />
     <ClCompile Include="Label.cpp" />
+    <ClCompile Include="LfnIc.cpp" />
     <ClCompile Include="Mask.cpp" />
     <ClCompile Include="MaskWritable.cpp" />
     <ClCompile Include="NeighborEdge.cpp" />
@@ -132,12 +133,12 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pch.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="PriorityBp.cpp" />
     <ClCompile Include="PriorityBpRunner.cpp" />
     <ClCompile Include="ScalableDebugging.cpp" />
     <ClCompile Include="Settings.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\api\LfnIc.h" />
     <ClInclude Include="..\api\LfnIcImage.h" />
     <ClInclude Include="..\api\LfnIcSettings.h" />
     <ClInclude Include="..\api\LfnIcTypes.h" />
@@ -160,7 +161,6 @@
     <ClInclude Include="energy-calculators\EnergyCalculatorPerPixel.h" />
     <ClInclude Include="energy-calculators\EnergyCalculatorUtils.h" />
     <ClInclude Include="energy-calculators\EnergyWsst.h" />
-    <ClInclude Include="..\api\PriorityBp.h" />
     <ClInclude Include="Compositor.h" />
     <ClInclude Include="ConstNodeLabels.h" />
     <ClInclude Include="EnergyCalculator.h" />

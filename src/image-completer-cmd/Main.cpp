@@ -24,7 +24,7 @@
 #include "tech/Profile.h"
 
 #include "CommandLineOptions.h"
-#include "PriorityBp.h"
+#include "LfnIc.h"
 #include "LfnIcImage.h"
 #include "LfnIcSettings.h"
 #include "SettingsText.h"

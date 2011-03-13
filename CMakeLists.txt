@@ -33,13 +33,13 @@ ${prioritybp}/EnergyCalculatorContainer.cpp
 ${prioritybp}/ImageConst.cpp
 ${prioritybp}/ImageScalable.cpp
 ${prioritybp}/Label.cpp
+${prioritybp}/LfnIc.cpp
 ${prioritybp}/Mask.cpp
 ${prioritybp}/MaskWritable.cpp
 ${prioritybp}/NeighborEdge.cpp
 ${prioritybp}/Node.cpp
 ${prioritybp}/NodeSet.cpp
 ${prioritybp}/Pch.cpp
-${prioritybp}/PriorityBp.cpp
 ${prioritybp}/PriorityBpRunner.cpp
 ${prioritybp}/ScalableDebugging.cpp
 ${prioritybp}/Settings.cpp

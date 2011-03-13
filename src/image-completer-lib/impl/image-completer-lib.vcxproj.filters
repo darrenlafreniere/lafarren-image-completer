@@ -35,7 +35,6 @@
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="NodeSet.cpp" />
     <ClCompile Include="Pch.cpp" />
-    <ClCompile Include="PriorityBp.cpp" />
     <ClCompile Include="PriorityBpRunner.cpp" />
     <ClCompile Include="EnergyCalculatorContainer.cpp" />
     <ClCompile Include="Settings.cpp" />
@@ -76,6 +75,7 @@
     </ClCompile>
     <ClCompile Include="ImageConst.cpp" />
     <ClCompile Include="ImageScalable.cpp" />
+    <ClCompile Include="LfnIc.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="compositors\CompositorUtils.h">
@@ -95,9 +95,6 @@
     </ClInclude>
     <ClInclude Include="energy-calculators\EnergyWsst.h">
       <Filter>energy-calculators</Filter>
-    </ClInclude>
-    <ClInclude Include="..\api\PriorityBp.h">
-      <Filter>../api</Filter>
     </ClInclude>
     <ClInclude Include="Compositor.h" />
     <ClInclude Include="ConstNodeLabels.h" />
@@ -164,6 +161,9 @@
       <Filter>../api</Filter>
     </ClInclude>
     <ClInclude Include="..\api\LfnIcImage.h">
+      <Filter>../api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\LfnIc.h">
       <Filter>../api</Filter>
     </ClInclude>
   </ItemGroup>
