@@ -26,12 +26,13 @@
 
 #include "tech/MathUtils.h"
 
+#include "Image.h"
 #include "Mask.h"
 
 #include "tech/DbgMem.h"
 
 #if FFT_VALIDATION_ENABLED
-Energy EnergyCalculatorFftUtils::BruteForceCalculate1stTerm(const Image& image, int width, int height, int aLeft, int aTop, const Mask* aMask)
+LfnIc::Energy LfnIc::EnergyCalculatorFftUtils::BruteForceCalculate1stTerm(const Image& image, int width, int height, int aLeft, int aTop, const MaskLod* aMask)
 {
 	Energy e = Energy(0);
 
@@ -46,7 +47,7 @@ Energy EnergyCalculatorFftUtils::BruteForceCalculate1stTerm(const Image& image, 
 		{
 			if ((aLeft + x) >= 0 && (aTop + y) >= 0)
 			{
-				const int idx = GetRowMajorIndex(imageWidth, aLeft + x, aTop + y);
+				const int idx = LfnTech::GetRowMajorIndex(imageWidth, aLeft + x, aTop + y);
 				if (!aMask || maskBuffer[idx] == Mask::KNOWN)
 				{
 					const Image::Rgb& rgb = imageRgb[idx];
@@ -59,7 +60,7 @@ Energy EnergyCalculatorFftUtils::BruteForceCalculate1stTerm(const Image& image, 
 	return e;
 }
 
-Energy EnergyCalculatorFftUtils::BruteForceCalculate2ndTerm(const Image& image, int width, int height, int aLeft, int aTop, const Mask* aMask, int bLeft, int bTop)
+LfnIc::Energy LfnIc::EnergyCalculatorFftUtils::BruteForceCalculate2ndTerm(const Image& image, int width, int height, int aLeft, int aTop, const MaskLod* aMask, int bLeft, int bTop)
 {
 	Energy e = Energy(0);
 
@@ -80,11 +81,11 @@ Energy EnergyCalculatorFftUtils::BruteForceCalculate2ndTerm(const Image& image, 
 				const int bx = bLeft + i;
 				if (ax >= 0 && bx >= 0 && ax < imageWidth && bx < imageWidth)
 				{
-					const int aIdx = GetRowMajorIndex(imageWidth, ax, ay);
+					const int aIdx = LfnTech::GetRowMajorIndex(imageWidth, ax, ay);
 					if (!aMask || maskBuffer[aIdx] == Mask::KNOWN)
 					{
 						const Image::Rgb& aRgb = imageRgb[aIdx];
-						const Image::Rgb& bRgb = imageRgb[GetRowMajorIndex(imageWidth, bx, by)];
+						const Image::Rgb& bRgb = imageRgb[LfnTech::GetRowMajorIndex(imageWidth, bx, by)];
 						const int scalar = 2;
 						const int rmult = scalar * aRgb.red * bRgb.red;
 						const int gmult = scalar * aRgb.green * bRgb.green;
@@ -99,7 +100,7 @@ Energy EnergyCalculatorFftUtils::BruteForceCalculate2ndTerm(const Image& image, 
 	return -e;
 }
 
-Energy EnergyCalculatorFftUtils::BruteForceCalculate3rdTerm(const Image& image, int width, int height, int aLeft, int aTop, const Mask* aMask, int bLeft, int bTop)
+LfnIc::Energy LfnIc::EnergyCalculatorFftUtils::BruteForceCalculate3rdTerm(const Image& image, int width, int height, int aLeft, int aTop, const MaskLod* aMask, int bLeft, int bTop)
 {
 	Energy e = Energy(0);
 	return e;
