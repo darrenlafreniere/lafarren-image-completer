@@ -22,6 +22,10 @@
 #ifndef ENERGY_CALCULATOR_FFT_CONFIG_H
 #define ENERGY_CALCULATOR_FFT_CONFIG_H
 
-#define ENABLE_ENERGY_CALCULATOR_FFT 1
+#define ENABLE_ENERGY_CALCULATOR_FFT 0
+
+// Debugging flag. If enabled, verifies the fft-based energy results against
+// the per-pixel energy calculator results.
+#define FFT_VALIDATION_ENABLED (ENABLE_ENERGY_CALCULATOR_FFT && 0)
 
 #endif // ENERGY_CALCULATOR_FFT_CONFIG_H

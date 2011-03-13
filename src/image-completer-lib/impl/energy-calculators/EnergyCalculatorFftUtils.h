@@ -27,10 +27,6 @@
 
 #include "LfnIcTypes.h"
 
-// Debugging flag. If enabled, verifies the fft-based energy results against
-// the per-pixel energy calculator results.
-#define FFT_VALIDATION_ENABLED 1
-
 namespace LfnIc
 {
 	// Forward declarations
