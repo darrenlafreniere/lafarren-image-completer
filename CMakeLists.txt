@@ -6,7 +6,7 @@ find_package(wxWidgets COMPONENTS core base REQUIRED)
 include( ${wxWidgets_USE_FILE} )
 
 set(cmdsrc src/image-completer-cmd)
-set(prioritybp src/image-completer-lib/impl)
+set(ImageCompleterDir src/image-completer-lib/impl)
 set(tech src/tech)
 
 include_directories(lib/tacus/ src/image-completer-cmd src/image-completer-lib src/image-completer-lib/api src/image-completer-lib/impl src/image-completer-lib/impl/compositors src/image-completer-lib/impl/energy-calculators src/tech/tech src/tech)
@@ -25,43 +25,41 @@ IF(UNIX)
 ENDIF(UNIX)
 
 ###############
-set(ImageCompleterSources
+add_library(ImageCompleterLib
+${ImageCompleterDir}/Compositor.cpp
+${ImageCompleterDir}/ConstNodeLabels.cpp
+${ImageCompleterDir}/EnergyCalculatorContainer.cpp
+${ImageCompleterDir}/HostImageLocal.cpp
+${ImageCompleterDir}/Image.cpp
+${ImageCompleterDir}/Label.cpp
+${ImageCompleterDir}/Mask.cpp
+${ImageCompleterDir}/MaskWritable.cpp
+${ImageCompleterDir}/NeighborEdge.cpp
+${ImageCompleterDir}/Node.cpp
+${ImageCompleterDir}/NodeSet.cpp
+${ImageCompleterDir}/Pch.cpp
+${ImageCompleterDir}/PriorityBp.cpp
+${ImageCompleterDir}/PriorityBpRunner.cpp
+${ImageCompleterDir}/ScalableDebugging.cpp
+${ImageCompleterDir}/Settings.cpp
 
-${cmdsrc}/CommandLineOptions.cpp
-${cmdsrc}/Pch.cpp
-${cmdsrc}/SettingsText.cpp
+${ImageCompleterDir}/compositors/CompositorRoot.cpp
+${ImageCompleterDir}/compositors/CompositorUtils.cpp
+${ImageCompleterDir}/compositors/ImageFloat.cpp
+${ImageCompleterDir}/compositors/OutputBlenderDebugSoftMaskIntensity.cpp
+${ImageCompleterDir}/compositors/OutputBlenderSoftMask.cpp
+${ImageCompleterDir}/compositors/PatchBlenderNone.cpp
+${ImageCompleterDir}/compositors/PatchBlenderPriority.cpp
+${ImageCompleterDir}/compositors/PatchTypeDebugPatchOrder.cpp
+${ImageCompleterDir}/compositors/PatchTypeNormal.cpp
 
-${prioritybp}/Compositor.cpp
-${prioritybp}/ConstNodeLabels.cpp
-${prioritybp}/EnergyCalculatorContainer.cpp
-${prioritybp}/HostImageLocal.cpp
-${prioritybp}/Image.cpp
-${prioritybp}/Label.cpp
-${prioritybp}/Mask.cpp
-${prioritybp}/MaskWritable.cpp
-${prioritybp}/NeighborEdge.cpp
-${prioritybp}/Node.cpp
-${prioritybp}/NodeSet.cpp
-${prioritybp}/Pch.cpp
-${prioritybp}/PriorityBp.cpp
-${prioritybp}/PriorityBpRunner.cpp
-${prioritybp}/ScalableDebugging.cpp
-${prioritybp}/Settings.cpp
+${ImageCompleterDir}/energy-calculators/EnergyCalculatorFft.cpp
+${ImageCompleterDir}/energy-calculators/EnergyCalculatorFftUtils.cpp
+${ImageCompleterDir}/energy-calculators/EnergyCalculatorPerPixel.cpp
 
-${prioritybp}/compositors/CompositorRoot.cpp
-${prioritybp}/compositors/CompositorUtils.cpp
-${prioritybp}/compositors/ImageFloat.cpp
-${prioritybp}/compositors/OutputBlenderDebugSoftMaskIntensity.cpp
-${prioritybp}/compositors/OutputBlenderSoftMask.cpp
-${prioritybp}/compositors/PatchBlenderNone.cpp
-${prioritybp}/compositors/PatchBlenderPriority.cpp
-${prioritybp}/compositors/PatchTypeDebugPatchOrder.cpp
-${prioritybp}/compositors/PatchTypeNormal.cpp
+)
 
-${prioritybp}/energy-calculators/EnergyCalculatorFft.cpp
-${prioritybp}/energy-calculators/EnergyCalculatorFftUtils.cpp
-${prioritybp}/energy-calculators/EnergyCalculatorPerPixel.cpp
-
+add_library(Tech
 ${tech}/Pch.cpp
 ${tech}/tech/Atomic.cpp
 ${tech}/tech/Core.cpp
@@ -69,7 +67,6 @@ ${tech}/tech/ImageUtils.cpp
 ${tech}/tech/Profile.cpp
 ${tech}/tech/StrUtils.cpp
 ${tech}/tech/Time.cpp
-
 )
 
 #if TAUCS is setup correctly, we would want to enable Poisson blending
@@ -83,5 +80,9 @@ ENDIF(USE_POISSON)
 #####################################
 
 
-add_executable(ImageCompleter ${cmdsrc}/Main.cpp ${ImageCompleterSources})
-target_link_libraries(ImageCompleter ${wxWidgets_LIBRARIES})
+add_executable(ImageCompleter ${cmdsrc}/Main.cpp
+
+${cmdsrc}/CommandLineOptions.cpp
+${cmdsrc}/Pch.cpp
+${cmdsrc}/SettingsText.cpp)
+target_link_libraries(ImageCompleter ${wxWidgets_LIBRARIES} Tech ImageCompleterLib)
