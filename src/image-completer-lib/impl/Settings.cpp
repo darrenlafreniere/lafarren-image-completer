@@ -25,7 +25,7 @@
 #include "tech/MathUtils.h"
 #include "tech/StrUtils.h"
 
-#include "PriorityBpHost.h"
+#include "LfnIcImage.h"
 #include "Settings.h"
 
 #include "tech/DbgMem.h"

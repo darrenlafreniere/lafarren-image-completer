@@ -138,6 +138,7 @@
     <ClCompile Include="Settings.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\api\LfnIcImage.h" />
     <ClInclude Include="..\api\LfnIcSettings.h" />
     <ClInclude Include="..\api\LfnIcTypes.h" />
     <ClInclude Include="compositors\CompositorRoot.h" />
@@ -160,7 +161,6 @@
     <ClInclude Include="energy-calculators\EnergyCalculatorUtils.h" />
     <ClInclude Include="energy-calculators\EnergyWsst.h" />
     <ClInclude Include="..\api\PriorityBp.h" />
-    <ClInclude Include="..\api\PriorityBpHost.h" />
     <ClInclude Include="Compositor.h" />
     <ClInclude Include="ConstNodeLabels.h" />
     <ClInclude Include="EnergyCalculator.h" />

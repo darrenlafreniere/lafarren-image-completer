@@ -19,17 +19,13 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef PRIORITY_BP_HOST_H
-#define PRIORITY_BP_HOST_H
+#ifndef LFN_IC_IMAGE_H
+#define LFN_IC_IMAGE_H
 
 #include <iostream>
 
 namespace LfnIc
 {
-	// Forward declarations
-	class Image;
-	struct Settings;
-
 	// Image interface. Used for both reading the input image and
 	// writing the output image.
 	class Image

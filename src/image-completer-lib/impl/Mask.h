@@ -22,7 +22,7 @@
 #ifndef MASK_H
 #define MASK_H
 
-#include "PriorityBpHost.h"
+#include "LfnIcImage.h"
 #include "Scalable.h"
 
 namespace LfnIc

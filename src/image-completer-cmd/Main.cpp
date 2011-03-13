@@ -25,7 +25,7 @@
 
 #include "CommandLineOptions.h"
 #include "PriorityBp.h"
-#include "PriorityBpHost.h"
+#include "LfnIcImage.h"
 #include "LfnIcSettings.h"
 #include "SettingsText.h"
 

@@ -75,7 +75,7 @@
 #include "tech/MathUtils.h"
 
 #include "ImageFloat.h"
-#include "PriorityBpHost.h"
+#include "LfnIcImage.h"
 #include "TaucsMatrix.h"
 
 #include "tech/DbgMem.h"

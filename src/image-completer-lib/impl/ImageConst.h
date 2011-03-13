@@ -22,7 +22,7 @@
 #ifndef IMAGE_CONST_H
 #define IMAGE_CONST_H
 
-#include "PriorityBpHost.h"
+#include "LfnIcImage.h"
 
 namespace LfnIc
 {

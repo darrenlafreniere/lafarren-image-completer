@@ -22,7 +22,7 @@
 #ifndef IMAGE_FLOAT_H
 #define IMAGE_FLOAT_H
 
-#include "PriorityBpHost.h"
+#include "LfnIcImage.h"
 
 namespace LfnIc
 {

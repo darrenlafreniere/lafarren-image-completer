@@ -23,7 +23,8 @@
 #define COMPOSITOR_H
 
 #include "Patch.h"
-#include "PriorityBpHost.h"
+#include "ImageConst.h"
+#include "LfnIcSettings.h"
 
 namespace LfnIc
 {

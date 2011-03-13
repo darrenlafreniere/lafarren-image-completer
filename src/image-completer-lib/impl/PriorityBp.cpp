@@ -31,7 +31,7 @@
 #include "Mask.h"
 #include "NodeSet.h"
 #include "Patch.h"
-#include "PriorityBpHost.h"
+#include "LfnIcImage.h"
 #include "PriorityBpRunner.h"
 #include "ScalableDebugging.h"
 #include "Settings.h"

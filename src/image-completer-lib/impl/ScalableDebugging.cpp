@@ -6,7 +6,7 @@
 #include "Compositor.h"
 #include "ImageScalable.h"
 #include "Mask.h"
-#include "PriorityBpHost.h"
+#include "LfnIcImage.h"
 #include "PriorityBpRunner.h"
 #include "Settings.h"
 
