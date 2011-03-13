@@ -22,7 +22,7 @@
 #ifndef SETTINGS_TEXT_H
 #define SETTINGS_TEXT_H
 
-#include "PriorityBpSettings.h"
+#include "LfnIcSettings.h"
 
 class SettingsText
 {

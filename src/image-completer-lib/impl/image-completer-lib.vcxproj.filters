@@ -102,9 +102,6 @@
     <ClInclude Include="..\api\PriorityBpHost.h">
       <Filter>../api</Filter>
     </ClInclude>
-    <ClInclude Include="..\api\PriorityBpSettings.h">
-      <Filter>../api</Filter>
-    </ClInclude>
     <ClInclude Include="Compositor.h" />
     <ClInclude Include="ConstNodeLabels.h" />
     <ClInclude Include="EnergyCalculator.h" />
@@ -164,6 +161,9 @@
     <ClInclude Include="ImageConst.h" />
     <ClInclude Include="ImageScalable.h" />
     <ClInclude Include="..\api\LfnIcTypes.h">
+      <Filter>../api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\LfnIcSettings.h">
       <Filter>../api</Filter>
     </ClInclude>
   </ItemGroup>

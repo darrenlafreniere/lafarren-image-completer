@@ -29,7 +29,7 @@
 #include "EnergyCalculatorUtils.h"
 #include "ImageConst.h"
 #include "Mask.h"
-#include "PriorityBpSettings.h"
+#include "LfnIcSettings.h"
 
 #include "tech/DbgMem.h"
 

@@ -27,7 +27,7 @@
 #include "ConstNodeLabels.h"
 #include "Label.h"
 #include "NodeSet.h"
-#include "PriorityBpSettings.h"
+#include "LfnIcSettings.h"
 
 #include "tech/DbgMem.h"
 

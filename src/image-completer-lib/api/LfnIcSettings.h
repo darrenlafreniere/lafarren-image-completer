@@ -19,8 +19,8 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef PRIORITY_BP_SETTINGS_H
-#define PRIORITY_BP_SETTINGS_H
+#ifndef LFN_IC_SETTINGS_H
+#define LFN_IC_SETTINGS_H
 
 #include "tech/Core.h"
 #include "LfnIcTypes.h"

@@ -22,7 +22,7 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include "PriorityBpSettings.h"
+#include "LfnIcSettings.h"
 #include "Scalable.h"
 
 namespace LfnIc
