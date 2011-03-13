@@ -60,9 +60,14 @@ LfnIc::Mask::Value AppWxMask::GetValue(int x, int y) const
 {
 	const int xMaskSpace = x - m_offsetX;
 	const int yMaskSpace = y - m_offsetY;
-	return (xMaskSpace >= 0 && yMaskSpace >= 0 && xMaskSpace < m_width && yMaskSpace < m_height)
-		? m_values[LfnTech::GetRowMajorIndex(m_width, xMaskSpace, yMaskSpace)]
-		: Mask::KNOWN;
+
+	Value value = Mask::KNOWN;
+	if (xMaskSpace >= 0 && yMaskSpace >= 0 && xMaskSpace < m_width && yMaskSpace < m_height)
+	{
+		value = m_values[LfnTech::GetRowMajorIndex(m_width, xMaskSpace, yMaskSpace)];
+	}
+
+	return value;
 }
 
 LfnIc::Mask::Value AppWxMask::ByteToMaskValue(unsigned char byte) const
