@@ -23,6 +23,8 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUNIX")
 ###############
 set(ImageCompleterSources
 
+${cmdsrc}/AppData.cpp
+${cmdsrc}/AppWxImage.cpp
 ${cmdsrc}/CommandLineOptions.cpp
 ${cmdsrc}/Pch.cpp
 ${cmdsrc}/SettingsText.cpp
