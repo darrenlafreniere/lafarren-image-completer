@@ -112,9 +112,9 @@ m_hasPrunedOnce(false)
 
 LfnIc::Node::Node(const Node& other) :
 m_context(other.m_context),
+m_depth(other.m_depth),
 m_overlapsKnownRegion(other.m_overlapsKnownRegion),
-m_hasPrunedOnce(other.m_hasPrunedOnce),
-m_depth(other.m_depth)
+m_hasPrunedOnce(other.m_hasPrunedOnce)
 {
 	m_resolutions = other.m_resolutions;
 	memcpy(m_neighbors, other.m_neighbors, sizeof(m_neighbors));
