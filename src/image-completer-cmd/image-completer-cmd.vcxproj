@@ -90,6 +90,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AppData.cpp" />
+    <ClCompile Include="AppWxImage.cpp" />
     <ClCompile Include="CommandLineOptions.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Pch.cpp">
@@ -101,6 +103,8 @@
     <ClCompile Include="SettingsText.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AppData.h" />
+    <ClInclude Include="AppWxImage.h" />
     <ClInclude Include="CommandLineOptions.h" />
     <ClInclude Include="Pch.h" />
     <ClInclude Include="SettingsText.h" />
