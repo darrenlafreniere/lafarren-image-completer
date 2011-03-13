@@ -66,7 +66,7 @@ namespace LfnIc
 	class ImageScalable : public ImageConst, public Scalable
 	{
 	public:
-		ImageScalable(const Image& hostImage);
+		ImageScalable(const Image& image);
 		virtual ~ImageScalable();
 
 		virtual const Rgb* GetRgb() const;

@@ -14,10 +14,10 @@
 
 namespace LfnIc
 {
-	class OutputHostImage : public LfnIc::Image
+	class OutputWxImage : public LfnIc::Image
 	{
 	public:
-		OutputHostImage(const std::string& highResOutputFilePath, int depth)
+		OutputWxImage(const std::string& highResOutputFilePath, int depth)
 		{
 			int lastDotIndex = highResOutputFilePath.rfind('.');
 			if (lastDotIndex == -1)
@@ -30,7 +30,7 @@ namespace LfnIc
 			m_filePath += highResOutputFilePath.substr(lastDotIndex);
 		}
 
-		~OutputHostImage()
+		~OutputWxImage()
 		{
 			if (!m_filePath.empty())
 			{
@@ -79,8 +79,8 @@ namespace LfnIc { namespace ScalableDebugging
 		std::auto_ptr<Compositor> compositor(CompositorFactory::Create(settingsScalable.compositorPatchType, settingsScalable.compositorPatchBlender));
 		if (compositor.get())
 		{
-			OutputHostImage outputHostImage(highResOutputFilePath, depth);
-			compositor->Compose(compositorInput, outputHostImage);
+			OutputWxImage outputWxImage(highResOutputFilePath, depth);
+			compositor->Compose(compositorInput, outputWxImage);
 		}
 	}
 }}

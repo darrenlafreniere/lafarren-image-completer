@@ -57,10 +57,10 @@ public:
 static const AssertIdenticalRgbLayout g_assertIdenticalRgbLayout;
 #endif
 
-class AppCmdHostImage : public LfnIc::Image
+class AppWxImage : public LfnIc::Image
 {
 public:
-	// AppCmdHostImage interface
+	// AppWxImage interface
 	void SetFilePath(const std::string& filePath);
 	wxImage& GetwxImage();
 	const wxImage& GetwxImage() const;
@@ -86,9 +86,9 @@ public:
 	// AppCmdHost interface
 	AppCmdHost(const CommandLineOptions& options);
 	bool IsValid() const;
-	const AppCmdHostImage& GetInputImageImpl();
-	const AppCmdHostImage& GetMaskImageImpl();
-	AppCmdHostImage& GetOutputImageImpl();
+	const AppWxImage& GetInputImageImpl();
+	const AppWxImage& GetMaskImageImpl();
+	AppWxImage& GetOutputImageImpl();
 
 	// LfnIc::Host interface
 	const LfnIc::Settings& GetSettings();
@@ -103,9 +103,9 @@ private:
 	void ApplyCommandLineOptionsToSettings(const CommandLineOptions& options);
 
 	// Internal data
-	AppCmdHostImage m_inputImage;
-	AppCmdHostImage m_maskImage;
-	AppCmdHostImage m_outputImage;
+	AppWxImage m_inputImage;
+	AppWxImage m_maskImage;
+	AppWxImage m_outputImage;
 
 	LfnIc::Settings m_settings;
 
@@ -117,7 +117,7 @@ private:
 
 // Trues true if the images are valid for image completion. Otherwise, logs an
 // error and returns false.
-static bool LoadAndValidateImage(const char* imageTypeName, const std::string& imagePath, AppCmdHostImage& image)
+static bool LoadAndValidateImage(const char* imageTypeName, const std::string& imagePath, AppWxImage& image)
 {
 	bool result = false;
 	wxMessageOutput& msgOut = *wxMessageOutput::Get();
@@ -195,17 +195,17 @@ bool AppCmdHost::IsValid() const
 	return m_isValid;
 }
 
-const AppCmdHostImage& AppCmdHost::GetInputImageImpl()
+const AppWxImage& AppCmdHost::GetInputImageImpl()
 {
 	return m_inputImage;
 }
 
-const AppCmdHostImage& AppCmdHost::GetMaskImageImpl()
+const AppWxImage& AppCmdHost::GetMaskImageImpl()
 {
 	return m_maskImage;
 }
 
-AppCmdHostImage& AppCmdHost::GetOutputImageImpl()
+AppWxImage& AppCmdHost::GetOutputImageImpl()
 {
 	return m_outputImage;
 }
@@ -285,52 +285,52 @@ void AppCmdHost::ApplyCommandLineOptionsToSettings(const CommandLineOptions& opt
 	}
 }
 
-void AppCmdHostImage::SetFilePath(const std::string& filePath)
+void AppWxImage::SetFilePath(const std::string& filePath)
 {
 	m_filePath = filePath;
 }
 
-wxImage& AppCmdHostImage::GetwxImage()
+wxImage& AppWxImage::GetwxImage()
 {
 	return m_wxImage;
 }
 
-const wxImage& AppCmdHostImage::GetwxImage() const
+const wxImage& AppWxImage::GetwxImage() const
 {
 	return m_wxImage;
 }
 
-bool AppCmdHostImage::IsValid() const
+bool AppWxImage::IsValid() const
 {
 	return m_wxImage.Ok();
 }
 
-const std::string& AppCmdHostImage::GetFilePath() const
+const std::string& AppWxImage::GetFilePath() const
 {
 	return m_filePath;
 }
 
-bool AppCmdHostImage::Init(int width, int height)
+bool AppWxImage::Init(int width, int height)
 {
 	return m_wxImage.Create(width, height, false);
 }
 
-LfnIc::Image::Rgb* AppCmdHostImage::GetRgb()
+LfnIc::Image::Rgb* AppWxImage::GetRgb()
 {
 	return reinterpret_cast<LfnIc::Image::Rgb*>(m_wxImage.GetData());
 }
 
-const LfnIc::Image::Rgb* AppCmdHostImage::GetRgb() const
+const LfnIc::Image::Rgb* AppWxImage::GetRgb() const
 {
 	return reinterpret_cast<const LfnIc::Image::Rgb*>(m_wxImage.GetData());
 }
 
-int AppCmdHostImage::GetWidth() const
+int AppWxImage::GetWidth() const
 {
 	return m_wxImage.GetWidth();
 }
 
-int AppCmdHostImage::GetHeight() const
+int AppWxImage::GetHeight() const
 {
 	return m_wxImage.GetHeight();
 }
@@ -377,7 +377,7 @@ int main(int argc, char** argv)
 				{
 					if (LfnIc::Complete(host.GetSettings(), host.GetInputImage(), host.GetMaskImage(), host.GetOutputImage(), host.GetPatchesIstream(), host.GetPatchesOstream()))
 					{
-						AppCmdHostImage& outputImage = host.GetOutputImageImpl();
+						AppWxImage& outputImage = host.GetOutputImageImpl();
 						outputImage.GetwxImage().SaveFile(outputImage.GetFilePath());
 						wxMessageOutput::Get()->Printf("Completed image and wrote %s.\n", outputImage.GetFilePath().c_str());
 					}

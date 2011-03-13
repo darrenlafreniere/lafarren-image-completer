@@ -46,7 +46,7 @@ namespace LfnIc
 	class ImageConstDelegateToImage : public ImageConstInternal
 	{
 	public:
-		ImageConstDelegateToImage(const Image& hostImage);
+		ImageConstDelegateToImage(const Image& image);
 
 		virtual const Rgb* GetRgb() const;
 		virtual int GetWidth() const;
@@ -54,30 +54,30 @@ namespace LfnIc
 
 	private:
 		// Hide copy constructor.
-		ImageConstDelegateToImage(const ImageConstDelegateToImage&) : m_hostImage(*reinterpret_cast<const Image*>(0xCDCDCDCD)) {}
+		ImageConstDelegateToImage(const ImageConstDelegateToImage&) : m_image(*reinterpret_cast<const Image*>(0xCDCDCDCD)) {}
 
-		const Image& m_hostImage;
+		const Image& m_image;
 	};
 }
 
-LfnIc::ImageConstDelegateToImage::ImageConstDelegateToImage(const Image& hostImage) :
-m_hostImage(hostImage)
+LfnIc::ImageConstDelegateToImage::ImageConstDelegateToImage(const Image& image) :
+m_image(image)
 {
 }
 
 const LfnIc::Image::Rgb* LfnIc::ImageConstDelegateToImage::GetRgb() const
 {
-	return m_hostImage.GetRgb();
+	return m_image.GetRgb();
 }
 
 int LfnIc::ImageConstDelegateToImage::GetWidth() const
 {
-	return m_hostImage.GetWidth();
+	return m_image.GetWidth();
 }
 
 int LfnIc::ImageConstDelegateToImage::GetHeight() const
 {
-	return m_hostImage.GetHeight();
+	return m_image.GetHeight();
 }
 
 //
@@ -226,11 +226,11 @@ LfnIc::Image::Rgb* LfnIc::ImageConst::GetRgb()
 //
 // ImageScalable implementation
 //
-LfnIc::ImageScalable::ImageScalable(const Image& hostImage) :
+LfnIc::ImageScalable::ImageScalable(const Image& image) :
 m_depth(0)
 {
 	// Delegate to original resolution Image at depth 0.
-	m_resolutions.push_back(new ImageConstDelegateToImage(hostImage));
+	m_resolutions.push_back(new ImageConstDelegateToImage(image));
 }
 
 LfnIc::ImageScalable::~ImageScalable()
