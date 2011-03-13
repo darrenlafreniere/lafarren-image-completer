@@ -29,16 +29,16 @@
 
 // Trues true if the images are valid for image completion. Otherwise, logs an
 // error and returns false.
-static bool LoadAndValidateImage(const char* imageTypeName, const std::string& imagePath, AppWxImage& image)
+static bool LoadAndValidateImage(const char* imageTypeName, const std::string& imagePath, wxImage& image)
 {
 	bool result = false;
 	wxMessageOutput& msgOut = *wxMessageOutput::Get();
 
-	if (!image.GetwxImage().LoadFile(imagePath))
+	if (!image.LoadFile(imagePath))
 	{
 		// If LoadFile fails, it already prints an wxMessageOutput error for us.
 	}
-	else if (!image.IsValid())
+	else if (!image.IsOk())
 	{
 		msgOut.Printf("The %s image was invalid.\n", imageTypeName);
 	}
@@ -54,10 +54,10 @@ static bool LoadAndValidateImage(const char* imageTypeName, const std::string& i
 	return result;
 }
 
-AppCmdHost::AppCmdHost(const CommandLineOptions& options)
+AppData::AppData(const CommandLineOptions& options)
 	: m_isValid(false)
 {
-	if (LoadAndValidateImage("input", options.GetInputImagePath(), m_inputImage))
+	if (LoadAndValidateImage("input", options.GetInputImagePath(), m_inputImage.GetwxImage()))
 	{
 		LfnIc::SettingsConstruct(m_settings, m_inputImage);
 
@@ -74,14 +74,16 @@ AppCmdHost::AppCmdHost(const CommandLineOptions& options)
 
 			if (options.ShouldRunImageCompletion())
 			{
-				if (!LoadAndValidateImage("mask", options.GetMaskImagePath(), m_maskImage))
+				wxImage maskImage;
+				if (!LoadAndValidateImage("mask", options.GetMaskImagePath(), maskImage))
 				{
 					m_isValid = false;
 				}
 				else
 				{
+					m_mask.Init(maskImage);
+
 					m_inputImage.SetFilePath(options.GetInputImagePath());
-					m_maskImage.SetFilePath(options.GetMaskImagePath());
 					m_outputImage.SetFilePath(options.GetOutputImagePath());
 
 #if ENABLE_PATCHES_INPUT_OUTPUT
@@ -102,62 +104,52 @@ AppCmdHost::AppCmdHost(const CommandLineOptions& options)
 	}
 }
 
-bool AppCmdHost::IsValid() const
+bool AppData::IsValid() const
 {
 	return m_isValid;
 }
 
-const AppWxImage& AppCmdHost::GetInputImageImpl()
-{
-	return m_inputImage;
-}
-
-const AppWxImage& AppCmdHost::GetMaskImageImpl()
-{
-	return m_maskImage;
-}
-
-AppWxImage& AppCmdHost::GetOutputImageImpl()
+AppWxImage& AppData::GetOutputWxImage()
 {
 	return m_outputImage;
 }
 
-const LfnIc::Settings& AppCmdHost::GetSettings()
+const LfnIc::Settings& AppData::GetSettings()
 {
 	return m_settings;
 }
 
-const LfnIc::Image& AppCmdHost::GetInputImage()
+const LfnIc::Image& AppData::GetInputImage()
 {
 	return m_inputImage;
 }
 
-const LfnIc::Image& AppCmdHost::GetMaskImage()
+const LfnIc::Mask& AppData::GetMask()
 {
-	return m_maskImage;
+	return m_mask;
 }
 
-LfnIc::Image& AppCmdHost::GetOutputImage()
-{
-	return m_outputImage;
-}
-
-const LfnIc::Image& AppCmdHost::GetOutputImage() const
+LfnIc::Image& AppData::GetOutputImage()
 {
 	return m_outputImage;
 }
 
-std::istream* AppCmdHost::GetPatchesIstream()
+const LfnIc::Image& AppData::GetOutputImage() const
+{
+	return m_outputImage;
+}
+
+std::istream* AppData::GetPatchesIstream()
 {
 	return m_patchesIstream.get();
 }
 
-std::ostream* AppCmdHost::GetPatchesOstream()
+std::ostream* AppData::GetPatchesOstream()
 {
 	return m_patchesOstream.get();
 }
 
-void AppCmdHost::ApplyCommandLineOptionsToSettings(const CommandLineOptions& options)
+void AppData::ApplyCommandLineOptionsToSettings(const CommandLineOptions& options)
 {
 	if (options.DebugLowResolutionPasses())
 	{

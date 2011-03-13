@@ -25,6 +25,7 @@ set(ImageCompleterSources
 
 ${cmdsrc}/AppData.cpp
 ${cmdsrc}/AppWxImage.cpp
+${cmdsrc}/AppWxMask.cpp
 ${cmdsrc}/CommandLineOptions.cpp
 ${cmdsrc}/Pch.cpp
 ${cmdsrc}/SettingsText.cpp
@@ -36,7 +37,6 @@ ${prioritybp}/ImageConst.cpp
 ${prioritybp}/ImageScalable.cpp
 ${prioritybp}/Label.cpp
 ${prioritybp}/LfnIc.cpp
-${prioritybp}/LfnIcMask.cpp
 ${prioritybp}/MaskScalable.cpp
 ${prioritybp}/MaskWritable.cpp
 ${prioritybp}/NeighborEdge.cpp

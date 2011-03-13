@@ -33,6 +33,7 @@ namespace LfnIc
 {
 	// Forward declarations
 	class Image;
+	class Mask;
 	struct Settings;
 
 	//
@@ -49,7 +50,7 @@ namespace LfnIc
 	extern EXPORT bool Complete(
 		const Settings& settings,
 		const Image& inputImage,
-		const Image& maskImage,
+		const Mask& mask,
 		Image& outputImage,
 		std::istream* patchesIstream = NULL,
 		std::ostream* patchesOstream = NULL);

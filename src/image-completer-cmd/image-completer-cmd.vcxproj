@@ -92,6 +92,7 @@
   <ItemGroup>
     <ClCompile Include="AppData.cpp" />
     <ClCompile Include="AppWxImage.cpp" />
+    <ClCompile Include="AppWxMask.cpp" />
     <ClCompile Include="CommandLineOptions.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Pch.cpp">
@@ -105,6 +106,7 @@
   <ItemGroup>
     <ClInclude Include="AppData.h" />
     <ClInclude Include="AppWxImage.h" />
+    <ClInclude Include="AppWxMask.h" />
     <ClInclude Include="CommandLineOptions.h" />
     <ClInclude Include="Pch.h" />
     <ClInclude Include="SettingsText.h" />

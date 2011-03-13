@@ -23,6 +23,7 @@
 #define APP_DATA_H
 
 #include "AppWxImage.h"
+#include "AppWxMask.h"
 #include "LfnIcSettings.h"
 
 class CommandLineOptions;
@@ -30,20 +31,17 @@ class CommandLineOptions;
 //
 // Prepares and stores the data needed to run LfnIc::Complete().
 //
-class AppCmdHost
+class AppData
 {
 public:
-	// AppCmdHost interface
-	AppCmdHost(const CommandLineOptions& options);
+	AppData(const CommandLineOptions& options);
 	bool IsValid() const;
-	const AppWxImage& GetInputImageImpl();
-	const AppWxImage& GetMaskImageImpl();
-	AppWxImage& GetOutputImageImpl();
+	AppWxImage& GetOutputWxImage();
 
 	// LfnIc::Host interface
 	const LfnIc::Settings& GetSettings();
 	const LfnIc::Image& GetInputImage();
-	const LfnIc::Image& GetMaskImage();
+	const LfnIc::Mask& GetMask();
 	LfnIc::Image& GetOutputImage();
 	const LfnIc::Image& GetOutputImage() const;
 	std::istream* GetPatchesIstream();
@@ -54,7 +52,7 @@ private:
 
 	// Internal data
 	AppWxImage m_inputImage;
-	AppWxImage m_maskImage;
+	AppWxMask m_mask;
 	AppWxImage m_outputImage;
 
 	LfnIc::Settings m_settings;

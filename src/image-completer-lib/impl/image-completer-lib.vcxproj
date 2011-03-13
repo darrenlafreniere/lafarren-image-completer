@@ -122,7 +122,6 @@
     <ClCompile Include="ImageScalable.cpp" />
     <ClCompile Include="Label.cpp" />
     <ClCompile Include="LfnIc.cpp" />
-    <ClCompile Include="LfnIcMask.cpp" />
     <ClCompile Include="MaskScalable.cpp" />
     <ClCompile Include="MaskWritable.cpp" />
     <ClCompile Include="NeighborEdge.cpp" />

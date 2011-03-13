@@ -167,14 +167,14 @@ namespace LfnIc
 	bool Complete(
 		const Settings& settings,
 		const Image& inputImage,
-		const Image& maskImage,
+		const Mask& mask,
 		Image& outputImage,
 		std::istream* patchesIstream,
 		std::ostream* patchesOstream)
 	{
 		bool succeeded = false;
 
-		if (ValidateImage(inputImage) && ValidateImage(maskImage))
+		if (ValidateImage(inputImage))
 		{
 			// In Windows, this project is compiled into its own dll, with its
 			// own global memory space, and statically links against wxWidgets.
@@ -188,8 +188,7 @@ namespace LfnIc
 			{
 				SettingsScalable settingsScalable(settings);
 				ImageScalable imageScalable(inputImage);
-				const AppWxMask appWxMask(imageScalable.GetWidth(), imageScalable.GetHeight(), maskImage);
-				MaskScalable maskScalable(imageScalable.GetWidth(), imageScalable.GetHeight(), appWxMask);
+				MaskScalable maskScalable(imageScalable.GetWidth(), imageScalable.GetHeight(), mask);
 				Compositor::Input compositorInput(settingsScalable, imageScalable, maskScalable);
 				bool arePatchesValid = false;
 

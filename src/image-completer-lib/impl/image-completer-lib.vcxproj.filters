@@ -75,7 +75,6 @@
     <ClCompile Include="ImageConst.cpp" />
     <ClCompile Include="ImageScalable.cpp" />
     <ClCompile Include="LfnIc.cpp" />
-    <ClCompile Include="LfnIcMask.cpp" />
     <ClCompile Include="MaskScalable.cpp" />
   </ItemGroup>
   <ItemGroup>

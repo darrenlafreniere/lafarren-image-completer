@@ -24,7 +24,7 @@
 
 namespace LfnIc
 {
-	// Mask interface.
+	// Mask interface. EXPORTed so that the static const members are linked.
 	class Mask
 	{
 	public:
@@ -34,19 +34,19 @@ namespace LfnIc
 		// Indeterminate is used for lower levels of detail (lod > 0),
 		// where the region in question contains both unknown and known
 		// pixels. Examination at a higher level of detail may be required.
-		static const Value INDETERMINATE;
+		static const Value INDETERMINATE = -1;
 
 		// Unknown pixels should be filled by the image completer.
-		static const Value UNKNOWN;
+		static const Value UNKNOWN = 0;
 
 		// Ignored pixels should not be filled by the image completer,
 		// nor may they be used as input for the image completion
 		// process, nor should they be used in energy calculations.
-		static const Value IGNORED;
+		static const Value IGNORED = 1;
 
 		// Known pixels should not be filled by the image completer,
 		// but may be used as input for the image completion process.
-		static const Value KNOWN;
+		static const Value KNOWN = 2;
 
 		// Samples a single value. If x and y are outside of the mask's
 		// internal boundaries, this method is expected to return KNOWN.

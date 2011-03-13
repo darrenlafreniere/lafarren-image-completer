@@ -55,28 +55,34 @@ int main(int argc, char** argv)
 		const CommandLineOptions options(argc, argv);
 		if (options.IsValid())
 		{
-			AppCmdHost host(options);
-			if (host.IsValid())
+			AppData appData(options);
+			if (appData.IsValid())
 			{
-				succeeded = true;
-
 				if (options.ShouldShowSettings())
 				{
-					SettingsText::Print(host.GetSettings());
+					SettingsText::Print(appData.GetSettings());
+					succeeded = true;
 				}
 
 				if (options.ShouldRunImageCompletion())
 				{
-					if (LfnIc::Complete(host.GetSettings(), host.GetInputImage(), host.GetMaskImage(), host.GetOutputImage(), host.GetPatchesIstream(), host.GetPatchesOstream()))
+					succeeded = LfnIc::Complete(
+						appData.GetSettings(),
+						appData.GetInputImage(),
+						appData.GetMask(),
+						appData.GetOutputImage(),
+						appData.GetPatchesIstream(),
+						appData.GetPatchesOstream());
+
+					if (succeeded)
 					{
-						AppWxImage& outputImage = host.GetOutputImageImpl();
+						AppWxImage& outputImage = appData.GetOutputWxImage();
 						outputImage.GetwxImage().SaveFile(outputImage.GetFilePath());
 						wxMessageOutput::Get()->Printf("Completed image and wrote %s.\n", outputImage.GetFilePath().c_str());
 					}
 					else
 					{
 						wxMessageOutput::Get()->Printf("Could not complete the image.\n");
-						succeeded = false;
 					}
 				}
 			}
