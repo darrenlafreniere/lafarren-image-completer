@@ -196,34 +196,6 @@ int LfnIc::ImageScaledDown::GetHeight() const
 }
 
 //
-// ImageConst implementation
-//
-bool LfnIc::ImageConst::Init(int width, int height)
-{
-	// Not supported, and not expected to be called.
-	wxASSERT(false);
-	return false;
-}
-
-bool LfnIc::ImageConst::IsValid() const
-{
-	return true;
-}
-
-const std::string& LfnIc::ImageConst::GetFilePath() const
-{
-	static const std::string empty("");
-	return empty;
-}
-
-LfnIc::Image::Rgb* LfnIc::ImageConst::GetRgb()
-{
-	// Not supported, and not expected to be called.
-	wxASSERT(false);
-	return NULL;
-}
-
-//
 // ImageScalable implementation
 //
 LfnIc::ImageScalable::ImageScalable(const Image& image) :

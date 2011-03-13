@@ -75,6 +75,7 @@
     <ClCompile Include="compositors\PatchTypeDebugPatchOrder.cpp">
       <Filter>compositors</Filter>
     </ClCompile>
+    <ClCompile Include="ImageConst.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="compositors\CompositorUtils.h">
@@ -164,6 +165,7 @@
     <ClInclude Include="compositors\PatchTypePoisson.h">
       <Filter>compositors</Filter>
     </ClInclude>
+    <ClInclude Include="ImageConst.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="energy-calculators\EnergyCalculatorUtils.inl">
