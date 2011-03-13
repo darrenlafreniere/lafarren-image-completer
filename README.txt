@@ -58,7 +58,7 @@ Developed using:
 - Visual C++ Express 2008 and 2010.
 - wxWidgets (wxMSW-2.8.10, static C runtime (/MT))
 - FFTW (3.2.2, static C runtime (/MT), single precision enabled)
-- Taucs, Metis, and Atlas (included in lib)
+- Eigen and UMFPACK
 
 Tested on:
 - Fedora 13
