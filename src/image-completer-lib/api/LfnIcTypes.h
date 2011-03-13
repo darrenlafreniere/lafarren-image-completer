@@ -19,8 +19,8 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef PRIORITY_BP_TYPES_H
-#define PRIORITY_BP_TYPES_H
+#ifndef LFN_IC_TYPES_H
+#define LFN_IC_TYPES_H
 
 #include "tech/Core.h"
 

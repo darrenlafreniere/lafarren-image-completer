@@ -22,7 +22,7 @@
 #ifndef COMMAND_LINE_OPTIONS_H
 #define COMMAND_LINE_OPTIONS_H
 
-#include "PriorityBpTypes.h"
+#include "LfnIcTypes.h"
 
 class wxCmdLineParser;
 

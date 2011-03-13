@@ -24,7 +24,7 @@
 
 #include "Label.h"
 #include "NeighborEdge.h"
-#include "PriorityBpTypes.h"
+#include "LfnIcTypes.h"
 #include "Scalable.h"
 
 namespace LfnIc

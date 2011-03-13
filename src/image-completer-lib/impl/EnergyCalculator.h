@@ -23,7 +23,7 @@
 #define ENERGY_CALCULATOR_H
 
 #include "tech/Core.h"
-#include "PriorityBpTypes.h"
+#include "LfnIcTypes.h"
 
 namespace LfnIc
 {

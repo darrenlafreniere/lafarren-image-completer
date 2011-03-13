@@ -22,7 +22,7 @@
 #ifndef CONST_NODE_LABELS_H
 #define CONST_NODE_LABELS_H
 
-#include "PriorityBpTypes.h"
+#include "LfnIcTypes.h"
 
 namespace LfnIc
 {

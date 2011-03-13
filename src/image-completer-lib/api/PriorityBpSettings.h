@@ -23,7 +23,7 @@
 #define PRIORITY_BP_SETTINGS_H
 
 #include "tech/Core.h"
-#include "PriorityBpTypes.h"
+#include "LfnIcTypes.h"
 
 namespace LfnIc
 {

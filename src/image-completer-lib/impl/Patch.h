@@ -23,7 +23,7 @@
 #define PATCH_H
 
 #include "NeighborEdge.h"
-#include "PriorityBpTypes.h"
+#include "LfnIcTypes.h"
 
 namespace LfnIc
 {

@@ -25,7 +25,7 @@
 #include "EnergyCalculatorFftConfig.h"
 #if ENABLE_ENERGY_CALCULATOR_FFT
 
-#include "PriorityBpTypes.h"
+#include "LfnIcTypes.h"
 
 // Debugging flag. If enabled, verifies the fft-based energy results against
 // the per-pixel energy calculator results.
