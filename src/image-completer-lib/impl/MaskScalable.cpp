@@ -72,9 +72,28 @@ namespace LfnIc
 		}
 	}
 
-	inline int GetLodBlockSize(int lod)
+	AppWxMask::AppWxMask(int inputImageWidth, int inputImageHeight, const Image& maskImage, int offsetX, int offsetY)
+		: m_values(inputImageWidth * inputImageHeight)
+		, m_width(inputImageWidth)
+		, m_height(inputImageHeight)
+		, m_offsetX(offsetX)
+		, m_offsetY(offsetY)
 	{
-		return 1 << lod;
+		const Image::Rgb* rgbPtr = maskImage.GetRgb();
+		const int numPixels = m_width * m_height;
+		for (int i = 0; i < numPixels; ++i)
+		{
+			m_values[i] = RgbToMaskValue(rgbPtr[i]);
+		}
+	}
+
+	Mask::Value AppWxMask::GetValue(int x, int y) const
+	{
+		const int xMaskSpace = x - m_offsetX;
+		const int yMaskSpace = y - m_offsetY;
+		return (xMaskSpace >= 0 && yMaskSpace >= 0 && xMaskSpace < m_width && yMaskSpace < m_height)
+			? m_values[LfnTech::GetRowMajorIndex(m_width, xMaskSpace, yMaskSpace)]
+			: Mask::KNOWN;
 	}
 }
 
@@ -89,7 +108,7 @@ namespace LfnIc
 class LfnIc::MaskInternal : public MaskLod
 {
 public:
-	MaskInternal(int inputImageWidth, int inputImageHeight, const Image& maskImage, int maskImageOffsetX, int maskImageOffsetY);
+	MaskInternal(int width, int height, const Mask& maskToCopy);
 	MaskInternal(const MaskLod& maskToScaleDown);
 
 	virtual int GetLowestLod() const;
@@ -134,27 +153,21 @@ private:
 	LodSet m_lodSet;
 };
 
-LfnIc::MaskInternal::MaskInternal(int inputImageWidth, int inputImageHeight, const Image& maskImage, int maskImageOffsetX, int maskImageOffsetY) :
-m_width(inputImageWidth),
-m_height(inputImageHeight)
+LfnIc::MaskInternal::MaskInternal(int width, int height, const Mask& maskToCopy) :
+m_width(width),
+m_height(height)
 {
-	// Create lod 0 directly from the maskImage data
+	// Create lod 0 to be the same size as the input image, copying
+	// `'s values at each point.
 	{
 		LodData& lodData0 = AddLod();
 
-		const int maskImageWidth = maskImage.GetWidth();
-		const int maskImageHeight = maskImage.GetHeight();
-		for (int maskImageY = 0; maskImageY < maskImageHeight; ++maskImageY)
+		Value* lod0Ptr = &lodData0.buffer[0];
+		for (int y = 0; y < height; ++y)
 		{
-			const int maskY = maskImageY + maskImageOffsetY;
-			Value* lod0RowLeft = &lodData0.buffer[LfnTech::GetRowMajorIndex(m_width, maskImageOffsetX, maskY)];
-
-			const int maskImageRowLeftIndex = LfnTech::GetRowMajorIndex(maskImageWidth, 0, maskImageY);
-			const Image::Rgb* maskImageRowLeft = maskImage.GetRgb() + maskImageRowLeftIndex;
-
-			for (int maskImageX = 0; maskImageX < maskImageWidth; ++maskImageX)
+			for (int x = 0; x < width; ++x, ++lod0Ptr)
 			{
-				lod0RowLeft[maskImageX] = RgbToMaskValue(maskImageRowLeft[maskImageX]);
+				*lod0Ptr = maskToCopy.GetValue(x, y);
 			}
 		}
 	}
@@ -419,11 +432,11 @@ bool LfnIc::MaskInternal::RegionLtrbSearch(int left, int top, int right, int bot
 //
 // MaskScalable implementation
 //
-LfnIc::MaskScalable::MaskScalable(int inputImageWidth, int inputImageHeight, const Image& maskImage, int maskImageOffsetX, int maskImageOffsetY) :
+LfnIc::MaskScalable::MaskScalable(int inputImageWidth, int inputImageHeight, const Mask& mask) :
 m_depth(0)
 {
 	// Create original resolution mask.
-	m_resolutions.push_back(new MaskInternal(inputImageWidth, inputImageHeight, maskImage, maskImageOffsetX, maskImageOffsetY));
+	m_resolutions.push_back(new MaskInternal(inputImageWidth, inputImageHeight, mask));
 }
 
 LfnIc::MaskScalable::~MaskScalable()

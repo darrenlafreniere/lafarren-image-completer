@@ -24,12 +24,7 @@
 
 namespace LfnIc
 {
-	//
-	// Encapsulates the image mask's data, and provides methods for querying
-	// mask data on a single pixel or a rectangular region at various levels
-	// of detail. No assumptions are made about values outside of the valid
-	// mask, and are therefore considered KNOWN.
-	//
+	// Mask interface.
 	class Mask
 	{
 	public:
@@ -53,7 +48,8 @@ namespace LfnIc
 		// but may be used as input for the image completion process.
 		static const Value KNOWN;
 
-		// Samples a single value.
+		// Samples a single value. If x and y are outside of the mask's
+		// internal boundaries, this method is expected to return KNOWN.
 		virtual Value GetValue(int x, int y) const = 0;
 
 	protected:

@@ -188,7 +188,8 @@ namespace LfnIc
 			{
 				SettingsScalable settingsScalable(settings);
 				ImageScalable imageScalable(inputImage);
-				MaskScalable maskScalable(imageScalable.GetWidth(), imageScalable.GetHeight(), maskImage);
+				const AppWxMask appWxMask(imageScalable.GetWidth(), imageScalable.GetHeight(), maskImage);
+				MaskScalable maskScalable(imageScalable.GetWidth(), imageScalable.GetHeight(), appWxMask);
 				Compositor::Input compositorInput(settingsScalable, imageScalable, maskScalable);
 				bool arePatchesValid = false;
 

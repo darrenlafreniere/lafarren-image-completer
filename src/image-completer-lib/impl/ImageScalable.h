@@ -49,7 +49,7 @@ namespace LfnIc
 		virtual int GetScaleDepth() const;
 
 	private:
-		inline ImageConstInternal& GetCurrentResolution() const { return *m_resolutions[m_depth]; }
+		inline const ImageConstInternal& GetCurrentResolution() const { return *m_resolutions[m_depth]; }
 
 		std::vector<ImageConstInternal*> m_resolutions;
 		int m_depth;

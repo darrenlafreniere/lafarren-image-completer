@@ -31,14 +31,31 @@ namespace LfnIc
 	// Forward declaration. Defined in Mask.cpp.
 	class MaskInternal;
 
+	// TODO: this will be moved to the cmd line project, and made to accept a wxImage
+	// instead of a LfcIc::Image. The Complete() interface must be reworked first.
+	class AppWxMask : public Mask
+	{
+	public:
+		AppWxMask(int inputImageWidth, int inputImageHeight, const Image& maskImage, int offsetX = 0, int offsetY = 0);
+		virtual Value GetValue(int x, int y) const;
+
+	private:
+		std::vector<Value> m_values;
+		const int m_width;
+		const int m_height;
+		const int m_offsetX;
+		const int m_offsetY;
+	};
+
 	//
 	// Implements both the Mask and Scalable interfaces and provides an in
-	// place scalable mask. Initializes the mask from the input image data.
+	// place scalable mask. Initializes the mask from the highest resolution
+	// mask (the input mask passed to LfnIc::Complete()).
 	//
 	class MaskScalable : public MaskLod, public Scalable
 	{
 	public:
-		MaskScalable(int inputImageWidth, int inputImageHeight, const Image& maskImage, int maskImageOffsetX = 0, int maskImageOffsetY = 0);
+		MaskScalable(int inputImageWidth, int inputImageHeight, const Mask& mask);
 		~MaskScalable();
 
 		virtual int GetLowestLod() const;
