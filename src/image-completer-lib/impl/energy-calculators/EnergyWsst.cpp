@@ -115,7 +115,7 @@ void LfnIc::EnergyWsst::Construct(const ImageConst& inputImage, const MaskLod* m
 {
 	const int imageWidth = inputImage.GetWidth();
 	const int imageHeight = inputImage.GetHeight();
-	const ImageConst::Rgb* imageRgb = inputImage.GetRgb();
+	const Image::Rgb* imageRgb = inputImage.GetRgb();
 	const Mask::Value* maskBuffer = mask ? mask->GetLodBuffer(mask->GetHighestLod()) : NULL;
 
 	m_table = new Energy[m_tableWidth * m_tableHeight];
@@ -150,14 +150,14 @@ void LfnIc::EnergyWsst::Construct(const ImageConst& inputImage, const MaskLod* m
 		}
 
 		// x and y are in image space
-		FORCE_INLINE Energy Get(const ImageConst::Rgb* imageRgb, const Mask::Value* maskBuffer, int x, int y) const
+		FORCE_INLINE Energy Get(const Image::Rgb* imageRgb, const Mask::Value* maskBuffer, int x, int y) const
 		{
 			if (x >= 0 && y >= 0 && x < m_imageWidth && y < m_imageHeight)
 			{
 				const int imageIdx = LfnTech::GetRowMajorIndex(m_imageWidth, x, y);
 				if (!maskBuffer || maskBuffer[imageIdx] == Mask::KNOWN)
 				{
-					const ImageConst::Rgb& rgb = imageRgb[imageIdx];
+					const Image::Rgb& rgb = imageRgb[imageIdx];
 					return Energy((rgb.red * rgb.red) + (rgb.green * rgb.green) + (rgb.blue * rgb.blue));
 				}
 			}

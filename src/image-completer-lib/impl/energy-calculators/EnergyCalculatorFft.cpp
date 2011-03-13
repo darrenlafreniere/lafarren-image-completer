@@ -92,7 +92,7 @@ namespace LfnIc
 		}
 
 	protected:
-		const ImageConst::Rgb* m_imageRgb;
+		const Image::Rgb* m_imageRgb;
 		const int m_channel;
 	};
 

@@ -65,7 +65,7 @@ m_hostImage(hostImage)
 {
 }
 
-const LfnIc::ImageDelegateToHostImage::Rgb* LfnIc::ImageDelegateToHostImage::GetRgb() const
+const LfnIc::Image::Rgb* LfnIc::ImageDelegateToHostImage::GetRgb() const
 {
 	return m_hostImage.GetRgb();
 }
@@ -180,7 +180,7 @@ LfnIc::ImageScaledDown::~ImageScaledDown()
 	delete [] m_rgb;
 }
 
-const LfnIc::ImageScaledDown::Rgb* LfnIc::ImageScaledDown::GetRgb() const
+const LfnIc::Image::Rgb* LfnIc::ImageScaledDown::GetRgb() const
 {
 	return m_rgb;
 }
@@ -216,7 +216,7 @@ const std::string& LfnIc::ImageConst::GetFilePath() const
 	return empty;
 }
 
-LfnIc::ImageConst::Rgb* LfnIc::ImageConst::GetRgb()
+LfnIc::Image::Rgb* LfnIc::ImageConst::GetRgb()
 {
 	// Not supported, and not expected to be called.
 	wxASSERT(false);
@@ -241,7 +241,7 @@ LfnIc::ImageScalable::~ImageScalable()
 	}
 }
 
-const LfnIc::ImageScalable::Rgb* LfnIc::ImageScalable::GetRgb() const
+const LfnIc::Image::Rgb* LfnIc::ImageScalable::GetRgb() const
 {
 	return GetCurrentResolution().GetRgb();
 }

@@ -38,7 +38,7 @@ namespace LfnIc
 	//
 	// Helper functions
 	//
-	inline Mask::Value RgbToMaskValue(const ImageConst::Rgb& rgb)
+	inline Mask::Value RgbToMaskValue(const Image::Rgb& rgb)
 	{
 		// Convert to grayscale using whole integer percentages, then determine
 		// the closest intensity-to-mask-value. Uses the 30/59/11 rgb -> grayscale
@@ -155,7 +155,7 @@ m_height(inputImageHeight)
 			Value* lod0RowLeft = &lodData0.buffer[LfnTech::GetRowMajorIndex(m_width, maskImageOffsetX, maskY)];
 
 			const int maskImageRowLeftIndex = LfnTech::GetRowMajorIndex(maskImageWidth, 0, maskImageY);
-			const ImageConst::Rgb* maskImageRowLeft = maskImage.GetRgb() + maskImageRowLeftIndex;
+			const Image::Rgb* maskImageRowLeft = maskImage.GetRgb() + maskImageRowLeftIndex;
 
 			for (int maskImageX = 0; maskImageX < maskImageWidth; ++maskImageX)
 			{

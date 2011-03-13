@@ -39,7 +39,7 @@ LfnIc::Energy LfnIc::EnergyCalculatorFftUtils::BruteForceCalculate1stTerm(const 
 	const int imageWidth = image.GetWidth();
 	const int imageHeight = image.GetHeight();
 	const Mask::Value* maskBuffer = aMask ? aMask->GetLodBuffer(aMask->GetHighestLod()) : NULL;
-	const ImageConst::Rgb* imageRgb = image.GetRgb();
+	const Image::Rgb* imageRgb = image.GetRgb();
 
 	for (int y = 0; y < height; ++y)
 	{
@@ -50,7 +50,7 @@ LfnIc::Energy LfnIc::EnergyCalculatorFftUtils::BruteForceCalculate1stTerm(const 
 				const int idx = LfnTech::GetRowMajorIndex(imageWidth, aLeft + x, aTop + y);
 				if (!aMask || maskBuffer[idx] == Mask::KNOWN)
 				{
-					const ImageConst::Rgb& rgb = imageRgb[idx];
+					const Image::Rgb& rgb = imageRgb[idx];
 					e += Energy((rgb.red * rgb.red) + (rgb.green * rgb.green) + (rgb.blue * rgb.blue));
 				}
 			}
@@ -67,7 +67,7 @@ LfnIc::Energy LfnIc::EnergyCalculatorFftUtils::BruteForceCalculate2ndTerm(const 
 	const int imageWidth = image.GetWidth();
 	const int imageHeight = image.GetHeight();
 	const Mask::Value* maskBuffer = aMask ? aMask->GetLodBuffer(aMask->GetHighestLod()) : NULL;
-	const ImageConst::Rgb* imageRgb = image.GetRgb();
+	const Image::Rgb* imageRgb = image.GetRgb();
 
 	for (int j = 0; j < height; ++j)
 	{
@@ -84,8 +84,8 @@ LfnIc::Energy LfnIc::EnergyCalculatorFftUtils::BruteForceCalculate2ndTerm(const 
 					const int aIdx = LfnTech::GetRowMajorIndex(imageWidth, ax, ay);
 					if (!aMask || maskBuffer[aIdx] == Mask::KNOWN)
 					{
-						const ImageConst::Rgb& aRgb = imageRgb[aIdx];
-						const ImageConst::Rgb& bRgb = imageRgb[LfnTech::GetRowMajorIndex(imageWidth, bx, by)];
+						const Image::Rgb& aRgb = imageRgb[aIdx];
+						const Image::Rgb& bRgb = imageRgb[LfnTech::GetRowMajorIndex(imageWidth, bx, by)];
 						const int scalar = 2;
 						const int rmult = scalar * aRgb.red * bRgb.red;
 						const int gmult = scalar * aRgb.green * bRgb.green;
