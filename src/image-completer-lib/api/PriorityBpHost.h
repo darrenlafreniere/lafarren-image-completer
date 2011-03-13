@@ -27,52 +27,8 @@
 namespace LfnIc
 {
 	// Forward declarations
-	class Host;
 	class HostImage;
 	struct Settings;
-
-	//
-	// Host interface, to be implemented by the host and passed to
-	// LfnIc::Complete.
-	//
-	class Host
-	{
-	public:
-		// Must return a const reference to the settings object for the
-		// completion.
-		virtual const Settings& GetSettings() = 0;
-
-		// Must return a const reference to the input image for the
-		// completion.
-		virtual const HostImage& GetInputImage() = 0;
-
-		// Must return a const reference to the input mask for the
-		// completion.
-		virtual const HostImage& GetMaskImage() = 0;
-
-		// Must return a non-const reference to the output image object to
-		// receive the completed image.
-		virtual HostImage& GetOutputImage() = 0;
-		virtual const HostImage& GetOutputImage() const = 0;
-
-		// May optionally return a std::istream pointer from which patches
-		// from a previous completion will be read and composited into the
-		// output image, skipping a new completion altogether.
-		//
-		// Return NULL to force a new completion.
-		virtual std::istream* GetPatchesIstream() = 0;
-
-		// May optionally return a std::ostream pointer into which patches
-		// from the completion will be written. This enables the host to save
-		// a completion for re-compositing at a later point in time.
-		//
-		// Return NULL if patching writing is not required.
-		virtual std::ostream* GetPatchesOstream() = 0;
-
-	protected:
-		// Instances cannot be destroyed through a base Host pointer.
-		virtual ~Host() {}
-	};
 
 	// HostImage interface. Used for both reading the input image and
 	// writing the output image.

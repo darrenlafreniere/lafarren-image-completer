@@ -80,7 +80,7 @@ private:
 	wxImage m_wxImage;
 };
 
-class AppCmdHost : public LfnIc::Host
+class AppCmdHost
 {
 public:
 	// AppCmdHost interface
@@ -91,13 +91,13 @@ public:
 	AppCmdHostImage& GetOutputImageImpl();
 
 	// LfnIc::Host interface
-	virtual const LfnIc::Settings& GetSettings();
-	virtual const LfnIc::HostImage& GetInputImage();
-	virtual const LfnIc::HostImage& GetMaskImage();
-	virtual LfnIc::HostImage& GetOutputImage();
-	virtual const LfnIc::HostImage& GetOutputImage() const;
-	virtual std::istream* GetPatchesIstream();
-	virtual std::ostream* GetPatchesOstream();
+	const LfnIc::Settings& GetSettings();
+	const LfnIc::HostImage& GetInputImage();
+	const LfnIc::HostImage& GetMaskImage();
+	LfnIc::HostImage& GetOutputImage();
+	const LfnIc::HostImage& GetOutputImage() const;
+	std::istream* GetPatchesIstream();
+	std::ostream* GetPatchesOstream();
 
 private:
 	void ApplyCommandLineOptionsToSettings(const CommandLineOptions& options);
