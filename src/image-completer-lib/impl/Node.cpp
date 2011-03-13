@@ -33,7 +33,7 @@
 #include "EnergyCalculatorContainer.h"
 #include "Label.h"
 #include "LfnIcSettings.h"
-#include "LfnIcMask.h"
+#include "MaskLod.h"
 #include "ScopedNodeEnergyBatch.h"
 
 #include "tech/DbgMem.h"

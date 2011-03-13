@@ -28,8 +28,8 @@
 
 #include "EnergyCalculatorUtils.h"
 #include "ImageConst.h"
-#include "LfnIcMask.h"
 #include "LfnIcSettings.h"
+#include "MaskLod.h"
 
 #include "tech/DbgMem.h"
 

@@ -28,7 +28,7 @@
 #include "EnergyCalculatorContainer.h"
 #include "ImageScalable.h"
 #include "Label.h"
-#include "LfnIcMask.h"
+#include "MaskScalable.h"
 #include "NodeSet.h"
 #include "Patch.h"
 #include "LfnIcImage.h"

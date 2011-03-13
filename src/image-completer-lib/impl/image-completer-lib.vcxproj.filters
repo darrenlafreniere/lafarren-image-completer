@@ -76,6 +76,7 @@
     <ClCompile Include="ImageScalable.cpp" />
     <ClCompile Include="LfnIc.cpp" />
     <ClCompile Include="LfnIcMask.cpp" />
+    <ClCompile Include="MaskScalable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="compositors\CompositorUtils.h">
@@ -168,6 +169,8 @@
     <ClInclude Include="..\api\LfnIcMask.h">
       <Filter>../api</Filter>
     </ClInclude>
+    <ClInclude Include="MaskLod.h" />
+    <ClInclude Include="MaskScalable.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="energy-calculators\EnergyCalculatorUtils.inl">
