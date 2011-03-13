@@ -30,7 +30,6 @@
     <ClCompile Include="Compositor.cpp" />
     <ClCompile Include="ConstNodeLabels.cpp" />
     <ClCompile Include="Label.cpp" />
-    <ClCompile Include="Mask.cpp" />
     <ClCompile Include="NeighborEdge.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="NodeSet.cpp" />
@@ -76,6 +75,7 @@
     <ClCompile Include="ImageConst.cpp" />
     <ClCompile Include="ImageScalable.cpp" />
     <ClCompile Include="LfnIc.cpp" />
+    <ClCompile Include="LfnIcMask.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="compositors\CompositorUtils.h">
@@ -100,7 +100,6 @@
     <ClInclude Include="ConstNodeLabels.h" />
     <ClInclude Include="EnergyCalculator.h" />
     <ClInclude Include="Label.h" />
-    <ClInclude Include="Mask.h" />
     <ClInclude Include="NeighborEdge.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="NodeSet.h" />
@@ -164,6 +163,9 @@
       <Filter>../api</Filter>
     </ClInclude>
     <ClInclude Include="..\api\LfnIc.h">
+      <Filter>../api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\LfnIcMask.h">
       <Filter>../api</Filter>
     </ClInclude>
   </ItemGroup>

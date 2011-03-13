@@ -32,8 +32,8 @@
 #include "ConstNodeLabels.h"
 #include "EnergyCalculatorContainer.h"
 #include "Label.h"
-#include "Mask.h"
 #include "LfnIcSettings.h"
+#include "LfnIcMask.h"
 #include "ScopedNodeEnergyBatch.h"
 
 #include "tech/DbgMem.h"

@@ -19,8 +19,8 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef MASK_H
-#define MASK_H
+#ifndef LFN_MASK_H
+#define LFN_MASK_H
 
 #include "LfnIcImage.h"
 #include "Scalable.h"

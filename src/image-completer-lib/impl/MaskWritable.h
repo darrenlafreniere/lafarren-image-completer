@@ -22,7 +22,7 @@
 #ifndef MASK_WRITABLE_H
 #define MASK_WRITABLE_H
 
-#include "Mask.h"
+#include "LfnIcMask.h"
 
 namespace LfnIc
 {

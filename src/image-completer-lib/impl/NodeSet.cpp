@@ -25,7 +25,7 @@
 #include "tech/MathUtils.h"
 
 #include "ImageConst.h"
-#include "Mask.h"
+#include "LfnIcMask.h"
 #include "LfnIcSettings.h"
 
 #include "tech/DbgMem.h"

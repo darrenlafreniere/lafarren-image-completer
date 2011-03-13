@@ -36,7 +36,7 @@ ${prioritybp}/ImageConst.cpp
 ${prioritybp}/ImageScalable.cpp
 ${prioritybp}/Label.cpp
 ${prioritybp}/LfnIc.cpp
-${prioritybp}/Mask.cpp
+${prioritybp}/LfnIcMask.cpp
 ${prioritybp}/MaskWritable.cpp
 ${prioritybp}/NeighborEdge.cpp
 ${prioritybp}/Node.cpp
