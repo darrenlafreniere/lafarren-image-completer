@@ -30,7 +30,6 @@ ${cmdsrc}/SettingsText.cpp
 ${prioritybp}/Compositor.cpp
 ${prioritybp}/ConstNodeLabels.cpp
 ${prioritybp}/EnergyCalculatorContainer.cpp
-${prioritybp}/HostImageLocal.cpp
 ${prioritybp}/Image.cpp
 ${prioritybp}/Label.cpp
 ${prioritybp}/Mask.cpp

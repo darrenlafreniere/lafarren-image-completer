@@ -118,7 +118,6 @@
     <ClCompile Include="Compositor.cpp" />
     <ClCompile Include="ConstNodeLabels.cpp" />
     <ClCompile Include="EnergyCalculatorContainer.cpp" />
-    <ClCompile Include="HostImageLocal.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="Label.cpp" />
     <ClCompile Include="Mask.cpp" />
@@ -165,7 +164,6 @@
     <ClInclude Include="ConstNodeLabels.h" />
     <ClInclude Include="EnergyCalculator.h" />
     <ClInclude Include="EnergyCalculatorContainer.h" />
-    <ClInclude Include="HostImageLocal.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="Label.h" />
     <ClInclude Include="Mask.h" />

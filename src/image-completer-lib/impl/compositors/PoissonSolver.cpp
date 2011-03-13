@@ -74,7 +74,6 @@
 
 #include "tech/MathUtils.h"
 
-#include "HostImageLocal.h"
 #include "ImageFloat.h"
 #include "PriorityBpHost.h"
 #include "TaucsMatrix.h"
