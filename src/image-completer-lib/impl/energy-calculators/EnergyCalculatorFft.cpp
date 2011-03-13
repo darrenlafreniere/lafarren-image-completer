@@ -57,8 +57,8 @@
 	#define FFT_ASSERT_BOUNDS_RANGE(__base__, __p__, __rangeBytes__)
 #endif
 
-typedef EnergyCalculatorFft::FftReal FftReal;
-typedef EnergyCalculatorFft::FftComplex FftComplex;
+typedef LfnIc::EnergyCalculatorFft::FftReal FftReal;
+typedef LfnIc::EnergyCalculatorFft::FftComplex FftComplex;
 
 #if ENERGY_FFT_SINGLE_PRECISION
 	#define FFTW_PREFIX(name) FFTW_MANGLE_FLOAT(name)
@@ -69,126 +69,131 @@ typedef EnergyCalculatorFft::FftComplex FftComplex;
 //
 // Policy classes for use with the FillFfti and ReverseFillFfti template functions.
 //
-static inline FftReal MaskValueToFftReal(Mask::Value maskValue)
+namespace LfnIc
 {
-	return FftReal((maskValue == Mask::KNOWN) ? 1 : 0);
+	static inline FftReal MaskValueToFftReal(Mask::Value maskValue)
+	{
+		return FftReal((maskValue == Mask::KNOWN) ? 1 : 0);
+	}
+
+	class FillPolicyChannel
+	{
+	public:
+		FillPolicyChannel(const Image& inputImage, int channel) :
+		m_imageRgb(inputImage.GetRgb()),
+		m_channel(channel)
+		{
+		}
+
+		// rowMajorIndex length is based on EnergyCalculatorFft::m_inputWidth
+		inline FftReal GetReal(int rowMajorIndex) const
+		{
+			return m_imageRgb[rowMajorIndex].channel[m_channel];
+		}
+
+	protected:
+		const Image::Rgb* m_imageRgb;
+		const int m_channel;
+	};
+
+	class FillPolicyChannelScaled : public FillPolicyChannel
+	{
+	public:
+		typedef FillPolicyChannel Super;
+
+		FillPolicyChannelScaled(const Image& inputImage, int channel, FftReal scalar) :
+		Super(inputImage, channel),
+		m_scalar(scalar)
+		{
+		}
+
+		// rowMajorIndex length is based on EnergyCalculatorFft::m_inputWidth
+		inline FftReal GetReal(int rowMajorIndex) const
+		{
+			return m_scalar * Super::GetReal(rowMajorIndex);
+		}
+
+	protected:
+		const FftReal m_scalar;
+	};
+
+	class FillPolicyChannelMaskedScaled : public FillPolicyChannelScaled
+	{
+	public:
+		typedef FillPolicyChannelScaled Super;
+
+		FillPolicyChannelMaskedScaled(const Image& inputImage, const MaskLod& mask, int channel, FftReal scalar) :
+		Super(inputImage, channel, scalar),
+		m_maskBuffer(mask.GetLodBuffer(mask.GetHighestLod()))
+		{
+		}
+
+		// rowMajorIndex length is based on EnergyCalculatorFft::m_inputWidth
+		inline FftReal GetReal(int rowMajorIndex) const
+		{
+			return MaskValueToFftReal(m_maskBuffer[rowMajorIndex]) * Super::GetReal(rowMajorIndex);
+		}
+
+	protected:
+		const Mask::Value* m_maskBuffer;
+	};
+
+	class FillPolicyMask
+	{
+	public:
+		FillPolicyMask(const MaskLod& mask) :
+		m_maskBuffer(mask.GetLodBuffer(mask.GetHighestLod()))
+		{
+		}
+
+		// rowMajorIndex length is based on EnergyCalculatorFft::m_inputWidth
+		inline FftReal GetReal(int rowMajorIndex) const
+		{
+			return MaskValueToFftReal(m_maskBuffer[rowMajorIndex]);
+		}
+
+	protected:
+		const Mask::Value* m_maskBuffer;
+	};
 }
-
-class FillPolicyChannel
-{
-public:
-	FillPolicyChannel(const Image& inputImage, int channel) :
-	m_imageRgb(inputImage.GetRgb()),
-	m_channel(channel)
-	{
-	}
-
-	// rowMajorIndex length is based on EnergyCalculatorFft::m_inputWidth
-	inline FftReal GetReal(int rowMajorIndex) const
-	{
-		return m_imageRgb[rowMajorIndex].channel[m_channel];
-	}
-
-protected:
-	const Image::Rgb* m_imageRgb;
-	const int m_channel;
-};
-
-class FillPolicyChannelScaled : public FillPolicyChannel
-{
-public:
-	typedef FillPolicyChannel Super;
-
-	FillPolicyChannelScaled(const Image& inputImage, int channel, FftReal scalar) :
-	Super(inputImage, channel),
-	m_scalar(scalar)
-	{
-	}
-
-	// rowMajorIndex length is based on EnergyCalculatorFft::m_inputWidth
-	inline FftReal GetReal(int rowMajorIndex) const
-	{
-		return m_scalar * Super::GetReal(rowMajorIndex);
-	}
-
-protected:
-	const FftReal m_scalar;
-};
-
-class FillPolicyChannelMaskedScaled : public FillPolicyChannelScaled
-{
-public:
-	typedef FillPolicyChannelScaled Super;
-
-	FillPolicyChannelMaskedScaled(const Image& inputImage, const MaskLod& mask, int channel, FftReal scalar) :
-	Super(inputImage, channel, scalar),
-	m_maskBuffer(mask.GetLodBuffer(mask.GetHighestLod()))
-	{
-	}
-
-	// rowMajorIndex length is based on EnergyCalculatorFft::m_inputWidth
-	inline FftReal GetReal(int rowMajorIndex) const
-	{
-		return MaskValueToFftReal(m_maskBuffer[rowMajorIndex]) * Super::GetReal(rowMajorIndex);
-	}
-
-protected:
-	const Mask::Value* m_maskBuffer;
-};
-
-class FillPolicyMask
-{
-public:
-	FillPolicyMask(const MaskLod& mask) :
-	m_maskBuffer(mask.GetLodBuffer(mask.GetHighestLod()))
-	{
-	}
-
-	// rowMajorIndex length is based on EnergyCalculatorFft::m_inputWidth
-	inline FftReal GetReal(int rowMajorIndex) const
-	{
-		return MaskValueToFftReal(m_maskBuffer[rowMajorIndex]);
-	}
-
-protected:
-	const Mask::Value* m_maskBuffer;
-};
-
 
 //
 // Energy operator for use with the ApplyFftRealTo2ndAnd3rdTerm template function.
 //
-class EnergyOperatorAssignNegative
+namespace LfnIc
 {
-public:
-	void Execute(Energy& a, const Energy& b) const
+	class EnergyOperatorAssignNegative
 	{
-		a = -b;
-	}
-};
+	public:
+		void Execute(Energy& a, const Energy& b) const
+		{
+			a = -b;
+		}
+	};
 
-class EnergyOperatorDecrement
-{
-public:
-	void Execute(Energy& a, const Energy& b) const
+	class EnergyOperatorDecrement
 	{
-		a -= b;
-	}
-};
+	public:
+		void Execute(Energy& a, const Energy& b) const
+		{
+			a -= b;
+		}
+	};
 
-class EnergyOperatorIncrement
-{
-public:
-	void Execute(Energy& a, const Energy& b) const
+	class EnergyOperatorIncrement
 	{
-		a += b;
-	}
-};
+	public:
+		void Execute(Energy& a, const Energy& b) const
+		{
+			a += b;
+		}
+	};
+}
 
 //
 // EnergyCalculatorFft implementation
 //
-EnergyCalculatorFft::EnergyCalculatorFft(
+LfnIc::EnergyCalculatorFft::EnergyCalculatorFft(
 	const Settings& settings,
 	const Image& inputImage,
 	const MaskLod& mask
@@ -261,7 +266,7 @@ m_isBatchProcessed(false)
 	}
 }
 
-EnergyCalculatorFft::~EnergyCalculatorFft()
+LfnIc::EnergyCalculatorFft::~EnergyCalculatorFft()
 {
 	for (int channel = 0; channel < RGB_CHANNELS_NUM; ++channel)
 	{
@@ -276,19 +281,19 @@ EnergyCalculatorFft::~EnergyCalculatorFft()
 	delete [] m_batchEnergy2ndAnd3rdTerm;
 }
 
-EnergyCalculator::BatchImmediate EnergyCalculatorFft::BatchOpenImmediate(const BatchParams& params)
+LfnIc::EnergyCalculator::BatchImmediate LfnIc::EnergyCalculatorFft::BatchOpenImmediate(const BatchParams& params)
 {
 	BatchOpen(params);
 	return GetBatchImmediate(*this);
 }
 
-EnergyCalculator::BatchQueued EnergyCalculatorFft::BatchOpenQueued(const BatchParams& params)
+LfnIc::EnergyCalculator::BatchQueued LfnIc::EnergyCalculatorFft::BatchOpenQueued(const BatchParams& params)
 {
 	BatchOpen(params);
 	return GetBatchQueued(*this);
 }
 
-EnergyCalculatorFft& EnergyCalculatorFft::BatchOpen(const BatchParams& params)
+LfnIc::EnergyCalculatorFft& LfnIc::EnergyCalculatorFft::BatchOpen(const BatchParams& params)
 {
 	wxASSERT(!m_isBatchOpen);
 	wxASSERT(!m_isBatchProcessed);
@@ -358,7 +363,7 @@ EnergyCalculatorFft& EnergyCalculatorFft::BatchOpen(const BatchParams& params)
 #if FFT_VALIDATION_ENABLED
 		for (int y = 0; y < m_inputHeight; ++y)
 		{
-			Energy* batchEnergy2ndAnd3rdTermCurrent = m_batchEnergy2ndAnd3rdTerm + GetRowMajorIndex(m_inputWidth, 0, y);
+			Energy* batchEnergy2ndAnd3rdTermCurrent = m_batchEnergy2ndAnd3rdTerm + LfnTech::GetRowMajorIndex(m_inputWidth, 0, y);
 			for (int x = 0; x < m_inputWidth; ++x, ++batchEnergy2ndAnd3rdTermCurrent)
 			{
 				const Energy e = *batchEnergy2ndAnd3rdTermCurrent;
@@ -407,7 +412,7 @@ EnergyCalculatorFft& EnergyCalculatorFft::BatchOpen(const BatchParams& params)
 	return *this;
 }
 
-void EnergyCalculatorFft::BatchClose()
+void LfnIc::EnergyCalculatorFft::BatchClose()
 {
 	wxASSERT(m_isBatchOpen);
 	m_isBatchOpen = false;
@@ -422,7 +427,7 @@ void EnergyCalculatorFft::BatchClose()
 		"m_queuedEnergyResults is unexpectedly deallocating! Could have performance impacts.");
 }
 
-Energy EnergyCalculatorFft::Calculate(int bLeft, int bTop) const
+LfnIc::Energy LfnIc::EnergyCalculatorFft::Calculate(int bLeft, int bTop) const
 {
 	wxASSERT(m_isBatchOpen);
 	wxASSERT(bLeft >= 0);
@@ -435,7 +440,7 @@ Energy EnergyCalculatorFft::Calculate(int bLeft, int bTop) const
 
 	// Second term, and possibly third term if aMasked was true, calculated
 	// in BatchOpen:
-	e += m_batchEnergy2ndAnd3rdTerm[GetRowMajorIndex(m_inputImage.GetWidth(), bLeft, bTop)];
+	e += m_batchEnergy2ndAnd3rdTerm[LfnTech::GetRowMajorIndex(m_inputImage.GetWidth(), bLeft, bTop)];
 
 	// Third term if aMasked was false:
 	if (!m_batchParams.aMasked)
@@ -453,7 +458,7 @@ Energy EnergyCalculatorFft::Calculate(int bLeft, int bTop) const
 	return std::max(e, ENERGY_MIN);
 }
 
-EnergyCalculator::BatchQueued::Handle EnergyCalculatorFft::QueueCalculation(int bLeft, int bTop)
+LfnIc::EnergyCalculator::BatchQueued::Handle LfnIc::EnergyCalculatorFft::QueueCalculation(int bLeft, int bTop)
 {
 	wxASSERT(m_isBatchOpen);
 	wxASSERT(!m_isBatchProcessed);
@@ -465,20 +470,20 @@ EnergyCalculator::BatchQueued::Handle EnergyCalculatorFft::QueueCalculation(int 
 	return handle;
 }
 
-void EnergyCalculatorFft::ProcessCalculations()
+void LfnIc::EnergyCalculatorFft::ProcessCalculations()
 {
 	wxASSERT(m_isBatchOpen);
 	wxASSERT(!m_isBatchProcessed);
 	m_isBatchProcessed = true;
 }
 
-Energy EnergyCalculatorFft::GetResult(BatchQueued::Handle handle) const
+LfnIc::Energy LfnIc::EnergyCalculatorFft::GetResult(BatchQueued::Handle handle) const
 {
 	wxASSERT(m_isBatchOpen);
 	return m_queuedEnergyResults[handle];
 }
 
-EnergyCalculatorFft::FftwInPlaceBuffer EnergyCalculatorFft::FftwInPlaceBufferAlloc() const
+LfnIc::EnergyCalculatorFft::FftwInPlaceBuffer LfnIc::EnergyCalculatorFft::FftwInPlaceBufferAlloc() const
 {
 	wxASSERT(m_isBatchProcessed);
 	FftwInPlaceBuffer result = { FFTW_PREFIX(malloc)(m_fftInPlaceBufferNumBytes) };
@@ -486,13 +491,13 @@ EnergyCalculatorFft::FftwInPlaceBuffer EnergyCalculatorFft::FftwInPlaceBufferAll
 }
 
 template<typename T>
-T* EnergyCalculatorFft::GetRow(T* real, int y) const
+T* LfnIc::EnergyCalculatorFft::GetRow(T* real, int y) const
 {
 	return (T*)((BYTE *)real + (m_fftInPlaceBufferStride * y));
 }
 
 template<typename POLICY>
-void EnergyCalculatorFft::FillRealBuffer(const POLICY& policy, FftReal* real, int left, int top, int width, int height) const
+void LfnIc::EnergyCalculatorFft::FillRealBuffer(const POLICY& policy, FftReal* real, int left, int top, int width, int height) const
 {
 	// Clamp dimensions to fit within the fft dimensions
 	width = std::min(width, m_fftWidth);
@@ -515,7 +520,7 @@ void EnergyCalculatorFft::FillRealBuffer(const POLICY& policy, FftReal* real, in
 	top += topPadding;
 	for (int y = 0; y < heightToCopy; ++y)
 	{
-		int inRowMajorIdx = GetRowMajorIndex(m_inputWidth, left, top + y);
+		int inRowMajorIdx = LfnTech::GetRowMajorIndex(m_inputWidth, left, top + y);
 		FftReal* out = GetRow(real, topPadding + y) + leftPadding;
 		for (int x = 0; x < widthToCopy; ++x, ++inRowMajorIdx, ++out)
 		{
@@ -526,7 +531,7 @@ void EnergyCalculatorFft::FillRealBuffer(const POLICY& policy, FftReal* real, in
 }
 
 template<typename POLICY>
-void EnergyCalculatorFft::ReverseFillRealBuffer(const POLICY& policy, FftReal* real, int left, int top, int width, int height) const
+void LfnIc::EnergyCalculatorFft::ReverseFillRealBuffer(const POLICY& policy, FftReal* real, int left, int top, int width, int height) const
 {
 	// Clamp dimensions to fit within the fft buffers
 	width = std::min(width, m_fftWidth);
@@ -553,7 +558,7 @@ void EnergyCalculatorFft::ReverseFillRealBuffer(const POLICY& policy, FftReal* r
 	bottom -= topPadding;
 	for (int y = 0; y < heightToCopy; ++y)
 	{
-		int inRowMajorIdx = GetRowMajorIndex(m_inputWidth, right, bottom - y);
+		int inRowMajorIdx = LfnTech::GetRowMajorIndex(m_inputWidth, right, bottom - y);
 		FftReal* out = GetRow(real, topPadding + y) + leftPadding;
 		for (int x = 0; x < widthToCopy; ++x, --inRowMajorIdx, ++out)
 		{
@@ -563,7 +568,7 @@ void EnergyCalculatorFft::ReverseFillRealBuffer(const POLICY& policy, FftReal* r
 	}
 }
 
-void EnergyCalculatorFft::PadRealBuffer(FftReal* real, int leftPad, int topPad, int rightPad, int bottomPad) const
+void LfnIc::EnergyCalculatorFft::PadRealBuffer(FftReal* real, int leftPad, int topPad, int rightPad, int bottomPad) const
 {
 	// Padding is non-overlapping. As seen below, where the real data is
 	// represented by the x's, the top padding and bottom padding run the
@@ -626,7 +631,7 @@ void EnergyCalculatorFft::PadRealBuffer(FftReal* real, int leftPad, int topPad, 
 	}
 }
 
-void EnergyCalculatorFft::MultiplyEquals(FftComplex* aComplex, const FftComplex* bComplex) const
+void LfnIc::EnergyCalculatorFft::MultiplyEquals(FftComplex* aComplex, const FftComplex* bComplex) const
 {
 	const int complexNum = m_fftInPlaceBufferNumBytes / sizeof(FftComplex);
 	FftComplex* aCurrent = aComplex;
@@ -649,7 +654,7 @@ void EnergyCalculatorFft::MultiplyEquals(FftComplex* aComplex, const FftComplex*
 	}
 }
 
-void EnergyCalculatorFft::MultiplyEquals(FftReal* aReal, FftReal bScalar) const
+void LfnIc::EnergyCalculatorFft::MultiplyEquals(FftReal* aReal, FftReal bScalar) const
 {
 	for (int y = 0; y < m_fftHeight; ++y)
 	{
@@ -664,14 +669,14 @@ void EnergyCalculatorFft::MultiplyEquals(FftReal* aReal, FftReal bScalar) const
 }
 
 template<typename ENERGY_OPERATOR>
-void EnergyCalculatorFft::ApplyFftRealTo2ndAnd3rdTerm(const ENERGY_OPERATOR& energyOperator)
+void LfnIc::EnergyCalculatorFft::ApplyFftRealTo2ndAnd3rdTerm(const ENERGY_OPERATOR& energyOperator)
 {
 	// The results are shifted by the batch dimensions - 1
 	const int resultsLeft = m_batchParams.width - 1;
 	const int resultsTop = m_batchParams.height - 1;
 	for (int y = 0; y < m_inputHeight; ++y)
 	{
-		Energy* batchEnergy2ndAnd3rdTermCurrent = m_batchEnergy2ndAnd3rdTerm + GetRowMajorIndex(m_inputWidth, 0, y);
+		Energy* batchEnergy2ndAnd3rdTermCurrent = m_batchEnergy2ndAnd3rdTerm + LfnTech::GetRowMajorIndex(m_inputWidth, 0, y);
 		const FftReal* fftCurrent = GetRow(m_fftPlanBuffer.real, resultsTop + y) + resultsLeft;
 
 		for (int x = 0; x < m_inputWidth; ++x, ++batchEnergy2ndAnd3rdTermCurrent, ++fftCurrent)

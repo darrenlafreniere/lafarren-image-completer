@@ -39,7 +39,7 @@
 //
 // EnergyWsst implementation
 //
-EnergyWsst::EnergyWsst(const Image& inputImage, int blockWidth, int blockHeight) :
+LfnIc::EnergyWsst::EnergyWsst(const Image& inputImage, int blockWidth, int blockHeight) :
 m_blockWidth(blockWidth),
 m_blockHeight(blockHeight),
 m_tableWidth(blockWidth + inputImage.GetWidth()),
@@ -49,7 +49,7 @@ m_table(NULL)
 	Construct(inputImage, NULL);
 }
 
-EnergyWsst::EnergyWsst(const Image& inputImage, const MaskLod& mask, int blockWidth, int blockHeight) :
+LfnIc::EnergyWsst::EnergyWsst(const Image& inputImage, const MaskLod& mask, int blockWidth, int blockHeight) :
 m_blockWidth(blockWidth),
 m_blockHeight(blockHeight),
 m_tableWidth(blockWidth + inputImage.GetWidth()),
@@ -59,22 +59,22 @@ m_table(NULL)
 	Construct(inputImage, &mask);
 }
 
-EnergyWsst::~EnergyWsst()
+LfnIc::EnergyWsst::~EnergyWsst()
 {
 	delete [] m_table;
 }
 
-int EnergyWsst::GetBlockWidth() const
+int LfnIc::EnergyWsst::GetBlockWidth() const
 {
 	return m_blockWidth;
 }
 
-int EnergyWsst::GetBlockHeight() const
+int LfnIc::EnergyWsst::GetBlockHeight() const
 {
 	return m_blockHeight;
 }
 
-Energy EnergyWsst::Calculate(int left, int top, int width, int height) const
+LfnIc::Energy LfnIc::EnergyWsst::Calculate(int left, int top, int width, int height) const
 {
 	wxASSERT(width % m_blockWidth == 0);
 	wxASSERT(height % m_blockHeight == 0);
@@ -97,7 +97,7 @@ Energy EnergyWsst::Calculate(int left, int top, int width, int height) const
 			{
 				if (tableX >= 0 && tableY >= 0 && tableX < m_tableWidth && tableY < m_tableHeight)
 				{
-					e += m_table[GetRowMajorIndex(m_tableWidth, tableX, tableY)];
+					e += m_table[LfnTech::GetRowMajorIndex(m_tableWidth, tableX, tableY)];
 				}
 			}
 		}
@@ -106,12 +106,12 @@ Energy EnergyWsst::Calculate(int left, int top, int width, int height) const
 	}
 	else
 	{
-		wxFAIL_MSG("EnergyWsst::Calculate - width and/or height was invalid!");
+		wxFAIL_MSG("LfnIc::EnergyWsst::Calculate - width and/or height was invalid!");
 		return ENERGY_MIN;
 	}
 }
 
-void EnergyWsst::Construct(const Image& inputImage, const MaskLod* mask)
+void LfnIc::EnergyWsst::Construct(const Image& inputImage, const MaskLod* mask)
 {
 	const int imageWidth = inputImage.GetWidth();
 	const int imageHeight = inputImage.GetHeight();
@@ -142,7 +142,7 @@ void EnergyWsst::Construct(const Image& inputImage, const MaskLod* mask)
 			//if (x >= 0 && y >= 0 && x < m_tableWidth && y < m_tableHeight)
 			if (x < m_tableWidth && y < m_tableHeight)
 			{
-				return table[GetRowMajorIndex(m_tableWidth, x, y)];
+				return table[LfnTech::GetRowMajorIndex(m_tableWidth, x, y)];
 			}
 
 			static Energy e;
@@ -154,7 +154,7 @@ void EnergyWsst::Construct(const Image& inputImage, const MaskLod* mask)
 		{
 			if (x >= 0 && y >= 0 && x < m_imageWidth && y < m_imageHeight)
 			{
-				const int imageIdx = GetRowMajorIndex(m_imageWidth, x, y);
+				const int imageIdx = LfnTech::GetRowMajorIndex(m_imageWidth, x, y);
 				if (!maskBuffer || maskBuffer[imageIdx] == Mask::KNOWN)
 				{
 					const Image::Rgb& rgb = imageRgb[imageIdx];
@@ -177,13 +177,13 @@ void EnergyWsst::Construct(const Image& inputImage, const MaskLod* mask)
 
 	{
 #if PROFILE_WSST
-		TECH_TIME_PROFILE_EVERY_SAMPLE("EnergyWsst::Construct");
+		TECH_TIME_PROFILE_EVERY_SAMPLE("LfnIc::EnergyWsst::Construct");
 #endif
 		// Divide the table into blocks of size m_blockWidth * m_blockHeight and
 		// compute a sum squared table for each. Start at -m_blockWidth,-m_blockHeight.
 		{
 #if PROFILE_WSST
-			TECH_TIME_PROFILE_EVERY_SAMPLE("EnergyWsst::Construct - 1");
+			TECH_TIME_PROFILE_EVERY_SAMPLE("LfnIc::EnergyWsst::Construct - 1");
 #endif
 			for (int imageTop = -m_blockHeight; imageTop < imageHeight; imageTop += m_blockHeight)
 			{
@@ -230,7 +230,7 @@ void EnergyWsst::Construct(const Image& inputImage, const MaskLod* mask)
 		// Now combine the individual sst's to create the final windowed sst.
 		{
 #if PROFILE_WSST
-			TECH_TIME_PROFILE_EVERY_SAMPLE("EnergyWsst::Construct - 2");
+			TECH_TIME_PROFILE_EVERY_SAMPLE("LfnIc::EnergyWsst::Construct - 2");
 #endif
 			for (int y = 0, i = 0; y < m_tableHeight; ++y)
 			{
@@ -282,7 +282,7 @@ void EnergyWsst::Construct(const Image& inputImage, const MaskLod* mask)
 				const int blockWidth = std::min(m_blockWidth, m_tableWidth - x);
 				const int imageX = x - m_blockWidth;
 
-				const Energy e = m_table[GetRowMajorIndex(m_tableWidth, x, y)];
+				const Energy e = m_table[LfnTech::GetRowMajorIndex(m_tableWidth, x, y)];
 				const Energy eBruteForce = EnergyCalculatorFftUtils::BruteForceCalculate1stTerm(inputImage, blockWidth, blockHeight, imageX, imageY, mask);
 				wxASSERT(eBruteForce == e);
 			}
