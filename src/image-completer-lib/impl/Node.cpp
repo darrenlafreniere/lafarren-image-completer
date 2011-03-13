@@ -66,9 +66,9 @@ energyCalculatorContainer(energyCalculatorContainer)
 
 LfnIc::Node::Node(Context& context, const MaskLod& mask, int x, int y) :
 m_context(&context),
+m_depth(0),
 m_overlapsKnownRegion(false),
-m_hasPrunedOnce(false),
-m_depth(0)
+m_hasPrunedOnce(false)
 {
 	// Add original resolution
 	m_resolutions.push_back(Resolution(x, y));
