@@ -31,16 +31,27 @@
 static LfnIc::PixelFloat GetRainbowColor(float alpha)
 {
 	wxASSERT(alpha >= 0.0f && alpha <= 1.0f);
-	static const LfnIc::PixelFloat refColors[] =
-	{
-		LfnIc::PixelFloat(1.00f, 0.00f, 0.00f), // red
-		LfnIc::PixelFloat(1.00f, 0.65f, 0.00f), // orange
-		LfnIc::PixelFloat(1.00f, 1.00f, 0.00f), // yellow
-		LfnIc::PixelFloat(0.00f, 0.50f, 0.00f), // green
-		LfnIc::PixelFloat(0.00f, 0.00f, 1.00f), // blue
-		LfnIc::PixelFloat(0.30f, 0.00f, 0.51f), // indigo
-		LfnIc::PixelFloat(0.93f, 0.51f, 0.93f), // violet
-	};
+
+    LfnIc::PixelFloat red;
+    red.channel[0] = 1.00f; red.channel[1] = 0.00f; red.channel[2] = 0.00f;
+    LfnIc::PixelFloat orange;
+    orange.channel[0] = 1.00f; orange.channel[1] = 0.65f; orange.channel[2] = 0.00f;
+    LfnIc::PixelFloat yellow;
+    yellow.channel[0] = 1.00f; yellow.channel[1] = 1.00f; yellow.channel[2] = 0.00f;
+    LfnIc::PixelFloat green;
+    green.channel[0] = 0.00f; green.channel[1] = 0.50f; green.channel[2] = 0.00f;
+    LfnIc::PixelFloat blue;
+    blue.channel[0] = 0.00f; blue.channel[1] = 0.00f; blue.channel[2] = 1.00f;
+    LfnIc::PixelFloat indigo;
+    indigo.channel[0] = 0.30f; indigo.channel[1] = 0.00f; indigo.channel[2] = 0.51f;
+    LfnIc::PixelFloat violet;
+    violet.channel[0] = 0.93f; violet.channel[1] = 0.51f; violet.channel[2] = 0.93f;
+
+    static const LfnIc::PixelFloat refColors[] =
+    {
+        red, orange, yellow, green, blue, indigo, violet,
+    };
+
 	static const int numRefColors = sizeof(refColors) / sizeof(refColors[0]);
 	static const int penultimateRefColorIndex = numRefColors - 2;
 	static const float refAlphaStep = 1.0f / float(numRefColors - 1);
@@ -65,10 +76,11 @@ static LfnIc::PixelFloat GetRainbowColor(float alpha)
 	const LfnIc::PixelFloat& colorHigh = refColors[refIndex + 1];
 	const float blendAlpha = (alpha - refAlphaLow) / refAlphaStep;
 
-	return LfnIc::PixelFloat(
-		colorLow.channel[0] + blendAlpha * (colorHigh.channel[0] - colorLow.channel[0]),
-		colorLow.channel[1] + blendAlpha * (colorHigh.channel[1] - colorLow.channel[1]),
-		colorLow.channel[2] + blendAlpha * (colorHigh.channel[2] - colorLow.channel[2]));
+    LfnIc::PixelFloat pixel;
+    pixel.channel[0] = colorLow.channel[0] + blendAlpha * (colorHigh.channel[0] - colorLow.channel[0]);
+    pixel.channel[1] = colorLow.channel[1] + blendAlpha * (colorHigh.channel[1] - colorLow.channel[1]);
+    pixel.channel[2] = colorLow.channel[2] + blendAlpha * (colorHigh.channel[2] - colorLow.channel[2]);
+	return pixel;
 }
 
 LfnIc::CompositorRoot::PatchType* LfnIc::PatchTypeDebugPatchOrder::Factory::Create(const Compositor::Input& input, ImageFloat& imageFloat) const
@@ -84,7 +96,8 @@ LfnIc::PatchTypeDebugPatchOrder::PatchTypeDebugPatchOrder(const Compositor::Inpu
 
 const LfnIc::ImageFloat& LfnIc::PatchTypeDebugPatchOrder::Get(const Patch& patch) const
 {
-	LfnIc::PixelFloat rgb(0.0f, 0.0f, 0.0f);
+	LfnIc::PixelFloat rgb;
+    rgb.channel[0] = 0.0f; rgb.channel[1] = 0.0f; rgb.channel[2] = 0.0f;
 	for (int patchIdx = 0, patchesNum = m_patches.size(); patchIdx < patchesNum; ++patchIdx)
 	{
 		if (&m_patches[patchIdx] == &patch)

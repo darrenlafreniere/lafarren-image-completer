@@ -57,7 +57,12 @@ bool LfnIc::CompositorRoot::Compose(const Input& input, Image& outputImage) cons
 
 	ImageFloat outputImageFloat(inputImage);
 	{
-		ImageFloat patchesBlended(inputImage.GetWidth(), inputImage.GetHeight(), PixelFloat(0.0f, 0.0f, 0.0f));
+        PixelFloat zeroPixel;
+        for(unsigned int i = 0; i < static_cast<unsigned int>(PixelFloat::NUM_CHANNELS); i++)
+        {
+            zeroPixel.channel[i] = 0.0f;
+        }
+		ImageFloat patchesBlended(inputImage.GetWidth(), inputImage.GetHeight(), zeroPixel);
 
 		const int patchesNum = input.patches.size();
 		if (patchesNum > 0)

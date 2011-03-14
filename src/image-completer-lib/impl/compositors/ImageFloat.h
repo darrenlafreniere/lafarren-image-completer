@@ -33,20 +33,10 @@ namespace LfnIc
 	{
 	public:
 		static const int NUM_CHANNELS = Image::Pixel::NUM_CHANNELS;
-		union
-		{
-			struct
-			{
-				float r;
-				float g;
-				float b;
-			};
 
-			float channel[NUM_CHANNELS];
-		};
+        float channel[NUM_CHANNELS];
 
 		inline PixelFloat();
-		inline PixelFloat(float r, float g, float b);
 
 		inline PixelFloat& operator=(const PixelFloat& other);
 		inline PixelFloat& operator+=(const PixelFloat& other);

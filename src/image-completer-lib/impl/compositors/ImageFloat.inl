@@ -38,13 +38,6 @@ namespace LfnIc
 	{
 	}
 
-	PixelFloat::PixelFloat(float r, float g, float b)
-		: r(r)
-		, g(g)
-		, b(b)
-	{
-	}
-
 	PixelFloat& PixelFloat::operator=(const PixelFloat& other)
 	{
 		this->channel[0] = other.channel[0];
