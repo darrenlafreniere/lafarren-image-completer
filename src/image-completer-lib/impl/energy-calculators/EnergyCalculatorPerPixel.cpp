@@ -188,7 +188,7 @@ namespace LfnIc
 			int numPixelsInBatch = 0;
 			const bool canFitInU32Bit = (width * height) <= MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY;
 
-			const Image::Pixel* inputImageRgb = inputImage.GetRgb();
+			const Image::Pixel* inputImageRgb = inputImage.GetData();
 			int aRowIndex = LfnTech::GetRowMajorIndex(imageWidth, aLeft, aTop);
 			int bRowIndex = LfnTech::GetRowMajorIndex(imageWidth, bLeft, bTop);
 			for (int y = 0; y < height; ++y, aRowIndex += imageWidth, bRowIndex += imageWidth)
@@ -263,7 +263,7 @@ namespace LfnIc
             PolicyNoMaskGeneral policy;
             policy.OnPreLoop(mask);
 
-            const Image::Pixel* inputImageRgb = inputImage.GetRgb();
+            const Image::Pixel* inputImageRgb = inputImage.GetData();
             int aRowIndex = LfnTech::GetRowMajorIndex(imageWidth, aLeft, aTop);
             int bRowIndex = LfnTech::GetRowMajorIndex(imageWidth, bLeft, bTop);
             for (int y = 0; y < height; ++y, aRowIndex += imageWidth, bRowIndex += imageWidth)

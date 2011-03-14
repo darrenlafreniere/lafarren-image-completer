@@ -40,7 +40,7 @@ namespace LfnIc
 		ImageScalable(const Image& image);
 		virtual ~ImageScalable();
 
-		virtual const Pixel* GetRgb() const;
+		virtual const Pixel* GetData() const;
 		virtual int GetWidth() const;
 		virtual int GetHeight() const;
 

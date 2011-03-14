@@ -50,15 +50,15 @@ const LfnIc::ImageFloat& LfnIc::PatchTypeNormal::Get(const Patch& patch) const
 		const int patchHeight = m_patchImage.GetHeight();
 		const int patchNumPixels  = patchWidth * patchHeight;
 
-		const PixelFloat* srcRgbData = m_imageFloat.GetRgb();
-		PixelFloat* patchImagePtr = m_patchImage.GetRgb();
+		const PixelFloat* srcRgbData = m_imageFloat.GetData();
+		PixelFloat* patchImagePtr = m_patchImage.GetData();
 		for (int patchY = 0, patchSrcY = patch.srcTop; patchY < patchHeight; ++patchY, ++patchSrcY)
 		{
 			const PixelFloat* srcRgbPtr = srcRgbData + LfnTech::GetRowMajorIndex(imageWidth, patch.srcLeft, patchSrcY);
 			for (int patchX = 0; patchX < patchWidth; ++patchImagePtr, ++srcRgbPtr, ++patchX)
 			{
 				wxASSERT((srcRgbPtr - srcRgbData) < (imageWidth * imageHeight));
-				wxASSERT((patchImagePtr - m_patchImage.GetRgb()) < patchNumPixels);
+				wxASSERT((patchImagePtr - m_patchImage.GetData()) < patchNumPixels);
 				*patchImagePtr = *srcRgbPtr;
 			}
 		}

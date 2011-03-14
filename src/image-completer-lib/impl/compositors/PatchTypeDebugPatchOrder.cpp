@@ -97,9 +97,9 @@ const LfnIc::ImageFloat& LfnIc::PatchTypeDebugPatchOrder::Get(const Patch& patch
 
 	for (int i = 0, n = m_patchImage.GetWidth() * m_patchImage.GetHeight(); i < n; ++i)
 	{
-		m_patchImage.GetRgb()[i].channel[0] = rgb.channel[0];
-		m_patchImage.GetRgb()[i].channel[1] = rgb.channel[1];
-		m_patchImage.GetRgb()[i].channel[2] = rgb.channel[2];
+		m_patchImage.GetData()[i].channel[0] = rgb.channel[0];
+		m_patchImage.GetData()[i].channel[1] = rgb.channel[1];
+		m_patchImage.GetData()[i].channel[2] = rgb.channel[2];
 	}
 
 	return m_patchImage;

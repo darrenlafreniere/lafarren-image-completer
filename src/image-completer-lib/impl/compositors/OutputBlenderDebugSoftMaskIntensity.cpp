@@ -31,7 +31,7 @@ void LfnIc::OutputBlenderDebugSoftMaskIntensity::Blend(const Compositor::Input& 
 	CreateSoftMask(input, softMask);
 
 	const float* softMaskDataPtr = &softMask[0];
-	PixelFloat* destRgbDataPtr = outputImageFloat.GetRgb();
+	PixelFloat* destRgbDataPtr = outputImageFloat.GetData();
 
 	const int imageNumPixels = outputImageFloat.GetWidth() * outputImageFloat.GetHeight();
 	for (int i = 0; i < imageNumPixels; ++i, ++destRgbDataPtr, ++softMaskDataPtr)

@@ -39,8 +39,8 @@ public:
 	virtual bool Init(int width, int height);
 	virtual bool IsValid() const;
 	virtual const std::string& GetFilePath() const;
-	virtual Pixel* GetRgb();
-	virtual const Pixel* GetRgb() const;
+	virtual Pixel* GetData();
+	virtual const Pixel* GetData() const;
 	virtual int GetWidth() const;
 	virtual int GetHeight() const;
 

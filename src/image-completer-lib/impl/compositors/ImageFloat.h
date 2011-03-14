@@ -78,8 +78,8 @@ namespace LfnIc
 
 		void SetPixel(int x, int y, const PixelFloat& pixel);
 
-		inline PixelFloat* GetRgb() { return &m_data[0]; }
-		inline const PixelFloat* GetRgb() const { return &m_data[0]; }
+		inline PixelFloat* GetData() { return &m_data[0]; }
+		inline const PixelFloat* GetData() const { return &m_data[0]; }
 
 	private:
 		ImageFloat(const ImageFloat& other) {}

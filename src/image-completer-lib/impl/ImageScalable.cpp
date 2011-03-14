@@ -48,7 +48,7 @@ namespace LfnIc
 	public:
 		ImageConstDelegateToImage(const Image& image);
 
-		virtual const Pixel* GetRgb() const;
+		virtual const Pixel* GetData() const;
 		virtual int GetWidth() const;
 		virtual int GetHeight() const;
 
@@ -65,9 +65,9 @@ m_image(image)
 {
 }
 
-const LfnIc::Image::Pixel* LfnIc::ImageConstDelegateToImage::GetRgb() const
+const LfnIc::Image::Pixel* LfnIc::ImageConstDelegateToImage::GetData() const
 {
-	return m_image.GetRgb();
+	return m_image.GetData();
 }
 
 int LfnIc::ImageConstDelegateToImage::GetWidth() const
@@ -92,7 +92,7 @@ namespace LfnIc
 		ImageScaledDown(const ImageConst& imageToScaleDown);
 		virtual ~ImageScaledDown();
 
-		virtual const Pixel* GetRgb() const;
+		virtual const Pixel* GetData() const;
 		virtual int GetWidth() const;
 		virtual int GetHeight() const;
 
@@ -111,7 +111,7 @@ LfnIc::ImageScaledDown::ImageScaledDown(const ImageConst& imageToScaleDown)
 	// Alias to reduce wordiness.
 	const int otherWidth = imageToScaleDown.GetWidth();
 	const int otherHeight = imageToScaleDown.GetHeight();
-	const Pixel* otherRgb = imageToScaleDown.GetRgb();
+	const Pixel* otherRgb = imageToScaleDown.GetData();
 
 	// Downsample otherRgb into m_rgb by averaging 2x2 pixel blocks into 1 pixel.
 	// The low resolution image is half that of the high resolution image.
@@ -180,7 +180,7 @@ LfnIc::ImageScaledDown::~ImageScaledDown()
 	delete [] m_rgb;
 }
 
-const LfnIc::Image::Pixel* LfnIc::ImageScaledDown::GetRgb() const
+const LfnIc::Image::Pixel* LfnIc::ImageScaledDown::GetData() const
 {
 	return m_rgb;
 }
@@ -213,9 +213,9 @@ LfnIc::ImageScalable::~ImageScalable()
 	}
 }
 
-const LfnIc::Image::Pixel* LfnIc::ImageScalable::GetRgb() const
+const LfnIc::Image::Pixel* LfnIc::ImageScalable::GetData() const
 {
-	return GetCurrentResolution().GetRgb();
+	return GetCurrentResolution().GetData();
 }
 
 int LfnIc::ImageScalable::GetWidth() const

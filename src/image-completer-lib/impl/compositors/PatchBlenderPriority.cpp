@@ -85,7 +85,7 @@ LfnIc::PatchBlenderPriority::PatchBlenderPriority(const Compositor::Input& input
 
 LfnIc::PatchBlenderPriority::~PatchBlenderPriority()
 {
-	PixelFloat* rgbData = m_outPatchesBlended.GetRgb();
+	PixelFloat* rgbData = m_outPatchesBlended.GetData();
 	const int imageNumPixels = m_imageFloat.GetWidth() * m_imageFloat.GetHeight();
 	for (int i = 0; i < imageNumPixels; ++i)
 	{
@@ -116,9 +116,9 @@ void LfnIc::PatchBlenderPriority::Blend(const Patch& patch, const ImageFloat& pa
 	const float patchWeight = LfnTech::InverseLerp(patch.priority, m_priorityLowest, m_priorityHighest);
 	const float patchAlpha = LfnTech::Lerp(ALPHA_OF_LOWEST_PRIORITY_PATCH, ALPHA_OF_HIGHEST_PRIORITY_PATCH, patchWeight);
 
-	const PixelFloat* const patchImageData = patchImage.GetRgb();
+	const PixelFloat* const patchImageData = patchImage.GetData();
 	const float* const patchFeatherAlphaData = &m_patchFeatherAlpha[0];
-	PixelFloat* const destRgbData = m_outPatchesBlended.GetRgb();
+	PixelFloat* const destRgbData = m_outPatchesBlended.GetData();
 	float* const destWeightSumData = &m_patchesWeightSum[0];
 
 	const int colClipOffset = std::max(-patch.destLeft, 0);

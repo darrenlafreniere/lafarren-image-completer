@@ -42,7 +42,7 @@ LfnIc::ImageFloat::ImageFloat(const ImageConst& input)
 	const int height = input.GetHeight();
 	Create(width, height);
 
-	const Image::Pixel* rgbData = input.GetRgb();
+	const Image::Pixel* rgbData = input.GetData();
 	const int numPixels = width * height;
 	for (int i = 0; i < numPixels; ++i)
 	{
@@ -85,7 +85,7 @@ void LfnIc::ImageFloat::CopyTo(Image& output) const
 {
 	output.Init(m_width, m_height);
 
-	Image::Pixel* outRgbData = output.GetRgb();
+	Image::Pixel* outRgbData = output.GetData();
 	for (int y = 0, i = 0; y < m_height; ++y)
 	{
 		for (int x = 0; x < m_width; ++x, ++i)

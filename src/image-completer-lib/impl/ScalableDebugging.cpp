@@ -51,8 +51,8 @@ namespace LfnIc
 		virtual bool Init(int width, int height) { return m_wxImage.Create(width, height, false); }
 		virtual bool IsValid() const { return m_wxImage.Ok(); }
 		virtual const std::string& GetFilePath() const { return m_filePath; }
-		virtual Pixel* GetRgb() { return reinterpret_cast<LfnIc::Image::Pixel*>(m_wxImage.GetData()); }
-		virtual const Pixel* GetRgb() const { return reinterpret_cast<const LfnIc::Image::Pixel*>(m_wxImage.GetData()); }
+		virtual Pixel* GetData() { return reinterpret_cast<LfnIc::Image::Pixel*>(m_wxImage.GetData()); }
+		virtual const Pixel* GetData() const { return reinterpret_cast<const LfnIc::Image::Pixel*>(m_wxImage.GetData()); }
 		virtual int GetWidth() const { return m_wxImage.GetWidth(); }
 		virtual int GetHeight() const { return m_wxImage.GetHeight(); }
 

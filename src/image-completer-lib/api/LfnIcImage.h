@@ -49,8 +49,8 @@ namespace LfnIc
 		// result points to the upperleft-most pixel and the buffer is
 		// stored in row-major order, where the start of each row is
 		// separated by GetStride() bytes.
-		virtual Pixel* GetRgb() = 0;
-		virtual const Pixel* GetRgb() const = 0;
+		virtual Pixel* GetData() = 0;
+		virtual const Pixel* GetData() const = 0;
 
 		// Returns the image's width.
 		virtual int GetWidth() const = 0;

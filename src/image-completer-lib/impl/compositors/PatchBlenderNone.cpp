@@ -48,8 +48,8 @@ void LfnIc::PatchBlenderNone::Blend(const Patch& patch, const ImageFloat& patchI
 	const int patchHeight = patchImage.GetHeight();
 	const int patchNumPixels = patchWidth * patchHeight;
 
-	const PixelFloat* const patchImageData = patchImage.GetRgb();
-	PixelFloat* const destRgbData = m_outPatchesBlended.GetRgb();
+	const PixelFloat* const patchImageData = patchImage.GetData();
+	PixelFloat* const destRgbData = m_outPatchesBlended.GetData();
 
 	const int colClipOffset = std::max(-patch.destLeft, 0);
 	const int rowClipOffset = std::max(-patch.destTop, 0);

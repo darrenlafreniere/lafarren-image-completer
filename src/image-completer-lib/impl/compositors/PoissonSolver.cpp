@@ -544,7 +544,7 @@ namespace LfnIc { namespace Poisson
 				{
 					const int sourceIndex = LfnTech::GetRowMajorIndex(sourceWidth, translatedX, translatedY);
 					const int translatedIndex = LfnTech::GetRowMajorIndex(sourceImageTranslatedWidth, x, y);
-					m_sourceImageTranslated.GetRgb()[translatedIndex] = sourceImage.GetRgb()[sourceIndex];
+					m_sourceImageTranslated.GetData()[translatedIndex] = sourceImage.GetData()[sourceIndex];
 					m_laplacianMask.SetValue(x, y, mask.GetValue(translatedX, translatedY));
 				}
 			}

@@ -39,14 +39,14 @@ namespace LfnIc
 		virtual bool Init(int width, int height);
 		virtual bool IsValid() const;
 		virtual const std::string& GetFilePath() const;
-		virtual Pixel* GetRgb();
+		virtual Pixel* GetData();
 
 		// Unimplemented. These are defined in the base, but GetRgb() const
 		// must be redefined here as well, because otherwise, calling GetRgb()
 		// on a const Image& confuses the compile, and it tries calling the
 		// non-const version of GetRgb() above, and generates an error.
 		// Redefined the other two methods here just for completeness.
-		virtual const Pixel* GetRgb() const = 0;
+		virtual const Pixel* GetData() const = 0;
 		virtual int GetWidth() const = 0;
 		virtual int GetHeight() const = 0;
 

@@ -32,9 +32,9 @@ void LfnIc::OutputBlenderSoftMask::Blend(const Compositor::Input& input, const I
 	std::vector<float> softMask;
 	CreateSoftMask(input, softMask);
 
-	const PixelFloat* srcRgbDataPtr = patchesBlended.GetRgb();
+	const PixelFloat* srcRgbDataPtr = patchesBlended.GetData();
 	const float* softMaskDataPtr = &softMask[0];
-	PixelFloat* destRgbDataPtr = outputImageFloat.GetRgb();
+	PixelFloat* destRgbDataPtr = outputImageFloat.GetData();
 
 	wxASSERT(patchesBlended.GetWidth() == outputImageFloat.GetWidth());
 	wxASSERT(patchesBlended.GetHeight() == outputImageFloat.GetHeight());

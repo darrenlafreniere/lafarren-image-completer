@@ -74,12 +74,12 @@ bool AppWxImage::Init(int width, int height)
 	return m_wxImage.Create(width, height, false);
 }
 
-LfnIc::Image::Pixel* AppWxImage::GetRgb()
+LfnIc::Image::Pixel* AppWxImage::GetData()
 {
 	return reinterpret_cast<LfnIc::Image::Pixel*>(m_wxImage.GetData());
 }
 
-const LfnIc::Image::Pixel* AppWxImage::GetRgb() const
+const LfnIc::Image::Pixel* AppWxImage::GetData() const
 {
 	return reinterpret_cast<const LfnIc::Image::Pixel*>(m_wxImage.GetData());
 }
