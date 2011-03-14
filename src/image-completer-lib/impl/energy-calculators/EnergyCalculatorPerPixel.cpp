@@ -79,6 +79,28 @@ namespace LfnIc
 		}
 	};
 
+    class PolicyNoMaskGeneral
+    {
+    public:
+        inline void OnPreLoop(const Mask* mask) {}
+        inline void OnARow(int aSrcIndex) {}
+        inline void OnBRow(int bSrcIndex) {}
+
+        // See MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY for why this uses uint32.
+        FORCE_INLINE uint32 CalculateSquaredDifference(const Image::Rgb* aSrcRow, const Image::Rgb* bSrcRow, int x)
+        {
+            const Image::Rgb& a = aSrcRow[x];
+            const Image::Rgb& b = bSrcRow[x];
+
+            float squaredDifference = 0;
+            for(unsigned int i = 0; i < static_cast<unsigned int>(Image::Rgb::NUM_CHANNELS); i++)
+              {
+              squaredDifference += (a.channel[i] - b.channel[i])*(a.channel[i] - b.channel[i]);
+              }
+            return squaredDifference;
+        }
+    };
+
 	//
 	// PolicyMask - base class for testing one of the regions against the mask
 	//
@@ -218,8 +240,49 @@ namespace LfnIc
 
 		wxASSERT(energy64Bit >= ENERGY_MIN && energy64Bit <= ENERGY_MAX);
 		return energy64Bit;
-	}
-}
+	} // end static inline Energy CalculateEnergy
+
+    template<>
+    inline Energy CalculateEnergy<PolicyNoMaskGeneral>(
+        const ImageConst& inputImage, const MaskLod* mask,
+        int width, int height,
+        int aLeft, int aTop,
+        int bLeft, int bTop)
+    {
+        const int imageWidth = inputImage.GetWidth();
+        const int imageHeight = inputImage.GetHeight();
+
+        EnergyCalculatorUtils::ClampToMinBoundary(aLeft, bLeft, width, 0);
+        EnergyCalculatorUtils::ClampToMinBoundary(aTop, bTop, height, 0);
+        EnergyCalculatorUtils::ClampToMaxBoundary(aLeft, bLeft, width, imageWidth);
+        EnergyCalculatorUtils::ClampToMaxBoundary(aTop, bTop, height, imageHeight);
+
+        float totalEnergy = 0.0;
+        if (width > 0 && height > 0)
+        {
+            PolicyNoMaskGeneral policy;
+            policy.OnPreLoop(mask);
+
+            const Image::Rgb* inputImageRgb = inputImage.GetRgb();
+            int aRowIndex = LfnTech::GetRowMajorIndex(imageWidth, aLeft, aTop);
+            int bRowIndex = LfnTech::GetRowMajorIndex(imageWidth, bLeft, bTop);
+            for (int y = 0; y < height; ++y, aRowIndex += imageWidth, bRowIndex += imageWidth)
+            {
+                const Image::Rgb* aRow = inputImageRgb + aRowIndex;
+                const Image::Rgb* bRow = inputImageRgb + bRowIndex;
+                policy.OnARow(aRowIndex);
+                policy.OnBRow(bRowIndex);
+
+                for (int x = 0; x < width; ++x)
+                {
+                    totalEnergy += policy.CalculateSquaredDifference(aRow, bRow, x++);
+                }
+            }
+        }
+
+        return totalEnergy;
+    } // end static inline Energy CalculateEnergy general pixels
+} // end namespace LfnIc
 
 //
 // EnergyCalculatorPerPixel implementation
@@ -303,7 +366,14 @@ LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::Calculate(int bLeft, int bTop) co
 	}
 	else
 	{
-		return CalculateNoMask(bLeft, bTop);
+        if(typeid(unsigned char) == typeid(Image::Rgb::PixelType))
+            {
+            return CalculateNoMask<PolicyNoMask>(bLeft, bTop);
+            }
+        else
+            {
+            return CalculateNoMask<PolicyNoMaskGeneral>(bLeft, bTop);
+            }
 	}
 }
 
@@ -374,9 +444,10 @@ LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::GetResult(BatchQueued::Handle han
 	return m_queuedCalculationsAndResults[handle].result;
 }
 
+template <typename POLICY>
 LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::CalculateNoMask(int bLeft, int bTop) const
 {
-	return CalculateEnergy<PolicyNoMask>(
+	return CalculateEnergy<POLICY>(
 		m_inputImage, NULL,
 		m_batchParams.width, m_batchParams.height,
 		m_batchParams.aLeft, m_batchParams.aTop,
