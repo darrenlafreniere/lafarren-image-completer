@@ -48,7 +48,7 @@ namespace LfnIc
 	public:
 		ImageConstDelegateToImage(const Image& image);
 
-		virtual const Rgb* GetRgb() const;
+		virtual const Pixel* GetRgb() const;
 		virtual int GetWidth() const;
 		virtual int GetHeight() const;
 
@@ -65,7 +65,7 @@ m_image(image)
 {
 }
 
-const LfnIc::Image::Rgb* LfnIc::ImageConstDelegateToImage::GetRgb() const
+const LfnIc::Image::Pixel* LfnIc::ImageConstDelegateToImage::GetRgb() const
 {
 	return m_image.GetRgb();
 }
@@ -92,7 +92,7 @@ namespace LfnIc
 		ImageScaledDown(const ImageConst& imageToScaleDown);
 		virtual ~ImageScaledDown();
 
-		virtual const Rgb* GetRgb() const;
+		virtual const Pixel* GetRgb() const;
 		virtual int GetWidth() const;
 		virtual int GetHeight() const;
 
@@ -102,7 +102,7 @@ namespace LfnIc
 
 		int m_width;
 		int m_height;
-		Rgb* m_rgb;
+		Pixel* m_rgb;
 	};
 }
 
@@ -111,7 +111,7 @@ LfnIc::ImageScaledDown::ImageScaledDown(const ImageConst& imageToScaleDown)
 	// Alias to reduce wordiness.
 	const int otherWidth = imageToScaleDown.GetWidth();
 	const int otherHeight = imageToScaleDown.GetHeight();
-	const Rgb* otherRgb = imageToScaleDown.GetRgb();
+	const Pixel* otherRgb = imageToScaleDown.GetRgb();
 
 	// Downsample otherRgb into m_rgb by averaging 2x2 pixel blocks into 1 pixel.
 	// The low resolution image is half that of the high resolution image.
@@ -119,21 +119,21 @@ LfnIc::ImageScaledDown::ImageScaledDown(const ImageConst& imageToScaleDown)
 	m_height = otherHeight / 2;
 	wxASSERT(m_width > 0 && m_height > 0);
 
-	m_rgb = new Rgb[m_width * m_height];
+	m_rgb = new Pixel[m_width * m_height];
 
-	const int stride = m_width * sizeof(Rgb);
-	const int otherStride = otherWidth * sizeof(Rgb);
+	const int stride = m_width * sizeof(Pixel);
+	const int otherStride = otherWidth * sizeof(Pixel);
 	for (int y = 0, otherY = 0; y < m_height; ++y, otherY += 2)
 	{
 		wxASSERT(otherY < otherHeight);
-		Rgb* rgbCurrent = LfnTech::GetRowMajorPointer(m_rgb, stride, 0, y);
+		Pixel* rgbCurrent = LfnTech::GetRowMajorPointer(m_rgb, stride, 0, y);
 
-		const Rgb* otherRgbCurrentUpper = LfnTech::GetRowMajorPointer(otherRgb, otherStride, 0, otherY);
+		const Pixel* otherRgbCurrentUpper = LfnTech::GetRowMajorPointer(otherRgb, otherStride, 0, otherY);
 
 		// If the bottom edge of the imageToScaleDown image has no lower row,
 		// point at the upper one; it'll average to the same value
 		// and avoids an extra conditional in the loop.
-		const Rgb* otherRgbCurrentLower = ((otherY + 1) < otherHeight)
+		const Pixel* otherRgbCurrentLower = ((otherY + 1) < otherHeight)
 			? LfnTech::GetRowMajorPointer(otherRgb, otherStride, 0, otherY + 1)
 			: otherRgbCurrentUpper;
 
@@ -141,9 +141,9 @@ LfnIc::ImageScaledDown::ImageScaledDown(const ImageConst& imageToScaleDown)
 		{
 			wxASSERT(otherX < otherWidth);
 
-			float r = otherRgbCurrentUpper[0].r + otherRgbCurrentLower[0].r;
-			float g = otherRgbCurrentUpper[0].g + otherRgbCurrentLower[0].g;
-			float b = otherRgbCurrentUpper[0].b + otherRgbCurrentLower[0].b;
+			float r = otherRgbCurrentUpper[0].channel[0] + otherRgbCurrentLower[0].channel[0];
+			float g = otherRgbCurrentUpper[0].channel[1] + otherRgbCurrentLower[0].channel[1];
+			float b = otherRgbCurrentUpper[0].channel[2] + otherRgbCurrentLower[0].channel[2];
 
 			// numPixelsToAverage is the number of high resolution pixels we're
 			// collapsing/averaging into a single low resolution pixel. At most,
@@ -154,9 +154,9 @@ LfnIc::ImageScaledDown::ImageScaledDown(const ImageConst& imageToScaleDown)
 			float numPixelsToAverage = 2.0f;
 			if ((otherX + 1) < otherWidth)
 			{
-				r += otherRgbCurrentUpper[1].r + otherRgbCurrentLower[1].r;
-				g += otherRgbCurrentUpper[1].g + otherRgbCurrentLower[1].g;
-				b += otherRgbCurrentUpper[1].b + otherRgbCurrentLower[1].b;
+				r += otherRgbCurrentUpper[1].channel[0] + otherRgbCurrentLower[1].channel[0];
+				g += otherRgbCurrentUpper[1].channel[1] + otherRgbCurrentLower[1].channel[1];
+				b += otherRgbCurrentUpper[1].channel[2] + otherRgbCurrentLower[1].channel[2];
 				numPixelsToAverage = 4.0f;
 			}
 
@@ -168,9 +168,9 @@ LfnIc::ImageScaledDown::ImageScaledDown(const ImageConst& imageToScaleDown)
 			wxASSERT(g >= 0.0f && g <= 255.0f);
 			wxASSERT(b >= 0.0f && b <= 255.0f);
 
-			rgbCurrent->r = r;
-			rgbCurrent->g = g;
-			rgbCurrent->b = b;
+			rgbCurrent->channel[0] = r;
+			rgbCurrent->channel[1] = g;
+			rgbCurrent->channel[2] = b;
 		}
 	}
 }
@@ -180,7 +180,7 @@ LfnIc::ImageScaledDown::~ImageScaledDown()
 	delete [] m_rgb;
 }
 
-const LfnIc::Image::Rgb* LfnIc::ImageScaledDown::GetRgb() const
+const LfnIc::Image::Pixel* LfnIc::ImageScaledDown::GetRgb() const
 {
 	return m_rgb;
 }
@@ -213,7 +213,7 @@ LfnIc::ImageScalable::~ImageScalable()
 	}
 }
 
-const LfnIc::Image::Rgb* LfnIc::ImageScalable::GetRgb() const
+const LfnIc::Image::Pixel* LfnIc::ImageScalable::GetRgb() const
 {
 	return GetCurrentResolution().GetRgb();
 }

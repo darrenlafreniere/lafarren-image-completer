@@ -31,7 +31,7 @@ namespace LfnIc
 	class Image
 	{
 	public:
-		struct Rgb;
+		struct Pixel;
 
 		// Non-const method to initialize the image to the specified width
 		// and height. Any existing rgb data is not necessarily reserved.
@@ -49,8 +49,8 @@ namespace LfnIc
 		// result points to the upperleft-most pixel and the buffer is
 		// stored in row-major order, where the start of each row is
 		// separated by GetStride() bytes.
-		virtual Rgb* GetRgb() = 0;
-		virtual const Rgb* GetRgb() const = 0;
+		virtual Pixel* GetRgb() = 0;
+		virtual const Pixel* GetRgb() const = 0;
 
 		// Returns the image's width.
 		virtual int GetWidth() const = 0;
@@ -58,39 +58,15 @@ namespace LfnIc
 		// Returns the image's height.
 		virtual int GetHeight() const = 0;
 
-		// Rgb structure allows for access to the data using long-hand
+		// Pixel structure allows for access to the data using long-hand
 		// component names, short-hand component names, or a channel array.
-		struct Rgb
+		struct Pixel
 		{
             typedef unsigned char PixelType;
-			inline Rgb() {}
-			inline Rgb(PixelType r, PixelType g, PixelType b) : r(r), g(g), b(b) {}
 
 			static const int NUM_CHANNELS = 3;
 
-			union
-			{
-				struct
-				{
-					union
-					{
-						PixelType red;
-						PixelType r;
-					};
-					union
-					{
-						PixelType green;
-						PixelType g;
-					};
-					union
-					{
-						PixelType blue;
-						PixelType b;
-					};
-				};
-
-				PixelType channel[NUM_CHANNELS];
-			};
+            PixelType channel[NUM_CHANNELS];
 		};
 
 	protected:

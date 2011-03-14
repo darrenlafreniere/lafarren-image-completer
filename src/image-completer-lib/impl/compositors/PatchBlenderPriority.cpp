@@ -1,19 +1,19 @@
 //
 // Copyright 2010, Darren Lafreniere
 // <http://www.lafarren.com/image-completer/>
-// 
+//
 // This file is part of lafarren.com's Image Completer.
-// 
+//
 // Image Completer is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Image Completer is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with Image Completer, named License.txt. If not, see
 // <http://www.gnu.org/licenses/>.
@@ -85,15 +85,15 @@ LfnIc::PatchBlenderPriority::PatchBlenderPriority(const Compositor::Input& input
 
 LfnIc::PatchBlenderPriority::~PatchBlenderPriority()
 {
-	RgbFloat* rgbData = m_outPatchesBlended.GetRgb();
+	PixelFloat* rgbData = m_outPatchesBlended.GetRgb();
 	const int imageNumPixels = m_imageFloat.GetWidth() * m_imageFloat.GetHeight();
 	for (int i = 0; i < imageNumPixels; ++i)
 	{
 		const float weightSum = m_patchesWeightSum[i];
 		if (weightSum > 0.0f)
 		{
-			RgbFloat& rgb = rgbData[i];
-			for (int c = 0; c < RgbFloat::NUM_CHANNELS; ++c)
+			PixelFloat& rgb = rgbData[i];
+			for (int c = 0; c < PixelFloat::NUM_CHANNELS; ++c)
 			{
 				rgb.channel[c] /= weightSum;
 			}
@@ -116,9 +116,9 @@ void LfnIc::PatchBlenderPriority::Blend(const Patch& patch, const ImageFloat& pa
 	const float patchWeight = LfnTech::InverseLerp(patch.priority, m_priorityLowest, m_priorityHighest);
 	const float patchAlpha = LfnTech::Lerp(ALPHA_OF_LOWEST_PRIORITY_PATCH, ALPHA_OF_HIGHEST_PRIORITY_PATCH, patchWeight);
 
-	const RgbFloat* const patchImageData = patchImage.GetRgb();
+	const PixelFloat* const patchImageData = patchImage.GetRgb();
 	const float* const patchFeatherAlphaData = &m_patchFeatherAlpha[0];
-	RgbFloat* const destRgbData = m_outPatchesBlended.GetRgb();
+	PixelFloat* const destRgbData = m_outPatchesBlended.GetRgb();
 	float* const destWeightSumData = &m_patchesWeightSum[0];
 
 	const int colClipOffset = std::max(-patch.destLeft, 0);
@@ -128,11 +128,11 @@ void LfnIc::PatchBlenderPriority::Blend(const Patch& patch, const ImageFloat& pa
 	for (int row = rowClipOffset, patchDestY = patch.destTop + rowClipOffset; row < rowsNum; ++row, ++patchDestY)
 	{
 		const int patchRowMajorIndex = LfnTech::GetRowMajorIndex(patchWidth, colClipOffset, row);
-		const RgbFloat* patchImagePtr = patchImageData + patchRowMajorIndex;
+		const PixelFloat* patchImagePtr = patchImageData + patchRowMajorIndex;
 		const float* patchFeatherAlphaPtr = patchFeatherAlphaData + patchRowMajorIndex;
 
 		const int imageRowMajorIndex = LfnTech::GetRowMajorIndex(imageWidth, patch.destLeft + colClipOffset, patchDestY);
-		RgbFloat* destRgbPtr = destRgbData + imageRowMajorIndex;
+		PixelFloat* destRgbPtr = destRgbData + imageRowMajorIndex;
 		float* destWeightSumPtr = destWeightSumData + imageRowMajorIndex;
 
 		const int colsNum = std::min(patchWidth, imageWidth - patch.destLeft);
@@ -142,7 +142,7 @@ void LfnIc::PatchBlenderPriority::Blend(const Patch& patch, const ImageFloat& pa
 
 			wxASSERT((destRgbPtr - destRgbData) < (imageWidth * imageHeight));
 			wxASSERT((patchImagePtr - &patchImagePtr[0]) < patchNumPixels);
-			for (int c = 0; c < RgbFloat::NUM_CHANNELS; ++c)
+			for (int c = 0; c < PixelFloat::NUM_CHANNELS; ++c)
 			{
 				destRgbPtr->channel[c] += patchImagePtr->channel[c] * pixelWeight;
 			}

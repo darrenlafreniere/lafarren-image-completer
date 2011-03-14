@@ -1,19 +1,19 @@
 //
 // Copyright 2010, Darren Lafreniere
 // <http://www.lafarren.com/image-completer/>
-// 
+//
 // This file is part of lafarren.com's Image Completer.
-// 
+//
 // Image Completer is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Image Completer is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with Image Completer, named License.txt. If not, see
 // <http://www.gnu.org/licenses/>.
@@ -29,10 +29,10 @@ namespace LfnIc
 	class ImageConst;
 
 	// An rgb tuple of floats, where each component is [0.0, 1.0].
-	class RgbFloat
+	class PixelFloat
 	{
 	public:
-		static const int NUM_CHANNELS = Image::Rgb::NUM_CHANNELS;
+		static const int NUM_CHANNELS = Image::Pixel::NUM_CHANNELS;
 		union
 		{
 			struct
@@ -45,13 +45,13 @@ namespace LfnIc
 			float channel[NUM_CHANNELS];
 		};
 
-		inline RgbFloat();
-		inline RgbFloat(float r, float g, float b);
+		inline PixelFloat();
+		inline PixelFloat(float r, float g, float b);
 
-		inline RgbFloat& operator=(const RgbFloat& other);
-		inline RgbFloat& operator+=(const RgbFloat& other);
-		inline RgbFloat& operator-=(const RgbFloat& other);
-		inline RgbFloat& operator*=(float x);
+		inline PixelFloat& operator=(const PixelFloat& other);
+		inline PixelFloat& operator+=(const PixelFloat& other);
+		inline PixelFloat& operator-=(const PixelFloat& other);
+		inline PixelFloat& operator*=(float x);
 	};
 
 	//
@@ -63,7 +63,7 @@ namespace LfnIc
 		ImageFloat();
 		ImageFloat(const ImageConst& input);
 		ImageFloat(int width, int height);
-		ImageFloat(int width, int height, const RgbFloat& initialRgb);
+		ImageFloat(int width, int height, const PixelFloat& initialRgb);
 
 		void Create(int width, int height);
 
@@ -73,13 +73,13 @@ namespace LfnIc
 		inline int GetWidth() const { return m_width; }
 		inline int GetHeight() const { return m_height; }
 
-		RgbFloat& GetPixel(int x, int y);
-		const RgbFloat& GetPixel(int x, int y) const;
+		PixelFloat& GetPixel(int x, int y);
+		const PixelFloat& GetPixel(int x, int y) const;
 
-		void SetPixel(int x, int y, const RgbFloat& pixel);
+		void SetPixel(int x, int y, const PixelFloat& pixel);
 
-		inline RgbFloat* GetRgb() { return &m_data[0]; }
-		inline const RgbFloat* GetRgb() const { return &m_data[0]; }
+		inline PixelFloat* GetRgb() { return &m_data[0]; }
+		inline const PixelFloat* GetRgb() const { return &m_data[0]; }
 
 	private:
 		ImageFloat(const ImageFloat& other) {}
@@ -87,12 +87,12 @@ namespace LfnIc
 
 		int m_width;
 		int m_height;
-		std::vector<RgbFloat> m_data;
+		std::vector<PixelFloat> m_data;
 	};
 
 	// Image::Rgb <=> RgbFloat conversions.
-	inline void CopyRgbValue(RgbFloat& to, const Image::Rgb& from);
-	inline void CopyRgbValue(Image::Rgb& to, const RgbFloat& from);
+	inline void CopyRgbValue(PixelFloat& to, const Image::Pixel& from);
+	inline void CopyRgbValue(Image::Pixel& to, const PixelFloat& from);
 }
 
 //

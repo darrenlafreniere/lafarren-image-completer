@@ -1,19 +1,19 @@
 //
 // Copyright 2010, Darren Lafreniere
 // <http://www.lafarren.com/image-completer/>
-// 
+//
 // This file is part of lafarren.com's Image Completer.
-// 
+//
 // Image Completer is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Image Completer is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with Image Completer, named License.txt. If not, see
 // <http://www.gnu.org/licenses/>.
@@ -34,64 +34,64 @@ namespace LfnIc
 	//
 	// RgbFloat
 	//
-	RgbFloat::RgbFloat()
+	PixelFloat::PixelFloat()
 	{
 	}
 
-	RgbFloat::RgbFloat(float r, float g, float b)
+	PixelFloat::PixelFloat(float r, float g, float b)
 		: r(r)
 		, g(g)
 		, b(b)
 	{
 	}
 
-	RgbFloat& RgbFloat::operator=(const RgbFloat& other)
+	PixelFloat& PixelFloat::operator=(const PixelFloat& other)
 	{
-		r = other.r;
-		g = other.g;
-		b = other.b;
+		this->channel[0] = other.channel[0];
+		this->channel[1] = other.channel[1];
+		this->channel[2] = other.channel[2];
 		return *this;
 	}
 
-	RgbFloat& RgbFloat::operator+=(const RgbFloat& other)
+	PixelFloat& PixelFloat::operator+=(const PixelFloat& other)
 	{
-		r += other.r;
-		g += other.g;
-		b += other.b;
+		this->channel[0] += other.channel[0];
+		this->channel[1] += other.channel[1];
+		this->channel[2] += other.channel[2];
 		return *this;
 	}
 
-	RgbFloat& RgbFloat::operator-=(const RgbFloat& other)
+	PixelFloat& PixelFloat::operator-=(const PixelFloat& other)
 	{
-		r -= other.r;
-		g -= other.g;
-		b -= other.b;
+		this->channel[0] -= other.channel[0];
+		this->channel[1] -= other.channel[1];
+		this->channel[2] -= other.channel[2];
 		return *this;
 	}
 
-	RgbFloat& RgbFloat::operator*=(float x)
+	PixelFloat& PixelFloat::operator*=(float x)
 	{
-		r *= x;
-		g *= x;
-		b *= x;
+		this->channel[0] *= x;
+		this->channel[1] *= x;
+		this->channel[2] *= x;
 		return *this;
 	}
 
 	//
 	// CopyRgbValue functions
 	//
-	inline void CopyRgbValue(RgbFloat& to, const Image::Rgb& from)
+	inline void CopyRgbValue(PixelFloat& to, const Image::Pixel& from)
 	{
-		to.r = static_cast<float>(from.r) / 255.0f;
-		to.g = static_cast<float>(from.g) / 255.0f;
-		to.b = static_cast<float>(from.b) / 255.0f;
+		to.channel[0] = static_cast<float>(from.channel[0]) / 255.0f;
+		to.channel[1] = static_cast<float>(from.channel[1]) / 255.0f;
+		to.channel[2] = static_cast<float>(from.channel[2]) / 255.0f;
 	}
 
-	inline void CopyRgbValue(Image::Rgb& to, const RgbFloat& from)
+	inline void CopyRgbValue(Image::Pixel& to, const PixelFloat& from)
 	{
-		to.r = static_cast<unsigned char>(from.r * 255.0f);
-		to.g = static_cast<unsigned char>(from.g * 255.0f);
-		to.b = static_cast<unsigned char>(from.b * 255.0f);
+		to.channel[0] = static_cast<unsigned char>(from.channel[0] * 255.0f);
+		to.channel[1] = static_cast<unsigned char>(from.channel[1] * 255.0f);
+		to.channel[2] = static_cast<unsigned char>(from.channel[2] * 255.0f);
 	}
 }
 

@@ -65,16 +65,16 @@ namespace LfnIc
 		inline void OnBRow(int bSrcIndex) {}
 
 		// See MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY for why this uses uint32.
-		FORCE_INLINE uint32 CalculateSquaredDifference(const Image::Rgb* aSrcRow, const Image::Rgb* bSrcRow, int x)
+		FORCE_INLINE uint32 CalculateSquaredDifference(const Image::Pixel* aSrcRow, const Image::Pixel* bSrcRow, int x)
 		{
-			const Image::Rgb& a = aSrcRow[x];
-			const Image::Rgb& b = bSrcRow[x];
+			const Image::Pixel& a = aSrcRow[x];
+			const Image::Pixel& b = bSrcRow[x];
 
 			// d[x] = component delta
 			// e = dr^2 + dg^2 + db^2
-			const uint32 dr = a.red   - b.red;
-			const uint32 dg = a.green - b.green;
-			const uint32 db = a.blue  - b.blue;
+			const uint32 dr = a.channel[0]   - b.channel[0];
+			const uint32 dg = a.channel[1] - b.channel[1];
+			const uint32 db = a.channel[2]  - b.channel[2];
 			return (dr * dr) + (dg * dg) + (db * db);
 		}
 	};
@@ -87,13 +87,13 @@ namespace LfnIc
         inline void OnBRow(int bSrcIndex) {}
 
         // See MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY for why this uses uint32.
-        FORCE_INLINE uint32 CalculateSquaredDifference(const Image::Rgb* aSrcRow, const Image::Rgb* bSrcRow, int x)
+        FORCE_INLINE uint32 CalculateSquaredDifference(const Image::Pixel* aSrcRow, const Image::Pixel* bSrcRow, int x)
         {
-            const Image::Rgb& a = aSrcRow[x];
-            const Image::Rgb& b = bSrcRow[x];
+            const Image::Pixel& a = aSrcRow[x];
+            const Image::Pixel& b = bSrcRow[x];
 
             float squaredDifference = 0;
-            for(unsigned int i = 0; i < static_cast<unsigned int>(Image::Rgb::NUM_CHANNELS); i++)
+            for(unsigned int i = 0; i < static_cast<unsigned int>(Image::Pixel::NUM_CHANNELS); i++)
               {
               squaredDifference += (a.channel[i] - b.channel[i])*(a.channel[i] - b.channel[i]);
               }
@@ -115,7 +115,7 @@ namespace LfnIc
 		}
 
 		// See MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY for why this uses uint32.
-		inline uint32 CalculateSquaredDifference(const Image::Rgb* aSrcRow, const Image::Rgb* bSrcRow, int x)
+		inline uint32 CalculateSquaredDifference(const Image::Pixel* aSrcRow, const Image::Pixel* bSrcRow, int x)
 		{
 			return (!m_lodRow || m_lodRow[x] == Mask::KNOWN)
 				? Super::CalculateSquaredDifference(aSrcRow, bSrcRow, x)
@@ -188,13 +188,13 @@ namespace LfnIc
 			int numPixelsInBatch = 0;
 			const bool canFitInU32Bit = (width * height) <= MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY;
 
-			const Image::Rgb* inputImageRgb = inputImage.GetRgb();
+			const Image::Pixel* inputImageRgb = inputImage.GetRgb();
 			int aRowIndex = LfnTech::GetRowMajorIndex(imageWidth, aLeft, aTop);
 			int bRowIndex = LfnTech::GetRowMajorIndex(imageWidth, bLeft, bTop);
 			for (int y = 0; y < height; ++y, aRowIndex += imageWidth, bRowIndex += imageWidth)
 			{
-				const Image::Rgb* aRow = inputImageRgb + aRowIndex;
-				const Image::Rgb* bRow = inputImageRgb + bRowIndex;
+				const Image::Pixel* aRow = inputImageRgb + aRowIndex;
+				const Image::Pixel* bRow = inputImageRgb + bRowIndex;
 				policy.OnARow(aRowIndex);
 				policy.OnBRow(bRowIndex);
 
@@ -263,13 +263,13 @@ namespace LfnIc
             PolicyNoMaskGeneral policy;
             policy.OnPreLoop(mask);
 
-            const Image::Rgb* inputImageRgb = inputImage.GetRgb();
+            const Image::Pixel* inputImageRgb = inputImage.GetRgb();
             int aRowIndex = LfnTech::GetRowMajorIndex(imageWidth, aLeft, aTop);
             int bRowIndex = LfnTech::GetRowMajorIndex(imageWidth, bLeft, bTop);
             for (int y = 0; y < height; ++y, aRowIndex += imageWidth, bRowIndex += imageWidth)
             {
-                const Image::Rgb* aRow = inputImageRgb + aRowIndex;
-                const Image::Rgb* bRow = inputImageRgb + bRowIndex;
+                const Image::Pixel* aRow = inputImageRgb + aRowIndex;
+                const Image::Pixel* bRow = inputImageRgb + bRowIndex;
                 policy.OnARow(aRowIndex);
                 policy.OnBRow(bRowIndex);
 
@@ -366,14 +366,14 @@ LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::Calculate(int bLeft, int bTop) co
 	}
 	else
 	{
-        if(typeid(unsigned char) == typeid(Image::Rgb::PixelType) && Image::Rgb::NUM_CHANNELS == 3)
-            {
+        if(typeid(unsigned char) == typeid(Image::Pixel::PixelType) && Image::Pixel::NUM_CHANNELS == 3)
+        {
             return CalculateNoMask<PolicyNoMask>(bLeft, bTop);
-            }
+        }
         else
-            {
+        {
             return CalculateNoMask<PolicyNoMaskGeneral>(bLeft, bTop);
-            }
+        }
 	}
 }
 
