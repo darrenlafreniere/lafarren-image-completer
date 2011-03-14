@@ -366,7 +366,7 @@ LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::Calculate(int bLeft, int bTop) co
 	}
 	else
 	{
-        if(typeid(unsigned char) == typeid(Image::Rgb::PixelType))
+        if(typeid(unsigned char) == typeid(Image::Rgb::PixelType) && Image::Rgb::NUM_CHANNELS == 3)
             {
             return CalculateNoMask<PolicyNoMask>(bLeft, bTop);
             }
