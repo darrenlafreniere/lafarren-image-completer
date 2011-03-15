@@ -106,7 +106,14 @@ namespace LfnIc { namespace Poisson
 	class BVarInitializerZero : public BVarInitializer
 	{
 	public:
-		virtual void GetInitialValue(int, int, PixelFloat& outPixel) const { outPixel.channel[0] = outPixel.channel[1] = outPixel.channel[2] = 0.0f; }
+		virtual void GetInitialValue(int, int, PixelFloat& outPixel) const
+		{
+            for(unsigned int component = 0; component < static_cast<unsigned int>(LfnIc::PixelFloat::NUM_CHANNELS); component++)
+            {
+                outPixel.channel[component] = 0.0f;
+            }
+
+        }
 	};
 
 	class BVarInitializerDivergenceField : public BVarInitializer
@@ -201,10 +208,10 @@ namespace LfnIc { namespace Poisson
 	AAndBVars::AAndBVars(const ImageFloat& inputImage, const Mask& mask, const BVarInitializer& bVarInitializer, const UnknownVars& unknownVars)
 	{
 		// The A matrix is 3N * 3N where N is the number of masked pixels
-		m_a.resize(unknownVars.GetNum() * 3, unknownVars.GetNum() * 3);
+		m_a.resize(unknownVars.GetNum() * LfnIc::PixelFloat::NUM_CHANNELS, unknownVars.GetNum() * LfnIc::PixelFloat::NUM_CHANNELS);
 
 		// The 'b' values
-		m_b.resize(unknownVars.GetNum() * 3, 1);
+		m_b.resize(unknownVars.GetNum() * LfnIc::PixelFloat::NUM_CHANNELS, 1);
 
 		const int width = inputImage.GetWidth();
 		const int height = inputImage.GetHeight();
@@ -228,13 +235,12 @@ namespace LfnIc { namespace Poisson
 					Evaluate(neighbors.HasBottom(), inputImage, mask, unknownVars, x, y + 1, pixel, unknownIndex);
 
 					// This is the center pixel, so the corresponding entry should be on the diagonal
-					m_a.insert(unknownIndex + unknownVars.GetNum() * 0, unknownIndex + unknownVars.GetNum() * 0) = -neighbors.GetNum();
-					m_a.insert(unknownIndex + unknownVars.GetNum() * 1, unknownIndex + unknownVars.GetNum() * 1) = -neighbors.GetNum();
-					m_a.insert(unknownIndex + unknownVars.GetNum() * 2, unknownIndex + unknownVars.GetNum() * 2) = -neighbors.GetNum();
+                    for(unsigned int component = 0; component < static_cast<unsigned int>(LfnIc::PixelFloat::NUM_CHANNELS); component++)
+                    {
+                        m_a.insert(unknownIndex + unknownVars.GetNum() * component, unknownIndex + unknownVars.GetNum() * component) = -neighbors.GetNum();
+                        m_b(unknownIndex + unknownVars.GetNum() * component) = pixel.channel[component];
+                    }
 
-					m_b(unknownIndex + unknownVars.GetNum() * 0) = pixel.channel[0];
-					m_b(unknownIndex + unknownVars.GetNum() * 1) = pixel.channel[1];
-					m_b(unknownIndex + unknownVars.GetNum() * 2) = pixel.channel[2];
 				}
 			}
 		}
@@ -264,9 +270,10 @@ namespace LfnIc { namespace Poisson
 		if (mask.GetValue(x, y) == Mask::UNKNOWN)
 		{
 			// Unknown pixel
-			m_a.insert(variableId + unknownVars.GetNum() * 0, unknownVars.GetIndex(x,y) + unknownVars.GetNum() * 0) = 1.0f;
-			m_a.insert(variableId + unknownVars.GetNum() * 1, unknownVars.GetIndex(x,y) + unknownVars.GetNum() * 1) = 1.0f;
-			m_a.insert(variableId + unknownVars.GetNum() * 2, unknownVars.GetIndex(x,y) + unknownVars.GetNum() * 2) = 1.0f;
+			for(unsigned int component = 0; component < static_cast<unsigned int>(LfnIc::PixelFloat::NUM_CHANNELS); component++)
+            {
+                m_a.insert(variableId + unknownVars.GetNum() * component, unknownVars.GetIndex(x,y) + unknownVars.GetNum() * component) = 1.0f;
+            }
 		}
 		else
 		{
@@ -306,7 +313,7 @@ namespace LfnIc { namespace Poisson
 			}
 		}
 
-		m_u.resize(GetNum() * 3, 1);
+		m_u.resize(GetNum() * LfnIc::PixelFloat::NUM_CHANNELS, 1);
 	}
 
 	int UnknownVars::GetWidth() const

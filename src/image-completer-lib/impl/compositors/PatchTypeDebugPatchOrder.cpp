@@ -77,9 +77,10 @@ static LfnIc::PixelFloat GetRainbowColor(float alpha)
 	const float blendAlpha = (alpha - refAlphaLow) / refAlphaStep;
 
     LfnIc::PixelFloat pixel;
-    pixel.channel[0] = colorLow.channel[0] + blendAlpha * (colorHigh.channel[0] - colorLow.channel[0]);
-    pixel.channel[1] = colorLow.channel[1] + blendAlpha * (colorHigh.channel[1] - colorLow.channel[1]);
-    pixel.channel[2] = colorLow.channel[2] + blendAlpha * (colorHigh.channel[2] - colorLow.channel[2]);
+    for(unsigned int component = 0; component < static_cast<unsigned int>(LfnIc::PixelFloatRGB::NUM_CHANNELS); component++)
+    {
+        pixel.channel[component] = colorLow.channel[component] + blendAlpha * (colorHigh.channel[component] - colorLow.channel[component]);
+    }
 	return pixel;
 }
 
@@ -110,9 +111,10 @@ const LfnIc::ImageFloat& LfnIc::PatchTypeDebugPatchOrder::Get(const Patch& patch
 
 	for (int i = 0, n = m_patchImage.GetWidth() * m_patchImage.GetHeight(); i < n; ++i)
 	{
-		m_patchImage.GetData()[i].channel[0] = rgb.channel[0];
-		m_patchImage.GetData()[i].channel[1] = rgb.channel[1];
-		m_patchImage.GetData()[i].channel[2] = rgb.channel[2];
+        for(unsigned int component = 0; component < static_cast<unsigned int>(LfnIc::PixelFloatRGB::NUM_CHANNELS); component++)
+        {
+            m_patchImage.GetData()[i].channel[component] = rgb.channel[component];
+        }
 	}
 
 	return m_patchImage;
