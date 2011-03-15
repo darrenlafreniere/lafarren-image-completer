@@ -81,6 +81,18 @@ bool AppWxMask::LoadAndValidate(const std::string& imagePath, int offsetX, int o
     return result;
 }
 
+// Returns the mask's width.
+int AppWxMask::GetWidth() const
+{
+    return this->m_width;
+}
+
+// Returns the mask's height.
+int AppWxMask::GetHeight() const
+{
+    return this->m_height;
+}
+
 LfnIc::Mask::Value AppWxMask::GetValue(int x, int y) const
 {
 	const int xMaskSpace = x - m_offsetX;
@@ -92,6 +104,10 @@ LfnIc::Mask::Value AppWxMask::GetValue(int x, int y) const
 		value = m_values[LfnTech::GetRowMajorIndex(m_width, xMaskSpace, yMaskSpace)];
 	}
 
+if(value != 0)
+{
+  int a = 3;
+}
 	return value;
 }
 

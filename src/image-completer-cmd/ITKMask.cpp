@@ -27,11 +27,7 @@
 
 #include "itkImageFileReader.h"
 
-ITKMask::ITKMask()
-	: m_width(0)
-	, m_height(0)
-	, m_offsetX(0)
-	, m_offsetY(0)
+ITKMask::ITKMask() : m_offsetX(0), m_offsetY(0)
 {
 }
 
@@ -43,26 +39,25 @@ bool ITKMask::LoadAndValidate(const std::string& imagePath, int offsetX, int off
   reader->SetFileName(imagePath);
   reader->Update();
 
-  this->Init(reader->GetOutput());
+  this->m_mask = MaskImageType::New();
+  this->m_mask->Graft(reader->GetOutput());
+
+  m_offsetX = offsetX;
+  m_offsetY = offsetY;
 
   return true;
 }
 
-void ITKMask::Init(const MaskImageType::Pointer maskImage, int offsetX, int offsetY)
+// Returns the mask's width.
+int ITKMask::GetWidth() const
 {
-	m_width = maskImage->GetLargestPossibleRegion().GetSize()[0];
-	m_height = maskImage->GetLargestPossibleRegion().GetSize()[1];
-	m_offsetX = offsetX;
-	m_offsetY = offsetY;
-	m_values.resize(m_width * m_height);
+    return this->m_mask->GetLargestPossibleRegion().GetSize()[0];
+}
 
-    unsigned char* data = reinterpret_cast<unsigned char*>(maskImage->GetBufferPointer());
-
-	const int numPixels = m_width * m_height;
-	for (int i = 0; i < numPixels; ++i)
-	{
-		m_values[i] = ByteToMaskValue(data[i]);
-	}
+// Returns the mask's height.
+int ITKMask::GetHeight() const
+{
+    return this->m_mask->GetLargestPossibleRegion().GetSize()[1];
 }
 
 LfnIc::Mask::Value ITKMask::GetValue(int x, int y) const
@@ -71,11 +66,17 @@ LfnIc::Mask::Value ITKMask::GetValue(int x, int y) const
 	const int yMaskSpace = y - m_offsetY;
 
 	Value value = Mask::KNOWN;
-	if (xMaskSpace >= 0 && yMaskSpace >= 0 && xMaskSpace < m_width && yMaskSpace < m_height)
+	if (xMaskSpace >= 0 && yMaskSpace >= 0 && xMaskSpace < GetWidth() && yMaskSpace < GetHeight())
 	{
-		value = m_values[LfnTech::GetRowMajorIndex(m_width, xMaskSpace, yMaskSpace)];
+        itk::Index<2> index;
+        index[0] = x;
+        index[1] = y;
+		value = ByteToMaskValue(this->m_mask->GetPixel(index));
 	}
-
+if(value != 0)
+{
+  int a = 3;
+}
 	return value;
 }
 

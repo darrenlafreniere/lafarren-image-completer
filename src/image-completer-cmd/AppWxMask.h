@@ -39,6 +39,12 @@ public:
 
 	virtual Value GetValue(int x, int y) const;
 
+    // Returns the mask's width.
+    int GetWidth() const;
+
+    // Returns the mask's height.
+    int GetHeight() const;
+
 private:
 	Value ByteToMaskValue(unsigned char byte) const;
 

@@ -55,6 +55,12 @@ namespace LfnIc
 		// internal boundaries, this method is expected to return KNOWN.
 		virtual Value GetValue(int x, int y) const = 0;
 
+        // Returns the mask's width.
+        virtual int GetWidth() const = 0;
+
+        // Returns the mask's height.
+        virtual int GetHeight() const = 0;
+
 	protected:
 		// Cannot destroy Mask instance through a pointer to this base.
 		~Mask() {}

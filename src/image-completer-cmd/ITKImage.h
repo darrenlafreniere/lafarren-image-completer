@@ -34,6 +34,7 @@ class ITKImage : public LfnIc::Image
 {
 public:
 	// ITKImage interface
+	ITKImage();
     typedef itk::CovariantVector<LfnIc::Image::Pixel::PixelType, LfnIc::Image::Pixel::NUM_CHANNELS> ITKPixelType;
     typedef itk::Image<ITKPixelType, 2> ITKImageType;
 

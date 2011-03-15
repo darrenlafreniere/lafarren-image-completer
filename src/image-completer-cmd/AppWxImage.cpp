@@ -75,16 +75,6 @@ void AppWxImage::Save()
   m_wxImage.SaveFile(m_filePath);
 }
 
-wxImage& AppWxImage::GetwxImage()
-{
-	return m_wxImage;
-}
-
-const wxImage& AppWxImage::GetwxImage() const
-{
-	return m_wxImage;
-}
-
 bool AppWxImage::IsValid() const
 {
 	return m_wxImage.Ok();

@@ -25,11 +25,16 @@
 
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
+#include "itkImageRegionIterator.h"
+
+ITKImage::ITKImage()
+{
+  m_Image = NULL;
+}
 
 bool ITKImage::LoadAndValidate(const std::string& imagePath)
 {
   typedef itk::ImageFileReader<ITKImageType> ReaderType;
-
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName(imagePath);
   reader->Update();
@@ -38,7 +43,21 @@ bool ITKImage::LoadAndValidate(const std::string& imagePath)
     {
     m_Image = ITKImageType::New();
     }
-  this->m_Image->Graft(reader->GetOutput());
+
+  //this->m_Image->Graft(reader->GetOutput());
+
+  m_Image->SetRegions(reader->GetOutput()->GetLargestPossibleRegion());
+  m_Image->Allocate();
+
+  itk::ImageRegionConstIterator<ITKImageType> inputIterator(reader->GetOutput(), reader->GetOutput()->GetLargestPossibleRegion());
+  itk::ImageRegionIterator<ITKImageType> outputIterator(m_Image, m_Image->GetLargestPossibleRegion());
+
+  while(!inputIterator.IsAtEnd())
+    {
+    outputIterator.Set(inputIterator.Get());
+    ++inputIterator;
+    ++outputIterator;
+    }
 
   return true;
 }
@@ -64,7 +83,6 @@ const std::string& ITKImage::GetFilePath() const
 
 bool ITKImage::Init(int width, int height)
 {
-
     itk::Index<2> start;
     start.Fill(0);
 
@@ -73,10 +91,12 @@ bool ITKImage::Init(int width, int height)
     size[1] = height;
 
     itk::ImageRegion<2> region(start,size);
+
     if(!m_Image)
       {
       m_Image = ITKImageType::New();
       }
+
     m_Image->SetRegions(region);
     m_Image->Allocate();
     m_Image->FillBuffer(itk::NumericTraits<ITKPixelType>::Zero);

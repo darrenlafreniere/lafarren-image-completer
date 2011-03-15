@@ -109,7 +109,8 @@ ${tech}/tech/Time.cpp
 #####################################
 
 # We can only use the wxImage class if pixels are unsigned char and length 3
-if(USE_FLOAT_PIXELS EQUAL OFF)
+#if(USE_FLOAT_PIXELS EQUAL OFF)
+MESSAGE("Building Wx example")
   add_executable(ImageCompleter
     ${cmdsrc}/Main.cpp
     ${cmdsrc}/AppWxImage.cpp
@@ -125,11 +126,12 @@ if(USE_FLOAT_PIXELS EQUAL OFF)
   ENDIF(USE_POISSON)
 
   target_link_libraries(ImageCompleter ${LibrariesToLink})
-endif(USE_FLOAT_PIXELS EQUAL OFF)
+#endif(USE_FLOAT_PIXELS EQUAL OFF)
 
 ######################################
 # optional ITK demo
 IF(USE_ITK)
+  MESSAGE("Building ITK example")
   find_package(ITK REQUIRED)
   include(${ITK_USE_FILE})
 

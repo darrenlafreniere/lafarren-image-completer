@@ -40,17 +40,21 @@ public:
 
 	// The mask image can be smaller than the input image, and translated to a
 	// specific offset. This isn't yet supported via the command line arguments.
-	void Init(const MaskImageType::Pointer maskImage, int offsetX = 0, int offsetY = 0);
 	virtual Value GetValue(int x, int y) const;
 
     virtual bool LoadAndValidate(const std::string& imagePath, int offsetX = 0, int offsetY = 0);
 
+    // Returns the mask's width.
+    int GetWidth() const;
+
+    // Returns the mask's height.
+    int GetHeight() const;
+
 private:
 	Value ByteToMaskValue(unsigned char byte) const;
 
-	std::vector<Value> m_values;
-	int m_width;
-	int m_height;
+    MaskImageType::Pointer m_mask;
+
 	int m_offsetX;
 	int m_offsetY;
 };

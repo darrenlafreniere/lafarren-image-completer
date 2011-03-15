@@ -30,10 +30,6 @@
 class AppWxImage : public LfnIc::Image
 {
 public:
-	// AppWxImage interface
-	wxImage& GetwxImage();
-	const wxImage& GetwxImage() const;
-
 	// LfnIc::Image interface
     virtual bool LoadAndValidate(const std::string& imagePath);
     virtual void Save();
