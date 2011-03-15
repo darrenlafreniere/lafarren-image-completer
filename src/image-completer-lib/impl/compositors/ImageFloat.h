@@ -69,8 +69,8 @@ namespace LfnIc
 	public:
 		ImageFloat();
 		ImageFloat(const ImageConst& input);
-		ImageFloat(int width, int height){}
-		ImageFloat(int width, int height, const PixelFloat& initialRgb){}
+		ImageFloat(int width, int height);
+		ImageFloat(int width, int height, const PixelFloat& initialPixel);
 
 		void Create(int width, int height);
 

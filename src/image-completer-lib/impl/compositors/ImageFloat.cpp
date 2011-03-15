@@ -55,6 +55,21 @@ LfnIc::ImageFloat::ImageFloat(const ImageConst& input)
 	}
 }
 
+
+LfnIc::ImageFloat::ImageFloat(int width, int height)
+: m_width(width)
+, m_height(height)
+, m_data(width * height)
+{
+}
+
+LfnIc::ImageFloat::ImageFloat(int width, int height, const PixelFloat& initialPixel)
+: m_width(width)
+, m_height(height)
+, m_data(width * height, initialPixel)
+{
+}
+
 void LfnIc::ImageFloat::Create(int width, int height)
 {
 	m_width = width;
