@@ -44,6 +44,11 @@ ENDIF(UNIX)
 
 set(USE_ITK OFF CACHE BOOL "Use ITK?")
 
+set(USE_FLOAT_PIXELS OFF CACHE BOOL "Use float pixels?")
+IF(USE_FLOAT_PIXELS)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_FLOAT_PIXELS")
+ENDIF(USE_FLOAT_PIXELS)
+
 ###############
 #if Eigen is setup correctly, we would want to enable Poisson blending
 IF(USE_POISSON)
@@ -103,22 +108,24 @@ ${tech}/tech/Time.cpp
 
 #####################################
 
+# We can only use the wxImage class if pixels are unsigned char and length 3
+if(USE_FLOAT_PIXELS EQUAL OFF)
+  add_executable(ImageCompleter
+    ${cmdsrc}/Main.cpp
+    ${cmdsrc}/AppWxImage.cpp
+    ${cmdsrc}/AppWxMask.cpp
+    ${cmdsrc}/CommandLineOptions.cpp
+    ${cmdsrc}/Pch.cpp
+    ${cmdsrc}/SettingsText.cpp)
 
-add_executable(ImageCompleter
-${cmdsrc}/Main.cpp
-${cmdsrc}/AppWxImage.cpp
-${cmdsrc}/AppWxMask.cpp
-${cmdsrc}/CommandLineOptions.cpp
-${cmdsrc}/Pch.cpp
-${cmdsrc}/SettingsText.cpp)
+  set(LibrariesToLink ${wxWidgets_LIBRARIES} Tech ImageCompleterLib)
 
-set(LibrariesToLink ${wxWidgets_LIBRARIES} Tech ImageCompleterLib)
+  IF(USE_POISSON)
+    set(LibrariesToLink ${LibrariesToLink} umfpack)
+  ENDIF(USE_POISSON)
 
-IF(USE_POISSON)
-  set(LibrariesToLink ${LibrariesToLink} umfpack)
-ENDIF(USE_POISSON)
-
-target_link_libraries(ImageCompleter ${LibrariesToLink})
+  target_link_libraries(ImageCompleter ${LibrariesToLink})
+endif(USE_FLOAT_PIXELS EQUAL OFF)
 
 ######################################
 # optional ITK demo
@@ -127,14 +134,14 @@ IF(USE_ITK)
   include(${ITK_USE_FILE})
 
   add_executable(ImageCompleterITK
-  ${cmdsrc}/MainITK.cpp
-  ${cmdsrc}/ITKImage.cpp
-  ${cmdsrc}/ITKMask.cpp
+    ${cmdsrc}/MainITK.cpp
+    ${cmdsrc}/ITKImage.cpp
+    ${cmdsrc}/ITKMask.cpp
 
-  ${cmdsrc}/CommandLineOptions.cpp
-  ${cmdsrc}/Pch.cpp
-  ${cmdsrc}/SettingsText.cpp
-  ${ImageCompleterSources})
+    ${cmdsrc}/CommandLineOptions.cpp
+    ${cmdsrc}/Pch.cpp
+    ${cmdsrc}/SettingsText.cpp
+    )
 
   set(LibrariesToLinkITK ${wxWidgets_LIBRARIES} Tech ImageCompleterLib)
 

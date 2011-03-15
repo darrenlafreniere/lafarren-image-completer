@@ -74,8 +74,12 @@ namespace LfnIc
 		// component names, short-hand component names, or a channel array.
 		struct Pixel
 		{
-            typedef unsigned char PixelType;
-            //typedef float PixelType;
+            #ifdef USE_FLOAT_PIXELS
+              typedef float PixelType;
+            #else
+              typedef unsigned char PixelType;
+            #endif
+
 
 			static const int NUM_CHANNELS = 3;
 
