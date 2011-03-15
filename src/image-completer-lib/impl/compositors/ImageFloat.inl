@@ -40,33 +40,37 @@ namespace LfnIc
 
 	PixelFloat& PixelFloat::operator=(const PixelFloat& other)
 	{
-		this->channel[0] = other.channel[0];
-		this->channel[1] = other.channel[1];
-		this->channel[2] = other.channel[2];
+        for(unsigned int component = 0; component < static_cast<unsigned int>(PixelFloat::NUM_CHANNELS); component++)
+        {
+            this->channel[component] = other.channel[component];
+        }
 		return *this;
 	}
 
 	PixelFloat& PixelFloat::operator+=(const PixelFloat& other)
 	{
-		this->channel[0] += other.channel[0];
-		this->channel[1] += other.channel[1];
-		this->channel[2] += other.channel[2];
+        for(unsigned int component = 0; component < static_cast<unsigned int>(PixelFloat::NUM_CHANNELS); component++)
+        {
+            this->channel[component] += other.channel[component];
+        }
 		return *this;
 	}
 
 	PixelFloat& PixelFloat::operator-=(const PixelFloat& other)
 	{
-		this->channel[0] -= other.channel[0];
-		this->channel[1] -= other.channel[1];
-		this->channel[2] -= other.channel[2];
+        for(unsigned int component = 0; component < static_cast<unsigned int>(PixelFloat::NUM_CHANNELS); component++)
+        {
+            this->channel[component] -= other.channel[component];
+        }
 		return *this;
 	}
 
 	PixelFloat& PixelFloat::operator*=(float x)
 	{
-		this->channel[0] *= x;
-		this->channel[1] *= x;
-		this->channel[2] *= x;
+        for(unsigned int component = 0; component < static_cast<unsigned int>(PixelFloat::NUM_CHANNELS); component++)
+        {
+            this->channel[component] *= x;
+        }
 		return *this;
 	}
 
@@ -79,33 +83,37 @@ namespace LfnIc
 
     PixelFloatRGB& PixelFloatRGB::operator=(const PixelFloatRGB& other)
     {
-        this->channel[0] = other.channel[0];
-        this->channel[1] = other.channel[1];
-        this->channel[2] = other.channel[2];
+        for(unsigned int component = 0; component < static_cast<unsigned int>(PixelFloat::NUM_CHANNELS); component++)
+        {
+            this->channel[component] = other.channel[component];
+        }
         return *this;
     }
 
     PixelFloatRGB& PixelFloatRGB::operator+=(const PixelFloatRGB& other)
     {
-        this->channel[0] += other.channel[0];
-        this->channel[1] += other.channel[1];
-        this->channel[2] += other.channel[2];
+        for(unsigned int component = 0; component < static_cast<unsigned int>(PixelFloat::NUM_CHANNELS); component++)
+        {
+            this->channel[component] += other.channel[component];
+        }
         return *this;
     }
 
     PixelFloatRGB& PixelFloatRGB::operator-=(const PixelFloatRGB& other)
     {
-        this->channel[0] -= other.channel[0];
-        this->channel[1] -= other.channel[1];
-        this->channel[2] -= other.channel[2];
+        for(unsigned int component = 0; component < static_cast<unsigned int>(PixelFloat::NUM_CHANNELS); component++)
+        {
+            this->channel[component] -= other.channel[component];
+        }
         return *this;
     }
 
     PixelFloatRGB& PixelFloatRGB::operator*=(float x)
     {
-        this->channel[0] *= x;
-        this->channel[1] *= x;
-        this->channel[2] *= x;
+        for(unsigned int component = 0; component < static_cast<unsigned int>(PixelFloat::NUM_CHANNELS); component++)
+        {
+            this->channel[component] *= x;
+        }
         return *this;
     }
 
@@ -114,16 +122,18 @@ namespace LfnIc
 	//
 	inline void CopyRgbValue(PixelFloat& to, const Image::Pixel& from)
 	{
-		to.channel[0] = static_cast<float>(from.channel[0]) / 255.0f;
-		to.channel[1] = static_cast<float>(from.channel[1]) / 255.0f;
-		to.channel[2] = static_cast<float>(from.channel[2]) / 255.0f;
+        for(unsigned int component = 0; component < static_cast<unsigned int>(PixelFloat::NUM_CHANNELS); component++)
+        {
+            to.channel[component] = static_cast<float>(from.channel[component]) / 255.0f;
+        }
 	}
 
 	inline void CopyRgbValue(Image::Pixel& to, const PixelFloat& from)
 	{
-		to.channel[0] = static_cast<unsigned char>(from.channel[0] * 255.0f);
-		to.channel[1] = static_cast<unsigned char>(from.channel[1] * 255.0f);
-		to.channel[2] = static_cast<unsigned char>(from.channel[2] * 255.0f);
+        for(unsigned int component = 0; component < static_cast<unsigned int>(PixelFloat::NUM_CHANNELS); component++)
+        {
+            to.channel[component] = static_cast<unsigned char>(from.channel[component] * 255.0f);
+        }
 	}
 }
 
