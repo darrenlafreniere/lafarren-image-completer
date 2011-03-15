@@ -140,10 +140,11 @@ LfnIc::ImageScaledDown::ImageScaledDown(const ImageConst& imageToScaleDown)
 		for (int x = 0, otherX = 0; x < m_width; ++x, ++rgbCurrent, otherX += 2, otherRgbCurrentUpper += 2, otherRgbCurrentLower += 2)
 		{
 			wxASSERT(otherX < otherWidth);
-
-			float r = otherRgbCurrentUpper[0].channel[0] + otherRgbCurrentLower[0].channel[0];
-			float g = otherRgbCurrentUpper[0].channel[1] + otherRgbCurrentLower[0].channel[1];
-			float b = otherRgbCurrentUpper[0].channel[2] + otherRgbCurrentLower[0].channel[2];
+            float channel[Image::Pixel::NUM_CHANNELS];
+            for(unsigned int component = 0; component < static_cast<unsigned int>(Image::Pixel::NUM_CHANNELS); component++)
+            {
+                channel[component] = otherRgbCurrentUpper[0].channel[component] + otherRgbCurrentLower[0].channel[component];
+            }
 
 			// numPixelsToAverage is the number of high resolution pixels we're
 			// collapsing/averaging into a single low resolution pixel. At most,
@@ -154,23 +155,22 @@ LfnIc::ImageScaledDown::ImageScaledDown(const ImageConst& imageToScaleDown)
 			float numPixelsToAverage = 2.0f;
 			if ((otherX + 1) < otherWidth)
 			{
-				r += otherRgbCurrentUpper[1].channel[0] + otherRgbCurrentLower[1].channel[0];
-				g += otherRgbCurrentUpper[1].channel[1] + otherRgbCurrentLower[1].channel[1];
-				b += otherRgbCurrentUpper[1].channel[2] + otherRgbCurrentLower[1].channel[2];
+                for(unsigned int component = 0; component < static_cast<unsigned int>(Image::Pixel::NUM_CHANNELS); component++)
+                {
+				channel[component] += otherRgbCurrentUpper[1].channel[component] + otherRgbCurrentLower[1].channel[component];
+                }
 				numPixelsToAverage = 4.0f;
 			}
+            for(unsigned int component = 0; component < static_cast<unsigned int>(Image::Pixel::NUM_CHANNELS); component++)
+            {
+                channel[component] /= numPixelsToAverage;
+                wxASSERT(channel[component] >= 0.0f && channel[component] <= 255.0f);
+            }
 
-			r /= numPixelsToAverage;
-			g /= numPixelsToAverage;
-			b /= numPixelsToAverage;
-
-			wxASSERT(r >= 0.0f && r <= 255.0f);
-			wxASSERT(g >= 0.0f && g <= 255.0f);
-			wxASSERT(b >= 0.0f && b <= 255.0f);
-
-			rgbCurrent->channel[0] = r;
-			rgbCurrent->channel[1] = g;
-			rgbCurrent->channel[2] = b;
+            for(unsigned int component = 0; component < static_cast<unsigned int>(Image::Pixel::NUM_CHANNELS); component++)
+            {
+                rgbCurrent->channel[component] = channel[component];
+            }
 		}
 	}
 }

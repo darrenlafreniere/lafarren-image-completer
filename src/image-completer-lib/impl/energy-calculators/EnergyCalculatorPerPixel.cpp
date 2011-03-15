@@ -56,6 +56,8 @@ namespace LfnIc
 
 	//
 	// PolicyNoMask - handles straight pixel SSD calculations without any masking.
+    // This policy, along with the non-specialized CalculateEnergy function, provide
+    // an extremely efficient implementation for pixels with exactly 3 unsigned char channels.
 	//
 	class PolicyNoMask
 	{
