@@ -27,6 +27,8 @@
 #include "CommandLineOptions.h"
 #include "LfnIc.h"
 #include "SettingsText.h"
+#include "AppWxImage.h"
+#include "AppWxMask.h"
 
 #include "tech/DbgMem.h"
 
@@ -55,7 +57,12 @@ int main(int argc, char** argv)
 		const CommandLineOptions options(argc, argv);
 		if (options.IsValid())
 		{
-			AppData appData(options);
+            AppWxImage inputImage;
+            inputImage.LoadAndValidate(options.GetInputImagePath());
+            AppWxMask mask;
+            mask.LoadAndValidate(options.GetMaskImagePath());
+            AppWxImage outputImage;
+			AppData appData(options, &inputImage, &mask, &outputImage);
 			if (appData.IsValid())
 			{
 				if (options.ShouldShowSettings())
@@ -68,17 +75,17 @@ int main(int argc, char** argv)
 				{
 					succeeded = LfnIc::Complete(
 						appData.GetSettings(),
-						appData.GetInputImage(),
-						appData.GetMask(),
-						appData.GetOutputImage(),
+						*(appData.GetInputImage()),
+						*(appData.GetMask()),
+						*(appData.GetOutputImage()),
 						appData.GetPatchesIstream(),
 						appData.GetPatchesOstream());
 
 					if (succeeded)
 					{
-						AppWxImage& outputImage = appData.GetOutputWxImage();
-						outputImage.GetwxImage().SaveFile(outputImage.GetFilePath());
-						wxMessageOutput::Get()->Printf("Completed image and wrote %s.\n", outputImage.GetFilePath().c_str());
+						appData.GetOutputImage()->Save();
+						//wxMessageOutput::Get()->Printf("Completed image and wrote %s.\n", outputImage.GetFilePath().c_str());
+                        wxMessageOutput::Get()->Printf("Completed image and wrote output.\n");
 					}
 					else
 					{

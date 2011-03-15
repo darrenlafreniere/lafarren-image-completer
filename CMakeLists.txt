@@ -42,6 +42,8 @@ IF(UNIX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUNIX")
 ENDIF(UNIX)
 
+set(USE_ITK OFF CACHE BOOL "Use ITK?")
+
 ###############
 #if Eigen is setup correctly, we would want to enable Poisson blending
 IF(USE_POISSON)
@@ -115,3 +117,14 @@ IF(USE_POISSON)
 ENDIF(USE_POISSON)
 
 target_link_libraries(ImageCompleter ${LibrariesToLink})
+
+######################################
+# optional ITK demo
+IF(USE_ITK)
+  find_package(ITK REQUIRED)
+  include(${ITK_USE_FILE})
+
+  add_executable(ImageCompleterITK ${cmdsrc}/MainITK.cpp ${cmdsrc}/ITKImage.cpp ${cmdsrc}/ITKMask.cpp
+    ${ImageCompleterSources})
+  target_link_libraries(ImageCompleterITK ${wxWidgets_LIBRARIES} ${ITK_LIBRARIES})
+ENDIF(USE_ITK)

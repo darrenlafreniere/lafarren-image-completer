@@ -23,6 +23,7 @@
 #define LFN_IC_IMAGE_H
 
 #include <iostream>
+#include <string>
 
 namespace LfnIc
 {
@@ -33,10 +34,21 @@ namespace LfnIc
 	public:
 		struct Pixel;
 
+        inline void SetFilePath(const std::string& filePath)
+        {
+            m_filePath = filePath;
+        }
+
 		// Non-const method to initialize the image to the specified width
 		// and height. Any existing rgb data is not necessarily reserved.
 		// Returns true if there were no errors.
 		virtual bool Init(int width, int height) = 0;
+
+        // Load the image from a file
+        virtual bool LoadAndValidate(const std::string& imagePath){return false;}
+
+        // Save the image to a file
+        virtual void Save(){}
 
 		// Returns true if the image is of valid dimensions with a valid
 		// rgb buffer.
@@ -63,6 +75,7 @@ namespace LfnIc
 		struct Pixel
 		{
             typedef unsigned char PixelType;
+            //typedef float PixelType;
 
 			static const int NUM_CHANNELS = 3;
 
@@ -73,6 +86,8 @@ namespace LfnIc
 		// Instances cannot be destroyed through a base Image pointer
 		// using delete.
 		virtual ~Image() {}
+
+		std::string m_filePath;
 	};
 }
 

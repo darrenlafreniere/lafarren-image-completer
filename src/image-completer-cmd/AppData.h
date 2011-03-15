@@ -22,8 +22,8 @@
 #ifndef APP_DATA_H
 #define APP_DATA_H
 
-#include "AppWxImage.h"
-#include "AppWxMask.h"
+#include "LfnIcImage.h"
+#include "LfnIcMask.h"
 #include "LfnIcSettings.h"
 
 class CommandLineOptions;
@@ -34,16 +34,14 @@ class CommandLineOptions;
 class AppData
 {
 public:
-	AppData(const CommandLineOptions& options);
+	AppData(const CommandLineOptions& options, LfnIc::Image* inputImage, LfnIc::Mask* mask, LfnIc::Image* outputImage);
 	bool IsValid() const;
-	AppWxImage& GetOutputWxImage();
+	LfnIc::Image* GetOutputImage();
 
-	// LfnIc::Host interface
 	const LfnIc::Settings& GetSettings();
-	const LfnIc::Image& GetInputImage();
-	const LfnIc::Mask& GetMask();
-	LfnIc::Image& GetOutputImage();
-	const LfnIc::Image& GetOutputImage() const;
+	const LfnIc::Image* GetInputImage();
+	const LfnIc::Mask* GetMask();
+	const LfnIc::Image* GetOutputImage() const;
 	std::istream* GetPatchesIstream();
 	std::ostream* GetPatchesOstream();
 
@@ -51,9 +49,9 @@ private:
 	void ApplyCommandLineOptionsToSettings(const CommandLineOptions& options);
 
 	// Internal data
-	AppWxImage m_inputImage;
-	AppWxMask m_mask;
-	AppWxImage m_outputImage;
+	LfnIc::Image* m_inputImage;
+	LfnIc::Mask* m_mask;
+	LfnIc::Image* m_outputImage;
 
 	LfnIc::Settings m_settings;
 

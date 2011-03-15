@@ -21,6 +21,7 @@
 
 #include "Pch.h"
 #include "AppWxImage.h"
+#include "LfnIcSettings.h"
 
 // Make sure that wxWidgets wxImage::RGBValue and LfnIc::Image::Rgb
 // have identical size, since we perform no conversion.
@@ -44,9 +45,34 @@ public:
 static const AssertIdenticalRgbLayout g_assertIdenticalRgbLayout;
 #endif
 
-void AppWxImage::SetFilePath(const std::string& filePath)
+bool AppWxImage::LoadAndValidate(const std::string& imagePath)
 {
-	m_filePath = filePath;
+    bool result = false;
+    wxMessageOutput& msgOut = *wxMessageOutput::Get();
+
+    if (!m_wxImage.LoadFile(imagePath))
+    {
+        // If LoadFile fails, it already prints an wxMessageOutput error for us.
+    }
+    else if (!m_wxImage.IsOk())
+    {
+        msgOut.Printf("The image was invalid.\n");
+    }
+    else if (m_wxImage.GetWidth() > LfnIc::Settings::IMAGE_WIDTH_MAX || m_wxImage.GetHeight() > LfnIc::Settings::IMAGE_HEIGHT_MAX)
+    {
+        msgOut.Printf("The image is too large. Max size: %dx%x.\n", LfnIc::Settings::IMAGE_WIDTH_MAX, LfnIc::Settings::IMAGE_HEIGHT_MAX);
+    }
+    else
+    {
+        result = true;
+    }
+
+    return result;
+}
+
+void AppWxImage::Save()
+{
+  m_wxImage.SaveFile(m_filePath);
 }
 
 wxImage& AppWxImage::GetwxImage()

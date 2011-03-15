@@ -27,81 +27,47 @@
 
 #include "tech/DbgMem.h"
 
-// Trues true if the images are valid for image completion. Otherwise, logs an
-// error and returns false.
-static bool LoadAndValidateImage(const char* imageTypeName, const std::string& imagePath, wxImage& image)
-{
-	bool result = false;
-	wxMessageOutput& msgOut = *wxMessageOutput::Get();
 
-	if (!image.LoadFile(imagePath))
-	{
-		// If LoadFile fails, it already prints an wxMessageOutput error for us.
-	}
-	else if (!image.IsOk())
-	{
-		msgOut.Printf("The %s image was invalid.\n", imageTypeName);
-	}
-	else if (image.GetWidth() > LfnIc::Settings::IMAGE_WIDTH_MAX || image.GetHeight() > LfnIc::Settings::IMAGE_HEIGHT_MAX)
-	{
-		msgOut.Printf("The %s image is too large. Max size: %dx%x.\n", imageTypeName, LfnIc::Settings::IMAGE_WIDTH_MAX, LfnIc::Settings::IMAGE_HEIGHT_MAX);
-	}
-	else
-	{
-		result = true;
-	}
-
-	return result;
-}
-
-AppData::AppData(const CommandLineOptions& options)
+AppData::AppData(const CommandLineOptions& options, LfnIc::Image* inputImage, LfnIc::Mask* mask, LfnIc::Image* outputImage)
 	: m_isValid(false)
 {
-	if (LoadAndValidateImage("input", options.GetInputImagePath(), m_inputImage.GetwxImage()))
-	{
-		LfnIc::SettingsConstruct(m_settings, m_inputImage);
+    m_inputImage = inputImage;
+    m_mask = mask;
+    m_outputImage = outputImage;
 
-		ApplyCommandLineOptionsToSettings(options);
-		SettingsText::PrintInvalidMembers settingsTextPrintInvalidMembers;
-		if (LfnIc::AreSettingsValid(m_settings, &settingsTextPrintInvalidMembers))
-		{
-			m_isValid = true;
 
-			if (options.ShouldShowSettings())
-			{
-				// Nothing more to construct for simply displaying the settings.
-			}
+    LfnIc::SettingsConstruct(m_settings, *(m_inputImage));
 
-			if (options.ShouldRunImageCompletion())
-			{
-				wxImage maskImage;
-				if (!LoadAndValidateImage("mask", options.GetMaskImagePath(), maskImage))
-				{
-					m_isValid = false;
-				}
-				else
-				{
-					m_mask.Init(maskImage);
+    ApplyCommandLineOptionsToSettings(options);
+    SettingsText::PrintInvalidMembers settingsTextPrintInvalidMembers;
+    if (LfnIc::AreSettingsValid(m_settings, &settingsTextPrintInvalidMembers))
+    {
+        m_isValid = true;
 
-					m_inputImage.SetFilePath(options.GetInputImagePath());
-					m_outputImage.SetFilePath(options.GetOutputImagePath());
+        if (options.ShouldShowSettings())
+        {
+            // Nothing more to construct for simply displaying the settings.
+        }
+
+        if (options.ShouldRunImageCompletion())
+        {
+            m_inputImage->SetFilePath(options.GetInputImagePath());
+            m_outputImage->SetFilePath(options.GetOutputImagePath());
 
 #if ENABLE_PATCHES_INPUT_OUTPUT
-					if (options.HasInputPatchesPath())
-					{
-						m_patchesIstream.reset(new std::ifstream(options.GetInputPatchesPath().c_str(), std::ios::binary));
-					}
+            if (options.HasInputPatchesPath())
+            {
+                m_patchesIstream.reset(new std::ifstream(options.GetInputPatchesPath().c_str(), std::ios::binary));
+            }
 
-					if (options.HasOutputPatchesPath())
-					{
-						m_patchesOstream.reset(new std::ofstream());
-						m_patchesOstream->open(options.GetOutputPatchesPath().c_str(), std::ios::binary);
-					}
+            if (options.HasOutputPatchesPath())
+            {
+                m_patchesOstream.reset(new std::ofstream());
+                m_patchesOstream->open(options.GetOutputPatchesPath().c_str(), std::ios::binary);
+            }
 #endif // ENABLE_PATCHES_INPUT_OUTPUT
-				}
-			}
-		}
-	}
+        }
+    }
 }
 
 bool AppData::IsValid() const
@@ -109,32 +75,27 @@ bool AppData::IsValid() const
 	return m_isValid;
 }
 
-AppWxImage& AppData::GetOutputWxImage()
-{
-	return m_outputImage;
-}
-
 const LfnIc::Settings& AppData::GetSettings()
 {
 	return m_settings;
 }
 
-const LfnIc::Image& AppData::GetInputImage()
+const LfnIc::Image* AppData::GetInputImage()
 {
 	return m_inputImage;
 }
 
-const LfnIc::Mask& AppData::GetMask()
+const LfnIc::Mask* AppData::GetMask()
 {
 	return m_mask;
 }
 
-LfnIc::Image& AppData::GetOutputImage()
+LfnIc::Image* AppData::GetOutputImage()
 {
 	return m_outputImage;
 }
 
-const LfnIc::Image& AppData::GetOutputImage() const
+const LfnIc::Image* AppData::GetOutputImage() const
 {
 	return m_outputImage;
 }
