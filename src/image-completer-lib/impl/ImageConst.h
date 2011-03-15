@@ -40,6 +40,7 @@ namespace LfnIc
 		virtual bool IsValid() const;
 		virtual const std::string& GetFilePath() const;
 		virtual Pixel* GetData();
+        virtual bool LoadAndValidate(const std::string& imagePath) {return false;}
 
 		// Unimplemented. These are defined in the base, but GetRgb() const
 		// must be redefined here as well, because otherwise, calling GetRgb()

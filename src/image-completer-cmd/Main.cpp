@@ -84,8 +84,7 @@ int main(int argc, char** argv)
 					if (succeeded)
 					{
 						appData.GetOutputImage()->Save();
-						//wxMessageOutput::Get()->Printf("Completed image and wrote %s.\n", outputImage.GetFilePath().c_str());
-                        wxMessageOutput::Get()->Printf("Completed image and wrote output.\n");
+						wxMessageOutput::Get()->Printf("Completed image and wrote %s.\n", appData.GetOutputImage()->GetFilePath().c_str());
 					}
 					else
 					{

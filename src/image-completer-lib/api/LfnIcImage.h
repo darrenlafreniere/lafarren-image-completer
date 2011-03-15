@@ -45,7 +45,7 @@ namespace LfnIc
 		virtual bool Init(int width, int height) = 0;
 
         // Load the image from a file
-        virtual bool LoadAndValidate(const std::string& imagePath){return false;}
+        virtual bool LoadAndValidate(const std::string& imagePath) = 0;
 
         // Save the image to a file
         virtual void Save(){}

@@ -53,6 +53,9 @@ IF(USE_POISSON)
 ENDIF(USE_POISSON)
 
 set(ImageCompleterSources ${ImageCompleterSources}
+
+${cmdsrc}/AppData.cpp
+
 ${ImageCompleterDir}/Compositor.cpp
 ${ImageCompleterDir}/ConstNodeLabels.cpp
 ${ImageCompleterDir}/EnergyCalculatorContainer.cpp
@@ -101,9 +104,8 @@ ${tech}/tech/Time.cpp
 #####################################
 
 
-add_executable(ImageCompleter ${cmdsrc}/Main.cpp
-
-${cmdsrc}/AppData.cpp
+add_executable(ImageCompleter
+${cmdsrc}/Main.cpp
 ${cmdsrc}/AppWxImage.cpp
 ${cmdsrc}/AppWxMask.cpp
 ${cmdsrc}/CommandLineOptions.cpp
@@ -124,7 +126,21 @@ IF(USE_ITK)
   find_package(ITK REQUIRED)
   include(${ITK_USE_FILE})
 
-  add_executable(ImageCompleterITK ${cmdsrc}/MainITK.cpp ${cmdsrc}/ITKImage.cpp ${cmdsrc}/ITKMask.cpp
-    ${ImageCompleterSources})
-  target_link_libraries(ImageCompleterITK ${wxWidgets_LIBRARIES} ${ITK_LIBRARIES})
+  add_executable(ImageCompleterITK
+  ${cmdsrc}/MainITK.cpp
+  ${cmdsrc}/ITKImage.cpp
+  ${cmdsrc}/ITKMask.cpp
+
+  ${cmdsrc}/CommandLineOptions.cpp
+  ${cmdsrc}/Pch.cpp
+  ${cmdsrc}/SettingsText.cpp
+  ${ImageCompleterSources})
+
+  set(LibrariesToLinkITK ${wxWidgets_LIBRARIES} Tech ImageCompleterLib)
+
+  IF(USE_POISSON)
+    set(LibrariesToLinkITK ${LibrariesToLinkITK} umfpack)
+  ENDIF(USE_POISSON)
+
+  target_link_libraries(ImageCompleterITK ${wxWidgets_LIBRARIES} ${ITK_LIBRARIES} ${LibrariesToLinkITK})
 ENDIF(USE_ITK)
