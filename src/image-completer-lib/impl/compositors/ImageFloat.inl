@@ -32,7 +32,7 @@
 namespace LfnIc
 {
 	//
-	// RgbFloat
+	// PixelFloat
 	//
 	PixelFloat::PixelFloat()
 	{
@@ -69,6 +69,45 @@ namespace LfnIc
 		this->channel[2] *= x;
 		return *this;
 	}
+
+    //
+    // PixelFloatRGB
+    //
+    PixelFloatRGB::PixelFloatRGB()
+    {
+    }
+
+    PixelFloatRGB& PixelFloatRGB::operator=(const PixelFloatRGB& other)
+    {
+        this->channel[0] = other.channel[0];
+        this->channel[1] = other.channel[1];
+        this->channel[2] = other.channel[2];
+        return *this;
+    }
+
+    PixelFloatRGB& PixelFloatRGB::operator+=(const PixelFloatRGB& other)
+    {
+        this->channel[0] += other.channel[0];
+        this->channel[1] += other.channel[1];
+        this->channel[2] += other.channel[2];
+        return *this;
+    }
+
+    PixelFloatRGB& PixelFloatRGB::operator-=(const PixelFloatRGB& other)
+    {
+        this->channel[0] -= other.channel[0];
+        this->channel[1] -= other.channel[1];
+        this->channel[2] -= other.channel[2];
+        return *this;
+    }
+
+    PixelFloatRGB& PixelFloatRGB::operator*=(float x)
+    {
+        this->channel[0] *= x;
+        this->channel[1] *= x;
+        this->channel[2] *= x;
+        return *this;
+    }
 
 	//
 	// CopyRgbValue functions

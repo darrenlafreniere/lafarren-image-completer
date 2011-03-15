@@ -28,7 +28,7 @@ namespace LfnIc
 {
 	class ImageConst;
 
-	// An rgb tuple of floats, where each component is [0.0, 1.0].
+	// An tuple of floats, where each component is [0.0, 1.0].
 	class PixelFloat
 	{
 	public:
@@ -44,6 +44,23 @@ namespace LfnIc
 		inline PixelFloat& operator*=(float x);
 	};
 
+    // An RGB tuple of floats, where each component is [0.0, 1.0].
+    // We need this class for some of the debug functions which write out colored (RGB) patches.
+    class PixelFloatRGB
+    {
+    public:
+        static const int NUM_CHANNELS = 3;
+
+        float channel[3];
+
+        inline PixelFloatRGB();
+
+        inline PixelFloatRGB& operator=(const PixelFloatRGB& other);
+        inline PixelFloatRGB& operator+=(const PixelFloatRGB& other);
+        inline PixelFloatRGB& operator-=(const PixelFloatRGB& other);
+        inline PixelFloatRGB& operator*=(float x);
+    };
+
 	//
 	// A grid of RgbFloat pixels.
 	//
@@ -52,8 +69,8 @@ namespace LfnIc
 	public:
 		ImageFloat();
 		ImageFloat(const ImageConst& input);
-		ImageFloat(int width, int height);
-		ImageFloat(int width, int height, const PixelFloat& initialRgb);
+		ImageFloat(int width, int height){}
+		ImageFloat(int width, int height, const PixelFloat& initialRgb){}
 
 		void Create(int width, int height);
 

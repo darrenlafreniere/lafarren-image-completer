@@ -48,24 +48,11 @@ LfnIc::ImageFloat::ImageFloat(const ImageConst& input)
 	{
 		const Image::Pixel& inRgb = rgbData[i];
 		PixelFloat& outRgb = m_data[i];
-		outRgb.channel[0] = float(inRgb.channel[0]) / 255.0f;
-		outRgb.channel[1] = float(inRgb.channel[1]) / 255.0f;
-		outRgb.channel[2] = float(inRgb.channel[2]) / 255.0f;
+        for(unsigned int component = 0; component < static_cast<unsigned int>(PixelFloat::NUM_CHANNELS); component++)
+        {
+          outRgb.channel[component] = float(inRgb.channel[component]) / 255.0f;
+        }
 	}
-}
-
-LfnIc::ImageFloat::ImageFloat(int width, int height)
-: m_width(width)
-, m_height(height)
-, m_data(width * height)
-{
-}
-
-LfnIc::ImageFloat::ImageFloat(int width, int height, const PixelFloat& initialRgb)
-: m_width(width)
-, m_height(height)
-, m_data(width * height, initialRgb)
-{
 }
 
 void LfnIc::ImageFloat::Create(int width, int height)
@@ -92,9 +79,10 @@ void LfnIc::ImageFloat::CopyTo(Image& output) const
 		{
 			const PixelFloat& inRgb = m_data[i];
 			Image::Pixel& outRgb = outRgbData[i];
-			outRgb.channel[0] = (unsigned char)(LfnTech::Clamp0To1(inRgb.channel[0]) * 255);
-			outRgb.channel[1] = (unsigned char)(LfnTech::Clamp0To1(inRgb.channel[1]) * 255);
-			outRgb.channel[2] = (unsigned char)(LfnTech::Clamp0To1(inRgb.channel[2]) * 255);
+            for(unsigned int component = 0; component < static_cast<unsigned int>(PixelFloat::NUM_CHANNELS); component++)
+            {
+                outRgb.channel[component] = (unsigned char)(LfnTech::Clamp0To1(inRgb.channel[component]) * 255);
+            }
 		}
 	}
 }
