@@ -34,6 +34,8 @@
 
 int main(int argc, char** argv)
 {
+    std::cout << "Compiled with pixel dimension = " << LfnIc::Image::Pixel::NUM_CHANNELS << std::endl;
+
 	bool succeeded = false;
 	printf("\nlafarren.com\nImage Completion Using Efficient Belief Propagation\n");
 

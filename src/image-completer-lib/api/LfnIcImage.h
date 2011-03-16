@@ -80,8 +80,7 @@ namespace LfnIc
               typedef unsigned char PixelType;
             #endif
 
-
-			static const int NUM_CHANNELS = 3;
+			static const int NUM_CHANNELS = PIXEL_DIMENSION; // This is a variable set in CMake
 
             PixelType channel[NUM_CHANNELS];
 		};

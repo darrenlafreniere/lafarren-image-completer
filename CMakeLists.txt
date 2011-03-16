@@ -49,6 +49,9 @@ IF(USE_FLOAT_PIXELS)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_FLOAT_PIXELS")
 ENDIF(USE_FLOAT_PIXELS)
 
+set(PIXEL_DIMENSION 3 CACHE INTEGER "Dimensionality of pixels?")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPIXEL_DIMENSION=${PIXEL_DIMENSION}")
+
 ###############
 #if Eigen is setup correctly, we would want to enable Poisson blending
 IF(USE_POISSON)
