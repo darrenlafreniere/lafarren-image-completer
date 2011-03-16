@@ -64,10 +64,23 @@ bool ITKImage::LoadAndValidate(const std::string& imagePath)
 
 void ITKImage::Save()
 {
+  // If the image is RGB and unsigned char, write it to the specified output file (likely png)
   typedef itk::ImageFileWriter<ITKImageType> WriterType;
   WriterType::Pointer writer = WriterType::New();
   writer->SetInput(this->m_Image);
-  writer->SetFileName(m_filePath);
+
+  if(typeid(unsigned char) == typeid(Image::Pixel::PixelType) && Image::Pixel::NUM_CHANNELS == 3)
+  {
+      writer->SetFileName(m_filePath);
+  }
+  else
+  {
+      // If the image is not 3 channel and unsigned char, append ".mhd" to the end of the filename so it can be written
+      std::stringstream ss;
+      ss << m_filePath << ".mhd";
+      writer->SetFileName(ss.str());
+  }
+
   writer->Update();
 }
 
