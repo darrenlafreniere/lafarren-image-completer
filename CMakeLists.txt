@@ -24,7 +24,7 @@ set(cmdsrc src/image-completer-cmd)
 set(ImageCompleterDir src/image-completer-lib/impl)
 set(tech src/tech)
 
-include_directories(lib/tacus/ src/image-completer-cmd src/image-completer-lib src/image-completer-lib/api src/image-completer-lib/impl src/image-completer-lib/impl/compositors src/image-completer-lib/impl/energy-calculators src/tech/tech src/tech)
+include_directories(src/image-completer-cmd src/image-completer-lib src/image-completer-lib/api src/image-completer-lib/impl src/image-completer-lib/impl/compositors src/image-completer-lib/impl/energy-calculators src/tech/tech src/tech)
 
 #If you want to enable the patches to be composited using Poisson blending, set this flag to ON (requires TAUCS to be installed).
 set(USE_POISSON OFF CACHE BOOL "Use Poisson blending?")
@@ -49,7 +49,7 @@ IF(USE_FLOAT_PIXELS)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_FLOAT_PIXELS")
 ENDIF(USE_FLOAT_PIXELS)
 
-set(PIXEL_DIMENSION 3 CACHE INTEGER "Dimensionality of pixels?")
+set(PIXEL_DIMENSION 3 CACHE STRING "Dimensionality of pixels?") #cmake doesn't have an "INT" variable type, so treat it as a string
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPIXEL_DIMENSION=${PIXEL_DIMENSION}")
 
 ###############
