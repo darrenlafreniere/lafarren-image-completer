@@ -104,10 +104,6 @@ LfnIc::Mask::Value AppWxMask::GetValue(int x, int y) const
 		value = m_values[LfnTech::GetRowMajorIndex(m_width, xMaskSpace, yMaskSpace)];
 	}
 
-if(value != 0)
-{
-  int a = 3;
-}
 	return value;
 }
 

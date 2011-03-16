@@ -35,12 +35,6 @@ AppData::AppData(const CommandLineOptions& options, LfnIc::Image* inputImage, Lf
     this->m_mask = mask;
     this->m_outputImage = outputImage;
 
-    std::cout << "Image Width: " << this->m_inputImage->GetWidth() << std::endl;
-    std::cout << "Image Height: " << this->m_inputImage->GetHeight() << std::endl;
-
-    std::cout << "Mask Width: " << this->m_mask->GetWidth() << std::endl;
-    std::cout << "Mask Height: " << this->m_mask->GetHeight() << std::endl;
-
     LfnIc::SettingsConstruct(m_settings, *(m_inputImage));
 
     ApplyCommandLineOptionsToSettings(options);

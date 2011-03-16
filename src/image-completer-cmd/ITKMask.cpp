@@ -73,10 +73,7 @@ LfnIc::Mask::Value ITKMask::GetValue(int x, int y) const
         index[1] = y;
 		value = ByteToMaskValue(this->m_mask->GetPixel(index));
 	}
-if(value != 0)
-{
-  int a = 3;
-}
+
 	return value;
 }
 
