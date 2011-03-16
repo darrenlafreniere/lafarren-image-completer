@@ -85,6 +85,11 @@ namespace LfnIc
             PixelType channel[NUM_CHANNELS];
 		};
 
+        #ifdef USE_FLOAT_PIXELS
+            // This variable must be defined in any Image subclass that is built with USE_FLOAT_PIXELS
+            static float ComponentWeights[Pixel::NUM_CHANNELS];
+        #endif
+
 	protected:
 		// Instances cannot be destroyed through a base Image pointer
 		// using delete.

@@ -97,7 +97,10 @@ namespace LfnIc
             float squaredDifference = 0;
             for(unsigned int i = 0; i < static_cast<unsigned int>(Image::Pixel::NUM_CHANNELS); i++)
               {
-              squaredDifference += (a.channel[i] - b.channel[i])*(a.channel[i] - b.channel[i]);
+              #ifdef USE_FLOAT_PIXELS
+                  squaredDifference += LfnIc::Image::ComponentWeights[i] * (a.channel[i] - b.channel[i]) *
+                                       LfnIc::Image::ComponentWeights[i] * (a.channel[i] - b.channel[i]);
+              #endif
               }
             return squaredDifference;
         }

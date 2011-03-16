@@ -26,6 +26,10 @@
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 #include "itkImageRegionIterator.h"
+#include "itkNthElementImageAdaptor.h"
+#include "itkMinimumMaximumImageCalculator.h"
+
+float LfnIc::Image::ComponentWeights[Pixel::NUM_CHANNELS];
 
 ITKImage::ITKImage()
 {
@@ -58,6 +62,48 @@ bool ITKImage::LoadAndValidate(const std::string& imagePath)
     ++inputIterator;
     ++outputIterator;
     }
+
+  // Setup channel weights
+
+  // Un-weighted
+  /*
+  for(unsigned int i = 0; i < static_cast<unsigned int>(LfnIc::Image::Pixel::NUM_CHANNELS); i++)
+  {
+      LfnIc::Image::ComponentWeights[i] = 1.0;
+  }
+  */
+
+  // Manual weights
+  /*
+  LfnIc::Image::ComponentWeights[0] = .1;
+  LfnIc::Image::ComponentWeights[1] = .1;
+  LfnIc::Image::ComponentWeights[2] = .1;
+  LfnIc::Image::ComponentWeights[3] = 200.0;
+  */
+
+  // Uniform weighting - set the weight of each channel so it has the perceived range of 255
+  // If a channel already has the range 255, the weight is set to 1. If a channel has a range smaller
+  // than 255, its weight will be > 1. If a channel has a weight larger than 255, its weight will be set to < 1.
+  // A weight should never be negative. There is no magic to scaling to 255, it is just that usually there will be some
+  // RGB type components so 255 should make several of the weights close to 1.
+
+  std::cout << "Weights: ";
+  for(unsigned int i = 0; i < static_cast<unsigned int>(LfnIc::Image::Pixel::NUM_CHANNELS); i++)
+  {
+      typedef itk::NthElementImageAdaptor<ITKImageType, float> ImageAdaptorType;
+      ImageAdaptorType::Pointer adaptor = ImageAdaptorType::New();
+      adaptor->SelectNthElement(i);
+      adaptor->SetImage(m_Image);
+
+      typedef itk::MinimumMaximumImageCalculator <ImageAdaptorType> ImageCalculatorFilterType;
+      ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New();
+      imageCalculatorFilter->SetImage(adaptor);
+      imageCalculatorFilter->Compute();
+
+      LfnIc::Image::ComponentWeights[i] = 255. / (imageCalculatorFilter->GetMaximum() - imageCalculatorFilter->GetMinimum());
+      std::cout << LfnIc::Image::ComponentWeights[i] << " ";
+  }
+  std::cout << std::endl;
 
   return true;
 }
