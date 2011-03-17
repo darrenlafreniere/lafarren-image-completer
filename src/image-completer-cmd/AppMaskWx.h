@@ -22,6 +22,7 @@
 #ifndef APP_WX_MASK_H
 #define APP_WX_MASK_H
 
+#ifdef USE_WX
 #include <vector>
 #include "LfnIcMask.h"
 
@@ -49,4 +50,5 @@ private:
 	int m_offsetY;
 };
 
+#endif // USE_WX
 #endif

@@ -20,30 +20,10 @@
 //
 
 #include "Pch.h"
+
+#ifdef USE_WX
 #include "AppImageWx.h"
 #include "LfnIcSettings.h"
-
-// Make sure that wxWidgets wxImage::RGBValue and LfnIc::Image::Rgb
-// have identical size, since we perform no conversion.
-wxCOMPILE_TIME_ASSERT(sizeof(wxImage::RGBValue) == sizeof(LfnIc::Image::Pixel), INVALID_RGB_SIZE);
-#ifdef __WXDEBUG__
-class AssertIdenticalRgbLayout
-{
-public:
-	AssertIdenticalRgbLayout()
-	{
-		wxImage::RGBValue rgb1(0, 0, 0);
-		LfnIc::Image::Pixel& rgb2 = reinterpret_cast<LfnIc::Image::Pixel&>(rgb1);
-		rgb2.channel[0] = 1;
-		rgb2.channel[1] = 2;
-		rgb2.channel[2] = 3;
-		wxASSERT(rgb1.red == 1);
-		wxASSERT(rgb1.green == 2);
-		wxASSERT(rgb1.blue == 3);
-	}
-};
-static const AssertIdenticalRgbLayout g_assertIdenticalRgbLayout;
-#endif
 
 bool AppWxImage::LoadAndValidate(const std::string& imagePath)
 {
@@ -109,3 +89,5 @@ int AppWxImage::GetHeight() const
 {
 	return m_wxImage.GetHeight();
 }
+
+#endif // USE_WX

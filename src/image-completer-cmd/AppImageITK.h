@@ -22,6 +22,8 @@
 #ifndef ITK_IMAGE_H
 #define ITK_IMAGE_H
 
+#ifdef USE_IK
+
 #include "LfnIcImage.h"
 
 #include "itkImage.h"
@@ -35,12 +37,12 @@ class ITKImage : public LfnIc::Image
 public:
 	// ITKImage interface
 	ITKImage();
-    typedef itk::CovariantVector<LfnIc::Image::Pixel::PixelType, LfnIc::Image::Pixel::NUM_CHANNELS> ITKPixelType;
-    typedef itk::Image<ITKPixelType, 2> ITKImageType;
+	typedef itk::CovariantVector<LfnIc::Image::Pixel::PixelType, LfnIc::Image::Pixel::NUM_CHANNELS> ITKPixelType;
+	typedef itk::Image<ITKPixelType, 2> ITKImageType;
 
 	// LfnIc::Image interface
-    bool LoadAndValidate(const std::string& imagePath);
-    virtual void Save();
+	bool LoadAndValidate(const std::string& imagePath);
+	virtual void Save();
 	virtual bool Init(int width, int height);
 	virtual bool IsValid() const;
 	virtual const std::string& GetFilePath() const;
@@ -51,7 +53,8 @@ public:
 
 private:
 	// Internal data
-    ITKImageType::Pointer m_Image;
+	ITKImageType::Pointer m_Image;
 };
 
+#endif // USE_IK
 #endif

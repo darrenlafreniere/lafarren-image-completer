@@ -139,10 +139,9 @@ IF(USE_ITK)
   include(${ITK_USE_FILE})
 
   add_executable(ImageCompleterITK
-    ${cmdsrc}/MainITK.cpp
+    ${cmdsrc}/Main.cpp
     ${cmdsrc}/AppImageITK.cpp
     ${cmdsrc}/AppMaskITK.cpp
-
     ${cmdsrc}/CommandLineOptions.cpp
     ${cmdsrc}/Pch.cpp
     ${cmdsrc}/SettingsText.cpp

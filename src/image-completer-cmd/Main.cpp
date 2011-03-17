@@ -27,8 +27,20 @@
 #include "CommandLineOptions.h"
 #include "LfnIc.h"
 #include "SettingsText.h"
+
+#ifdef USE_IK
+#include "AppImageITK.h"
+#include "AppMaskITK.h"
+typedef ITKImage AppImageType;
+typedef ITKMask AppMaskType;
+#endif
+
+#ifdef USE_WX
 #include "AppImageWx.h"
 #include "AppMaskWx.h"
+typedef AppWxImage AppImageType;
+typedef AppWxMask AppMaskType;
+#endif // USE_WX
 
 #include "tech/DbgMem.h"
 
@@ -57,11 +69,13 @@ int main(int argc, char** argv)
 		const CommandLineOptions options(argc, argv);
 		if (options.IsValid())
 		{
-			AppWxImage inputImage;
+			AppImageType inputImage;
 			inputImage.LoadAndValidate(options.GetInputImagePath());
-			AppWxMask mask;
+
+			AppMaskType mask;
 			mask.LoadAndValidate(options.GetMaskImagePath());
-			AppWxImage outputImage;
+
+			AppImageType outputImage;
 			AppData appData(options, &inputImage, &mask, &outputImage);
 			if (appData.IsValid())
 			{

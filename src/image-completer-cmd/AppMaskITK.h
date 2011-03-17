@@ -22,6 +22,8 @@
 #ifndef ITK_MASK_H
 #define ITK_MASK_H
 
+#ifdef USE_IK
+
 #include <vector>
 
 #include "LfnIcMask.h"
@@ -36,21 +38,22 @@ class ITKMask : public LfnIc::Mask
 public:
 	ITKMask();
 
-    typedef itk::Image<unsigned char, 2> MaskImageType;
+	typedef itk::Image<unsigned char, 2> MaskImageType;
 
 	// The mask image can be smaller than the input image, and translated to a
 	// specific offset. This isn't yet supported via the command line arguments.
 	virtual Value GetValue(int x, int y) const;
 
-    virtual bool LoadAndValidate(const std::string& imagePath, int offsetX = 0, int offsetY = 0);
+	virtual bool LoadAndValidate(const std::string& imagePath, int offsetX = 0, int offsetY = 0);
 
 private:
 	Value ByteToMaskValue(unsigned char byte) const;
 
-    MaskImageType::Pointer m_mask;
+	MaskImageType::Pointer m_mask;
 
 	int m_offsetX;
 	int m_offsetY;
 };
 
+#endif // USE_IK
 #endif

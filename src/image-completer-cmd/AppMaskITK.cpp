@@ -20,6 +20,8 @@
 //
 
 #include "Pch.h"
+
+#ifdef USE_IK
 #include "AppMaskITK.h"
 
 #include "tech/MathUtils.h"
@@ -33,19 +35,19 @@ ITKMask::ITKMask() : m_offsetX(0), m_offsetY(0)
 
 bool ITKMask::LoadAndValidate(const std::string& imagePath, int offsetX, int offsetY)
 {
-  typedef itk::ImageFileReader<MaskImageType> ReaderType;
+	typedef itk::ImageFileReader<MaskImageType> ReaderType;
 
-  ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(imagePath);
-  reader->Update();
+	ReaderType::Pointer reader = ReaderType::New();
+	reader->SetFileName(imagePath);
+	reader->Update();
 
-  this->m_mask = MaskImageType::New();
-  this->m_mask->Graft(reader->GetOutput());
+	this->m_mask = MaskImageType::New();
+	this->m_mask->Graft(reader->GetOutput());
 
-  m_offsetX = offsetX;
-  m_offsetY = offsetY;
+	m_offsetX = offsetX;
+	m_offsetY = offsetY;
 
-  return true;
+	return true;
 }
 
 LfnIc::Mask::Value ITKMask::GetValue(int x, int y) const
@@ -53,12 +55,15 @@ LfnIc::Mask::Value ITKMask::GetValue(int x, int y) const
 	const int xMaskSpace = x - m_offsetX;
 	const int yMaskSpace = y - m_offsetY;
 
+	const int width = this->m_mask->GetLargestPossibleRegion().GetSize()[0];
+	const int height = this->m_mask->GetLargestPossibleRegion().GetSize()[1];
+
 	Value value = Mask::KNOWN;
-	if (xMaskSpace >= 0 && yMaskSpace >= 0 && xMaskSpace < GetWidth() && yMaskSpace < GetHeight())
+	if (xMaskSpace >= 0 && yMaskSpace >= 0 && xMaskSpace < width && yMaskSpace < height)
 	{
-        itk::Index<2> index;
-        index[0] = x;
-        index[1] = y;
+		itk::Index<2> index;
+		index[0] = x;
+		index[1] = y;
 		value = ByteToMaskValue(this->m_mask->GetPixel(index));
 	}
 
@@ -88,3 +93,5 @@ LfnIc::Mask::Value ITKMask::ByteToMaskValue(unsigned char byte) const
 		}
 	}
 }
+
+#endif // USE_IK

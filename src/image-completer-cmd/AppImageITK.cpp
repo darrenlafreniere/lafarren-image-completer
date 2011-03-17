@@ -21,6 +21,7 @@
 
 #include "Pch.h"
 
+#ifdef USE_IK
 #include "AppImageITK.h"
 
 #include "itkImageFileReader.h"
@@ -33,106 +34,106 @@ float LfnIc::Image::ComponentWeights[Pixel::NUM_CHANNELS];
 
 ITKImage::ITKImage()
 {
-  m_Image = NULL;
+	m_Image = NULL;
 }
 
 bool ITKImage::LoadAndValidate(const std::string& imagePath)
 {
-  typedef itk::ImageFileReader<ITKImageType> ReaderType;
-  ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(imagePath);
-  reader->Update();
+	typedef itk::ImageFileReader<ITKImageType> ReaderType;
+	ReaderType::Pointer reader = ReaderType::New();
+	reader->SetFileName(imagePath);
+	reader->Update();
 
-  if(!m_Image)
-    {
-    m_Image = ITKImageType::New();
-    }
+	if(!m_Image)
+	{
+		m_Image = ITKImageType::New();
+	}
 
-  //this->m_Image->Graft(reader->GetOutput());
+	//this->m_Image->Graft(reader->GetOutput());
 
-  m_Image->SetRegions(reader->GetOutput()->GetLargestPossibleRegion());
-  m_Image->Allocate();
+	m_Image->SetRegions(reader->GetOutput()->GetLargestPossibleRegion());
+	m_Image->Allocate();
 
-  itk::ImageRegionConstIterator<ITKImageType> inputIterator(reader->GetOutput(), reader->GetOutput()->GetLargestPossibleRegion());
-  itk::ImageRegionIterator<ITKImageType> outputIterator(m_Image, m_Image->GetLargestPossibleRegion());
+	itk::ImageRegionConstIterator<ITKImageType> inputIterator(reader->GetOutput(), reader->GetOutput()->GetLargestPossibleRegion());
+	itk::ImageRegionIterator<ITKImageType> outputIterator(m_Image, m_Image->GetLargestPossibleRegion());
 
-  while(!inputIterator.IsAtEnd())
-    {
-    outputIterator.Set(inputIterator.Get());
-    ++inputIterator;
-    ++outputIterator;
-    }
+	while(!inputIterator.IsAtEnd())
+	{
+		outputIterator.Set(inputIterator.Get());
+		++inputIterator;
+		++outputIterator;
+	}
 
-  // Setup channel weights
+	// Setup channel weights
 
-  // Un-weighted
-  /*
-  for(unsigned int i = 0; i < static_cast<unsigned int>(LfnIc::Image::Pixel::NUM_CHANNELS); i++)
-  {
-      LfnIc::Image::ComponentWeights[i] = 1.0;
-  }
-  */
+	// Un-weighted
+	/*
+	for(unsigned int i = 0; i < static_cast<unsigned int>(LfnIc::Image::Pixel::NUM_CHANNELS); i++)
+	{
+	LfnIc::Image::ComponentWeights[i] = 1.0;
+	}
+	*/
 
-  // Manual weights
-  /*
-  LfnIc::Image::ComponentWeights[0] = .1;
-  LfnIc::Image::ComponentWeights[1] = .1;
-  LfnIc::Image::ComponentWeights[2] = .1;
-  LfnIc::Image::ComponentWeights[3] = 200.0;
-  */
+	// Manual weights
+	/*
+	LfnIc::Image::ComponentWeights[0] = .1;
+	LfnIc::Image::ComponentWeights[1] = .1;
+	LfnIc::Image::ComponentWeights[2] = .1;
+	LfnIc::Image::ComponentWeights[3] = 200.0;
+	*/
 
-  // Uniform weighting - set the weight of each channel so it has the perceived range of 255
-  // If a channel already has the range 255, the weight is set to 1. If a channel has a range smaller
-  // than 255, its weight will be > 1. If a channel has a weight larger than 255, its weight will be set to < 1.
-  // A weight should never be negative. There is no magic to scaling to 255, it is just that usually there will be some
-  // RGB type components so 255 should make several of the weights close to 1.
+	// Uniform weighting - set the weight of each channel so it has the perceived range of 255
+	// If a channel already has the range 255, the weight is set to 1. If a channel has a range smaller
+	// than 255, its weight will be > 1. If a channel has a weight larger than 255, its weight will be set to < 1.
+	// A weight should never be negative. There is no magic to scaling to 255, it is just that usually there will be some
+	// RGB type components so 255 should make several of the weights close to 1.
 
-  std::cout << "Weights: ";
-  for(unsigned int i = 0; i < static_cast<unsigned int>(LfnIc::Image::Pixel::NUM_CHANNELS); i++)
-  {
-      typedef itk::NthElementImageAdaptor<ITKImageType, float> ImageAdaptorType;
-      ImageAdaptorType::Pointer adaptor = ImageAdaptorType::New();
-      adaptor->SelectNthElement(i);
-      adaptor->SetImage(m_Image);
+	std::cout << "Weights: ";
+	for(unsigned int i = 0; i < static_cast<unsigned int>(LfnIc::Image::Pixel::NUM_CHANNELS); i++)
+	{
+		typedef itk::NthElementImageAdaptor<ITKImageType, float> ImageAdaptorType;
+		ImageAdaptorType::Pointer adaptor = ImageAdaptorType::New();
+		adaptor->SelectNthElement(i);
+		adaptor->SetImage(m_Image);
 
-      typedef itk::MinimumMaximumImageCalculator <ImageAdaptorType> ImageCalculatorFilterType;
-      ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New();
-      imageCalculatorFilter->SetImage(adaptor);
-      imageCalculatorFilter->Compute();
+		typedef itk::MinimumMaximumImageCalculator <ImageAdaptorType> ImageCalculatorFilterType;
+		ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New();
+		imageCalculatorFilter->SetImage(adaptor);
+		imageCalculatorFilter->Compute();
 
-      LfnIc::Image::ComponentWeights[i] = 255. / (imageCalculatorFilter->GetMaximum() - imageCalculatorFilter->GetMinimum());
-      std::cout << LfnIc::Image::ComponentWeights[i] << " ";
-  }
-  std::cout << std::endl;
+		LfnIc::Image::ComponentWeights[i] = 255. / (imageCalculatorFilter->GetMaximum() - imageCalculatorFilter->GetMinimum());
+		std::cout << LfnIc::Image::ComponentWeights[i] << " ";
+	}
+	std::cout << std::endl;
 
-  return true;
+	return true;
 }
 
 void ITKImage::Save()
 {
-  // If the image is RGB and unsigned char, write it to the specified output file (likely png)
-  typedef itk::ImageFileWriter<ITKImageType> WriterType;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(this->m_Image);
+	// If the image is RGB and unsigned char, write it to the specified output file (likely png)
+	typedef itk::ImageFileWriter<ITKImageType> WriterType;
+	WriterType::Pointer writer = WriterType::New();
+	writer->SetInput(this->m_Image);
 
-  if(typeid(unsigned char) == typeid(Image::Pixel::PixelType) && Image::Pixel::NUM_CHANNELS == 3)
-  {
-      writer->SetFileName(m_filePath);
-  }
-  else
-  {
-      // If the image is not 3 channel and unsigned char, append ".mhd" to the end of the filename so it can be written
-      std::stringstream ss;
-      ss << m_filePath << ".mhd";
-      writer->SetFileName(ss.str());
-  }
+	if(typeid(unsigned char) == typeid(Image::Pixel::PixelType) && Image::Pixel::NUM_CHANNELS == 3)
+	{
+		writer->SetFileName(m_filePath);
+	}
+	else
+	{
+		// If the image is not 3 channel and unsigned char, append ".mhd" to the end of the filename so it can be written
+		std::stringstream ss;
+		ss << m_filePath << ".mhd";
+		writer->SetFileName(ss.str());
+	}
 
-  writer->Update();
+	writer->Update();
 }
 
 bool ITKImage::IsValid() const
 {
-	return m_Image;
+	return m_Image != NULL;
 }
 
 const std::string& ITKImage::GetFilePath() const
@@ -142,23 +143,23 @@ const std::string& ITKImage::GetFilePath() const
 
 bool ITKImage::Init(int width, int height)
 {
-    itk::Index<2> start;
-    start.Fill(0);
+	itk::Index<2> start;
+	start.Fill(0);
 
-    itk::Size<2> size;
-    size[0] = width;
-    size[1] = height;
+	itk::Size<2> size;
+	size[0] = width;
+	size[1] = height;
 
-    itk::ImageRegion<2> region(start,size);
+	itk::ImageRegion<2> region(start,size);
 
-    if(!m_Image)
-      {
-      m_Image = ITKImageType::New();
-      }
+	if(!m_Image)
+	{
+		m_Image = ITKImageType::New();
+	}
 
-    m_Image->SetRegions(region);
-    m_Image->Allocate();
-    m_Image->FillBuffer(itk::NumericTraits<ITKPixelType>::Zero);
+	m_Image->SetRegions(region);
+	m_Image->Allocate();
+	m_Image->FillBuffer(itk::NumericTraits<ITKPixelType>::Zero);
 
 	return true;
 }
@@ -182,3 +183,5 @@ int ITKImage::GetHeight() const
 {
 	return m_Image->GetLargestPossibleRegion().GetSize()[1];
 }
+
+#endif // USE_IK

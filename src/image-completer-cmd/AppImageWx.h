@@ -22,6 +22,7 @@
 #ifndef APP_WX_IMAGE_H
 #define APP_WX_IMAGE_H
 
+#ifdef USE_WX
 #include "LfnIcImage.h"
 
 //
@@ -46,4 +47,5 @@ private:
 	wxImage m_wxImage;
 };
 
+#endif // USE_WX
 #endif

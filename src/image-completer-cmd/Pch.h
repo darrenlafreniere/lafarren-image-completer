@@ -26,6 +26,15 @@
 #ifndef PCH_H
 #define PCH_H
 
+// If not explicitly defining USE_IK, default to USE_WX.
+#ifdef USE_IK
+	#ifndef USE_FLOAT_PIXELS
+		#error "image-completer-lib must be built with USE_FLOAT_PIXELS defined when USE_IK is defined"
+	#endif
+#else
+	#define USE_WX
+#endif
+
 // Compile time switches:
 #define TECH_PROFILE 1
 #define TECH_PROFILE_MACROS 1

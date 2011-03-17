@@ -20,6 +20,8 @@
 //
 
 #include "Pch.h"
+
+#ifdef USE_WX
 #include "AppMaskWx.h"
 #include "LfnIcSettings.h"
 
@@ -118,3 +120,5 @@ LfnIc::Mask::Value AppWxMask::ByteToMaskValue(unsigned char byte) const
 		}
 	}
 }
+
+#endif // USE_WX
