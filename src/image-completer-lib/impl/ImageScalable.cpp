@@ -140,11 +140,11 @@ LfnIc::ImageScaledDown::ImageScaledDown(const ImageConst& imageToScaleDown)
 		for (int x = 0, otherX = 0; x < m_width; ++x, ++rgbCurrent, otherX += 2, otherRgbCurrentUpper += 2, otherRgbCurrentLower += 2)
 		{
 			wxASSERT(otherX < otherWidth);
-            float channel[Image::Pixel::NUM_CHANNELS];
-            for(unsigned int component = 0; component < static_cast<unsigned int>(Image::Pixel::NUM_CHANNELS); component++)
-            {
-                channel[component] = otherRgbCurrentUpper[0].channel[component] + otherRgbCurrentLower[0].channel[component];
-            }
+			float channel[Image::Pixel::NUM_CHANNELS];
+			for(unsigned int component = 0; component < static_cast<unsigned int>(Image::Pixel::NUM_CHANNELS); component++)
+			{
+				channel[component] = otherRgbCurrentUpper[0].channel[component] + otherRgbCurrentLower[0].channel[component];
+			}
 
 			// numPixelsToAverage is the number of high resolution pixels we're
 			// collapsing/averaging into a single low resolution pixel. At most,
@@ -155,22 +155,22 @@ LfnIc::ImageScaledDown::ImageScaledDown(const ImageConst& imageToScaleDown)
 			float numPixelsToAverage = 2.0f;
 			if ((otherX + 1) < otherWidth)
 			{
-                for(unsigned int component = 0; component < static_cast<unsigned int>(Image::Pixel::NUM_CHANNELS); component++)
-                {
-				channel[component] += otherRgbCurrentUpper[1].channel[component] + otherRgbCurrentLower[1].channel[component];
-                }
+				for(unsigned int component = 0; component < static_cast<unsigned int>(Image::Pixel::NUM_CHANNELS); component++)
+				{
+					channel[component] += otherRgbCurrentUpper[1].channel[component] + otherRgbCurrentLower[1].channel[component];
+				}
 				numPixelsToAverage = 4.0f;
 			}
-            for(unsigned int component = 0; component < static_cast<unsigned int>(Image::Pixel::NUM_CHANNELS); component++)
-            {
-                channel[component] /= numPixelsToAverage;
-                wxASSERT(channel[component] >= 0.0f && channel[component] <= 255.0f);
-            }
+			for(unsigned int component = 0; component < static_cast<unsigned int>(Image::Pixel::NUM_CHANNELS); component++)
+			{
+				channel[component] /= numPixelsToAverage;
+				wxASSERT(channel[component] >= 0.0f && channel[component] <= 255.0f);
+			}
 
-            for(unsigned int component = 0; component < static_cast<unsigned int>(Image::Pixel::NUM_CHANNELS); component++)
-            {
-                rgbCurrent->channel[component] = channel[component];
-            }
+			for(unsigned int component = 0; component < static_cast<unsigned int>(Image::Pixel::NUM_CHANNELS); component++)
+			{
+				rgbCurrent->channel[component] = channel[component];
+			}
 		}
 	}
 }

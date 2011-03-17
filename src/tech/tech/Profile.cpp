@@ -40,7 +40,7 @@
 //
 LfnTech::BaseProfiler::BaseProfiler(const char* name) :
 m_name(name),
-m_startCount(0)
+	m_startCount(0)
 {
 }
 
@@ -69,25 +69,25 @@ void LfnTech::BaseProfiler::Stop()
 //
 LfnTech::TimeProfiler::TimeProfiler(const char* name, ReportMode report, int nthBlock) :
 BaseProfiler(name),
-m_reportAfterNumSamples(0),
-m_numSamples(0),
-m_startTime(0.0),
-m_timeSinceLastReport(0.0),
-m_totalTime(0.0)
+	m_reportAfterNumSamples(0),
+	m_numSamples(0),
+	m_startTime(0.0),
+	m_timeSinceLastReport(0.0),
+	m_totalTime(0.0)
 {
 	switch (report)
 	{
-		case ReportEverySample:
+	case ReportEverySample:
 		{
 			m_reportAfterNumSamples = 1;
 		}
 		break;
-		case ReportEveryNthSample:
+	case ReportEveryNthSample:
 		{
 			m_reportAfterNumSamples = nthBlock;
 		}
 		break;
-		case ReportFinal:
+	case ReportFinal:
 		{
 			m_reportAfterNumSamples = 0;
 		}
@@ -201,7 +201,7 @@ public:
 
 LfnTech::MemProfiler::MemProfiler(const char* name) :
 BaseProfiler(name),
-m_data(new MemProfilerData)
+	m_data(new MemProfilerData)
 {
 }
 

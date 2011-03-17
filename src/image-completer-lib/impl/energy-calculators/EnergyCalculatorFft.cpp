@@ -40,30 +40,30 @@
 #define FFT_ASSERT_BOUNDS_ENABLED 0
 
 #if FFT_ASSERT_BOUNDS_ENABLED
-	// Verify that __p__ is within __base__'s bounds.
-	// Assumes m_fftInPlaceBufferNumBytes exists.
-	#define FFT_ASSERT_BOUNDS(__base__, __p__) \
-		wxASSERT_MSG(int(__p__) >= int(__base__), "FFT_ASSERT_BOUNDS failed, pointer underruns buffer."); \
-		wxASSERT_MSG((int(__p__) - int(__base__)) < m_fftInPlaceBufferNumBytes, "FFT_ASSERT_BOUNDS failed, pointer overruns buffer.")
+// Verify that __p__ is within __base__'s bounds.
+// Assumes m_fftInPlaceBufferNumBytes exists.
+#define FFT_ASSERT_BOUNDS(__base__, __p__) \
+	wxASSERT_MSG(int(__p__) >= int(__base__), "FFT_ASSERT_BOUNDS failed, pointer underruns buffer."); \
+	wxASSERT_MSG((int(__p__) - int(__base__)) < m_fftInPlaceBufferNumBytes, "FFT_ASSERT_BOUNDS failed, pointer overruns buffer.")
 
-	// Verify that __rangeBytes__ from __p__ is within __base__'s bounds.
-	// Assumes m_fftInPlaceBufferNumBytes exists.
-	#define FFT_ASSERT_BOUNDS_RANGE(__base__, __p__, __rangeBytes__) \
-		wxASSERT_MSG(int(__p__) >= int(__base__), "FFT_ASSERT_BOUNDS_RANGE failed, pointer range underruns buffer."); \
-		wxASSERT_MSG((int(__p__) + __rangeBytes__ - int(__base__)) <= m_fftInPlaceBufferNumBytes, "FFT_ASSERT_BOUNDS_RANGE failed, pointer range overruns buffer")
+// Verify that __rangeBytes__ from __p__ is within __base__'s bounds.
+// Assumes m_fftInPlaceBufferNumBytes exists.
+#define FFT_ASSERT_BOUNDS_RANGE(__base__, __p__, __rangeBytes__) \
+	wxASSERT_MSG(int(__p__) >= int(__base__), "FFT_ASSERT_BOUNDS_RANGE failed, pointer range underruns buffer."); \
+	wxASSERT_MSG((int(__p__) + __rangeBytes__ - int(__base__)) <= m_fftInPlaceBufferNumBytes, "FFT_ASSERT_BOUNDS_RANGE failed, pointer range overruns buffer")
 #else
-	// no-ops
-	#define FFT_ASSERT_BOUNDS(real, out)
-	#define FFT_ASSERT_BOUNDS_RANGE(__base__, __p__, __rangeBytes__)
+// no-ops
+#define FFT_ASSERT_BOUNDS(real, out)
+#define FFT_ASSERT_BOUNDS_RANGE(__base__, __p__, __rangeBytes__)
 #endif
 
 typedef LfnIc::EnergyCalculatorFft::FftReal FftReal;
 typedef LfnIc::EnergyCalculatorFft::FftComplex FftComplex;
 
 #if ENERGY_FFT_SINGLE_PRECISION
-	#define FFTW_PREFIX(name) FFTW_MANGLE_FLOAT(name)
+#define FFTW_PREFIX(name) FFTW_MANGLE_FLOAT(name)
 #else
-	#define FFTW_PREFIX(name) FFTW_MANGLE_DOUBLE(name)
+#define FFTW_PREFIX(name) FFTW_MANGLE_DOUBLE(name)
 #endif
 
 //
@@ -80,16 +80,16 @@ namespace LfnIc
 	{
 	public:
 		FillPolicyChannel(const ImageConst& inputImage, int channel) :
-		m_imageRgb(inputImage.GetRgb()),
-		m_channel(channel)
-		{
-		}
+		  m_imageRgb(inputImage.GetRgb()),
+			  m_channel(channel)
+		  {
+		  }
 
-		// rowMajorIndex length is based on EnergyCalculatorFft::m_inputWidth
-		inline FftReal GetReal(int rowMajorIndex) const
-		{
-			return m_imageRgb[rowMajorIndex].channel[m_channel];
-		}
+		  // rowMajorIndex length is based on EnergyCalculatorFft::m_inputWidth
+		  inline FftReal GetReal(int rowMajorIndex) const
+		  {
+			  return m_imageRgb[rowMajorIndex].channel[m_channel];
+		  }
 
 	protected:
 		const Image::Rgb* m_imageRgb;
@@ -103,7 +103,7 @@ namespace LfnIc
 
 		FillPolicyChannelScaled(const ImageConst& inputImage, int channel, FftReal scalar) :
 		Super(inputImage, channel),
-		m_scalar(scalar)
+			m_scalar(scalar)
 		{
 		}
 
@@ -124,7 +124,7 @@ namespace LfnIc
 
 		FillPolicyChannelMaskedScaled(const ImageConst& inputImage, const MaskLod& mask, int channel, FftReal scalar) :
 		Super(inputImage, channel, scalar),
-		m_maskBuffer(mask.GetLodBuffer(mask.GetHighestLod()))
+			m_maskBuffer(mask.GetLodBuffer(mask.GetHighestLod()))
 		{
 		}
 
@@ -142,15 +142,15 @@ namespace LfnIc
 	{
 	public:
 		FillPolicyMask(const MaskLod& mask) :
-		m_maskBuffer(mask.GetLodBuffer(mask.GetHighestLod()))
-		{
-		}
+		  m_maskBuffer(mask.GetLodBuffer(mask.GetHighestLod()))
+		  {
+		  }
 
-		// rowMajorIndex length is based on EnergyCalculatorFft::m_inputWidth
-		inline FftReal GetReal(int rowMajorIndex) const
-		{
-			return MaskValueToFftReal(m_maskBuffer[rowMajorIndex]);
-		}
+		  // rowMajorIndex length is based on EnergyCalculatorFft::m_inputWidth
+		  inline FftReal GetReal(int rowMajorIndex) const
+		  {
+			  return MaskValueToFftReal(m_maskBuffer[rowMajorIndex]);
+		  }
 
 	protected:
 		const Mask::Value* m_maskBuffer;
@@ -202,24 +202,24 @@ LfnIc::EnergyCalculatorFft::EnergyCalculatorFft(
 #endif
 	) :
 m_settings(settings),
-m_inputImage(inputImage),
-m_mask(mask),
+	m_inputImage(inputImage),
+	m_mask(mask),
 #if FFT_VALIDATION_ENABLED
-m_energyCalculatorPerPixel(energyCalculatorPerPixel),
+	m_energyCalculatorPerPixel(energyCalculatorPerPixel),
 #endif
-m_inputWidth(m_inputImage.GetWidth()),
-m_inputHeight(m_inputImage.GetHeight()),
-m_fftWidth(m_inputWidth + m_settings.patchWidth - 1),
-m_fftHeight(m_inputHeight + m_settings.patchHeight - 1),
-// http://www.fftw.org/fftw3_doc/Multi_002dDimensional-DFTs-of-Real-Data.html#Multi_002dDimensional-DFTs-of-Real-Data
-m_fftInPlaceBufferStride(sizeof(FftReal) * 2 * (m_fftWidth / 2 + 1)),
-m_fftInPlaceBufferNumBytes(m_fftInPlaceBufferStride * m_fftHeight),
-m_wsst(inputImage, settings.latticeGapX, settings.latticeGapY),
-m_wsstMasked(inputImage, mask, settings.latticeGapX, settings.latticeGapY),
-m_batchEnergy2ndAnd3rdTerm(new Energy[m_inputWidth * m_inputHeight]),
-m_batchEnergy1stTerm(ENERGY_MIN),
-m_isBatchOpen(false),
-m_isBatchProcessed(false)
+	m_inputWidth(m_inputImage.GetWidth()),
+	m_inputHeight(m_inputImage.GetHeight()),
+	m_fftWidth(m_inputWidth + m_settings.patchWidth - 1),
+	m_fftHeight(m_inputHeight + m_settings.patchHeight - 1),
+	// http://www.fftw.org/fftw3_doc/Multi_002dDimensional-DFTs-of-Real-Data.html#Multi_002dDimensional-DFTs-of-Real-Data
+	m_fftInPlaceBufferStride(sizeof(FftReal) * 2 * (m_fftWidth / 2 + 1)),
+	m_fftInPlaceBufferNumBytes(m_fftInPlaceBufferStride * m_fftHeight),
+	m_wsst(inputImage, settings.latticeGapX, settings.latticeGapY),
+	m_wsstMasked(inputImage, mask, settings.latticeGapX, settings.latticeGapY),
+	m_batchEnergy2ndAnd3rdTerm(new Energy[m_inputWidth * m_inputHeight]),
+	m_batchEnergy1stTerm(ENERGY_MIN),
+	m_isBatchOpen(false),
+	m_isBatchProcessed(false)
 {
 	m_fftPlanBuffer = FftwInPlaceBufferAlloc();
 

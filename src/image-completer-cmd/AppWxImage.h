@@ -31,8 +31,8 @@ class AppWxImage : public LfnIc::Image
 {
 public:
 	// LfnIc::Image interface
-    virtual bool LoadAndValidate(const std::string& imagePath);
-    virtual void Save();
+	virtual bool LoadAndValidate(const std::string& imagePath);
+	virtual void Save();
 	virtual bool Init(int width, int height);
 	virtual bool IsValid() const;
 	virtual const std::string& GetFilePath() const;

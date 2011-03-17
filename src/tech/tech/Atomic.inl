@@ -34,11 +34,11 @@
 #endif
 /*
 #define ASSERT_TECH_ATOMIC_SIZE(T) \
-	wxASSERT(LfnTech::AtomicForceLinkValidationTests()); \
-	wxCOMPILE_TIME_ASSERT(sizeof(T) == sizeof(AtomicNativeType), TypeMustBeSizeofAtomicNativeType)
+wxASSERT(LfnTech::AtomicForceLinkValidationTests()); \
+wxCOMPILE_TIME_ASSERT(sizeof(T) == sizeof(AtomicNativeType), TypeMustBeSizeofAtomicNativeType)
 */
 #define ASSERT_TECH_ATOMIC_SIZE(T) \
-    wxCOMPILE_TIME_ASSERT(sizeof(T) == sizeof(AtomicNativeType), TypeMustBeSizeofAtomicNativeType)
+	wxCOMPILE_TIME_ASSERT(sizeof(T) == sizeof(AtomicNativeType), TypeMustBeSizeofAtomicNativeType)
 
 namespace LfnTech
 {

@@ -37,60 +37,60 @@ AppWxMask::AppWxMask()
 
 bool AppWxMask::LoadAndValidate(const std::string& imagePath, int offsetX, int offsetY)
 {
-    bool result = false;
-    wxMessageOutput& msgOut = *wxMessageOutput::Get();
+	bool result = false;
+	wxMessageOutput& msgOut = *wxMessageOutput::Get();
 
-    wxImage mask;
+	wxImage mask;
 
-    if (!mask.LoadFile(imagePath))
-    {
-        // If LoadFile fails, it already prints an wxMessageOutput error for us.
-    }
-    else if (!mask.IsOk())
-    {
-        msgOut.Printf("The image was invalid.\n");
-    }
-    else if (mask.GetWidth() > LfnIc::Settings::IMAGE_WIDTH_MAX || mask.GetHeight() > LfnIc::Settings::IMAGE_HEIGHT_MAX)
-    {
-        msgOut.Printf("The image is too large. Max size: %dx%x.\n", LfnIc::Settings::IMAGE_WIDTH_MAX, LfnIc::Settings::IMAGE_HEIGHT_MAX);
-    }
-    else
-    {
-        result = true;
-    }
+	if (!mask.LoadFile(imagePath))
+	{
+		// If LoadFile fails, it already prints an wxMessageOutput error for us.
+	}
+	else if (!mask.IsOk())
+	{
+		msgOut.Printf("The image was invalid.\n");
+	}
+	else if (mask.GetWidth() > LfnIc::Settings::IMAGE_WIDTH_MAX || mask.GetHeight() > LfnIc::Settings::IMAGE_HEIGHT_MAX)
+	{
+		msgOut.Printf("The image is too large. Max size: %dx%x.\n", LfnIc::Settings::IMAGE_WIDTH_MAX, LfnIc::Settings::IMAGE_HEIGHT_MAX);
+	}
+	else
+	{
+		result = true;
+	}
 
-    wxASSERT(mask.IsOk());
-    const wxImage& maskImageGreyscale = mask.ConvertToGreyscale();
-    wxASSERT(maskImageGreyscale.IsOk());
+	wxASSERT(mask.IsOk());
+	const wxImage& maskImageGreyscale = mask.ConvertToGreyscale();
+	wxASSERT(maskImageGreyscale.IsOk());
 
-    m_width = mask.GetWidth();
-    m_height = mask.GetHeight();
-    m_offsetX = offsetX;
-    m_offsetY = offsetY;
-    m_values.resize(m_width * m_height);
+	m_width = mask.GetWidth();
+	m_height = mask.GetHeight();
+	m_offsetX = offsetX;
+	m_offsetY = offsetY;
+	m_values.resize(m_width * m_height);
 
-    const wxImage::RGBValue* rgbPtr = reinterpret_cast<const wxImage::RGBValue*>(maskImageGreyscale.GetData());
-    const int numPixels = m_width * m_height;
-    for (int i = 0; i < numPixels; ++i)
-    {
-        wxASSERT(rgbPtr[i].red == rgbPtr[i].green);
-        wxASSERT(rgbPtr[i].red == rgbPtr[i].blue);
-        m_values[i] = ByteToMaskValue(rgbPtr[i].red);
-    }
+	const wxImage::RGBValue* rgbPtr = reinterpret_cast<const wxImage::RGBValue*>(maskImageGreyscale.GetData());
+	const int numPixels = m_width * m_height;
+	for (int i = 0; i < numPixels; ++i)
+	{
+		wxASSERT(rgbPtr[i].red == rgbPtr[i].green);
+		wxASSERT(rgbPtr[i].red == rgbPtr[i].blue);
+		m_values[i] = ByteToMaskValue(rgbPtr[i].red);
+	}
 
-    return result;
+	return result;
 }
 
 // Returns the mask's width.
 int AppWxMask::GetWidth() const
 {
-    return this->m_width;
+	return this->m_width;
 }
 
 // Returns the mask's height.
 int AppWxMask::GetHeight() const
 {
-    return this->m_height;
+	return this->m_height;
 }
 
 LfnIc::Mask::Value AppWxMask::GetValue(int x, int y) const

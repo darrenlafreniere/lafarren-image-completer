@@ -86,7 +86,7 @@ private:
 
 LfnIc::MaskInternal::MaskInternal(int width, int height, const Mask& maskToCopy) :
 m_width(width),
-m_height(height)
+	m_height(height)
 {
 	// Create lod 0 to be the same size as the input image, copying
 	// `'s values at each point.
@@ -246,14 +246,14 @@ void LfnIc::MaskInternal::CreateLowerLodsFromHighest()
 							{
 								wxASSERT((lodPrevX + u) < lodPrevWidth);
 								//wxASSERT((lodPrevY + v) < lodPrevHeight);
-                                if((lodPrevY + v) >= lodPrevHeight)
-                                  {
-                                  std::cout << "lodPrevY: " << lodPrevY << std::endl;
-                                  std::cout << "v: " << v << std::endl;
-                                  std::cout << "lodPrevY + v: " << lodPrevY + v << std::endl;
-                                  std::cout << "lodPrevHeight: " << lodPrevHeight << std::endl;
-                                  wxASSERT(0);
-                                  }
+								if((lodPrevY + v) >= lodPrevHeight)
+								{
+									std::cout << "lodPrevY: " << lodPrevY << std::endl;
+									std::cout << "v: " << v << std::endl;
+									std::cout << "lodPrevY + v: " << lodPrevY + v << std::endl;
+									std::cout << "lodPrevHeight: " << lodPrevHeight << std::endl;
+									wxASSERT(0);
+								}
 								const Value prevLodValueAtUV = lodPrevBuffer[LfnTech::GetRowMajorIndex(lodPrevWidth, lodPrevX + u, lodPrevY + v)];
 								if (!hasSetInitialValue)
 								{

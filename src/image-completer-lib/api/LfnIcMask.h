@@ -31,8 +31,8 @@ namespace LfnIc
 		// Use typedef and consts rather than enum to enforce single byte storage:
 		typedef char Value;
 
-        // Load the mask image from a file
-        virtual bool LoadAndValidate(const std::string& imagePath){return false;}
+		// Load the mask image from a file
+		virtual bool LoadAndValidate(const std::string& imagePath){return false;}
 
 		// Indeterminate is used for lower levels of detail (lod > 0),
 		// where the region in question contains both unknown and known
@@ -55,11 +55,11 @@ namespace LfnIc
 		// internal boundaries, this method is expected to return KNOWN.
 		virtual Value GetValue(int x, int y) const = 0;
 
-        // Returns the mask's width.
-        virtual int GetWidth() const = 0;
+		// Returns the mask's width.
+		virtual int GetWidth() const = 0;
 
-        // Returns the mask's height.
-        virtual int GetHeight() const = 0;
+		// Returns the mask's height.
+		virtual int GetHeight() const = 0;
 
 	protected:
 		// Cannot destroy Mask instance through a pointer to this base.

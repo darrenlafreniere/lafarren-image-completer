@@ -32,25 +32,25 @@ static LfnIc::PixelFloat GetRainbowColor(float alpha)
 {
 	wxASSERT(alpha >= 0.0f && alpha <= 1.0f);
 
-    LfnIc::PixelFloat red;
-    red.channel[0] = 1.00f; red.channel[1] = 0.00f; red.channel[2] = 0.00f;
-    LfnIc::PixelFloat orange;
-    orange.channel[0] = 1.00f; orange.channel[1] = 0.65f; orange.channel[2] = 0.00f;
-    LfnIc::PixelFloat yellow;
-    yellow.channel[0] = 1.00f; yellow.channel[1] = 1.00f; yellow.channel[2] = 0.00f;
-    LfnIc::PixelFloat green;
-    green.channel[0] = 0.00f; green.channel[1] = 0.50f; green.channel[2] = 0.00f;
-    LfnIc::PixelFloat blue;
-    blue.channel[0] = 0.00f; blue.channel[1] = 0.00f; blue.channel[2] = 1.00f;
-    LfnIc::PixelFloat indigo;
-    indigo.channel[0] = 0.30f; indigo.channel[1] = 0.00f; indigo.channel[2] = 0.51f;
-    LfnIc::PixelFloat violet;
-    violet.channel[0] = 0.93f; violet.channel[1] = 0.51f; violet.channel[2] = 0.93f;
+	LfnIc::PixelFloat red;
+	red.channel[0] = 1.00f; red.channel[1] = 0.00f; red.channel[2] = 0.00f;
+	LfnIc::PixelFloat orange;
+	orange.channel[0] = 1.00f; orange.channel[1] = 0.65f; orange.channel[2] = 0.00f;
+	LfnIc::PixelFloat yellow;
+	yellow.channel[0] = 1.00f; yellow.channel[1] = 1.00f; yellow.channel[2] = 0.00f;
+	LfnIc::PixelFloat green;
+	green.channel[0] = 0.00f; green.channel[1] = 0.50f; green.channel[2] = 0.00f;
+	LfnIc::PixelFloat blue;
+	blue.channel[0] = 0.00f; blue.channel[1] = 0.00f; blue.channel[2] = 1.00f;
+	LfnIc::PixelFloat indigo;
+	indigo.channel[0] = 0.30f; indigo.channel[1] = 0.00f; indigo.channel[2] = 0.51f;
+	LfnIc::PixelFloat violet;
+	violet.channel[0] = 0.93f; violet.channel[1] = 0.51f; violet.channel[2] = 0.93f;
 
-    static const LfnIc::PixelFloat refColors[] =
-    {
-        red, orange, yellow, green, blue, indigo, violet,
-    };
+	static const LfnIc::PixelFloat refColors[] =
+	{
+		red, orange, yellow, green, blue, indigo, violet,
+	};
 
 	static const int numRefColors = sizeof(refColors) / sizeof(refColors[0]);
 	static const int penultimateRefColorIndex = numRefColors - 2;
@@ -76,11 +76,11 @@ static LfnIc::PixelFloat GetRainbowColor(float alpha)
 	const LfnIc::PixelFloat& colorHigh = refColors[refIndex + 1];
 	const float blendAlpha = (alpha - refAlphaLow) / refAlphaStep;
 
-    LfnIc::PixelFloat pixel;
-    for(unsigned int component = 0; component < static_cast<unsigned int>(LfnIc::PixelFloatRGB::NUM_CHANNELS); component++)
-    {
-        pixel.channel[component] = colorLow.channel[component] + blendAlpha * (colorHigh.channel[component] - colorLow.channel[component]);
-    }
+	LfnIc::PixelFloat pixel;
+	for(unsigned int component = 0; component < static_cast<unsigned int>(LfnIc::PixelFloatRGB::NUM_CHANNELS); component++)
+	{
+		pixel.channel[component] = colorLow.channel[component] + blendAlpha * (colorHigh.channel[component] - colorLow.channel[component]);
+	}
 	return pixel;
 }
 
@@ -98,7 +98,7 @@ LfnIc::PatchTypeDebugPatchOrder::PatchTypeDebugPatchOrder(const Compositor::Inpu
 const LfnIc::ImageFloat& LfnIc::PatchTypeDebugPatchOrder::Get(const Patch& patch) const
 {
 	LfnIc::PixelFloat rgb;
-    rgb.channel[0] = 0.0f; rgb.channel[1] = 0.0f; rgb.channel[2] = 0.0f;
+	rgb.channel[0] = 0.0f; rgb.channel[1] = 0.0f; rgb.channel[2] = 0.0f;
 	for (int patchIdx = 0, patchesNum = m_patches.size(); patchIdx < patchesNum; ++patchIdx)
 	{
 		if (&m_patches[patchIdx] == &patch)
@@ -111,10 +111,10 @@ const LfnIc::ImageFloat& LfnIc::PatchTypeDebugPatchOrder::Get(const Patch& patch
 
 	for (int i = 0, n = m_patchImage.GetWidth() * m_patchImage.GetHeight(); i < n; ++i)
 	{
-        for(unsigned int component = 0; component < static_cast<unsigned int>(LfnIc::PixelFloatRGB::NUM_CHANNELS); component++)
-        {
-            m_patchImage.GetData()[i].channel[component] = rgb.channel[component];
-        }
+		for(unsigned int component = 0; component < static_cast<unsigned int>(LfnIc::PixelFloatRGB::NUM_CHANNELS); component++)
+		{
+			m_patchImage.GetData()[i].channel[component] = rgb.channel[component];
+		}
 	}
 
 	return m_patchImage;

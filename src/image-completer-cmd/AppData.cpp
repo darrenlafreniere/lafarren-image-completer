@@ -31,43 +31,43 @@
 AppData::AppData(const CommandLineOptions& options, LfnIc::Image* inputImage, LfnIc::Mask* mask, LfnIc::Image* outputImage)
 	: m_isValid(false)
 {
-    this->m_inputImage = inputImage;
-    this->m_mask = mask;
-    this->m_outputImage = outputImage;
+	this->m_inputImage = inputImage;
+	this->m_mask = mask;
+	this->m_outputImage = outputImage;
 
-    LfnIc::SettingsConstruct(m_settings, *(m_inputImage));
+	LfnIc::SettingsConstruct(m_settings, *(m_inputImage));
 
-    ApplyCommandLineOptionsToSettings(options);
-    SettingsText::PrintInvalidMembers settingsTextPrintInvalidMembers;
-    if (LfnIc::AreSettingsValid(m_settings, &settingsTextPrintInvalidMembers))
-    {
-        m_isValid = true;
+	ApplyCommandLineOptionsToSettings(options);
+	SettingsText::PrintInvalidMembers settingsTextPrintInvalidMembers;
+	if (LfnIc::AreSettingsValid(m_settings, &settingsTextPrintInvalidMembers))
+	{
+		m_isValid = true;
 
-        if (options.ShouldShowSettings())
-        {
-            // Nothing more to construct for simply displaying the settings.
-        }
+		if (options.ShouldShowSettings())
+		{
+			// Nothing more to construct for simply displaying the settings.
+		}
 
-        if (options.ShouldRunImageCompletion())
-        {
-            m_inputImage->SetFilePath(options.GetInputImagePath());
-            m_outputImage->SetFilePath(options.GetOutputImagePath());
+		if (options.ShouldRunImageCompletion())
+		{
+			m_inputImage->SetFilePath(options.GetInputImagePath());
+			m_outputImage->SetFilePath(options.GetOutputImagePath());
 
 #if ENABLE_PATCHES_INPUT_OUTPUT
-            if (options.HasInputPatchesPath())
-            {
-                m_patchesIstream.reset(new std::ifstream(options.GetInputPatchesPath().c_str(), std::ios::binary));
-            }
+			if (options.HasInputPatchesPath())
+			{
+				m_patchesIstream.reset(new std::ifstream(options.GetInputPatchesPath().c_str(), std::ios::binary));
+			}
 
-            if (options.HasOutputPatchesPath())
-            {
-                m_patchesOstream.reset(new std::ofstream());
-                m_patchesOstream->open(options.GetOutputPatchesPath().c_str(), std::ios::binary);
-            }
+			if (options.HasOutputPatchesPath())
+			{
+				m_patchesOstream.reset(new std::ofstream());
+				m_patchesOstream->open(options.GetOutputPatchesPath().c_str(), std::ios::binary);
+			}
 #endif // ENABLE_PATCHES_INPUT_OUTPUT
 
-        }
-    }
+		}
+	}
 }
 
 bool AppData::IsValid() const

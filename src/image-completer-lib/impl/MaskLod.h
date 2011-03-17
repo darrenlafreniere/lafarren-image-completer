@@ -40,11 +40,11 @@ namespace LfnIc
 			LodBuffer buffer;
 		};
 
-        // Returns the mask's width.
-        virtual int GetWidth() const { return 0;}
+		// Returns the mask's width.
+		virtual int GetWidth() const { return 0;}
 
-        // Returns the mask's height.
-        virtual int GetHeight() const { return 0;}
+		// Returns the mask's height.
+		virtual int GetHeight() const { return 0;}
 
 		// Returns the level of detail range that this mask supports. 0
 		// is always the highest level of detail, where each region is 1x1

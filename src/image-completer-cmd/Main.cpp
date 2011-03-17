@@ -57,11 +57,11 @@ int main(int argc, char** argv)
 		const CommandLineOptions options(argc, argv);
 		if (options.IsValid())
 		{
-            AppWxImage inputImage;
-            inputImage.LoadAndValidate(options.GetInputImagePath());
-            AppWxMask mask;
-            mask.LoadAndValidate(options.GetMaskImagePath());
-            AppWxImage outputImage;
+			AppWxImage inputImage;
+			inputImage.LoadAndValidate(options.GetInputImagePath());
+			AppWxMask mask;
+			mask.LoadAndValidate(options.GetMaskImagePath());
+			AppWxImage outputImage;
 			AppData appData(options, &inputImage, &mask, &outputImage);
 			if (appData.IsValid())
 			{

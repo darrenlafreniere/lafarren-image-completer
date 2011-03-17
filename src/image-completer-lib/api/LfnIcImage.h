@@ -34,21 +34,21 @@ namespace LfnIc
 	public:
 		struct Pixel;
 
-        inline void SetFilePath(const std::string& filePath)
-        {
-            m_filePath = filePath;
-        }
+		inline void SetFilePath(const std::string& filePath)
+		{
+			m_filePath = filePath;
+		}
 
 		// Non-const method to initialize the image to the specified width
 		// and height. Any existing rgb data is not necessarily reserved.
 		// Returns true if there were no errors.
 		virtual bool Init(int width, int height) = 0;
 
-        // Load the image from a file
-        virtual bool LoadAndValidate(const std::string& imagePath) = 0;
+		// Load the image from a file
+		virtual bool LoadAndValidate(const std::string& imagePath) = 0;
 
-        // Save the image to a file
-        virtual void Save(){}
+		// Save the image to a file
+		virtual void Save(){}
 
 		// Returns true if the image is of valid dimensions with a valid
 		// rgb buffer.
@@ -74,21 +74,21 @@ namespace LfnIc
 		// component names, short-hand component names, or a channel array.
 		struct Pixel
 		{
-            #ifdef USE_FLOAT_PIXELS
-              typedef float PixelType;
-            #else
-              typedef unsigned char PixelType;
-            #endif
+#ifdef USE_FLOAT_PIXELS
+			typedef float PixelType;
+#else
+			typedef unsigned char PixelType;
+#endif
 
 			static const int NUM_CHANNELS = PIXEL_DIMENSION; // This is a variable set in CMake
 
-            PixelType channel[NUM_CHANNELS];
+			PixelType channel[NUM_CHANNELS];
 		};
 
-        #ifdef USE_FLOAT_PIXELS
-            // This variable must be defined in any Image subclass that is built with USE_FLOAT_PIXELS
-            static float ComponentWeights[Pixel::NUM_CHANNELS];
-        #endif
+#ifdef USE_FLOAT_PIXELS
+		// This variable must be defined in any Image subclass that is built with USE_FLOAT_PIXELS
+		static float ComponentWeights[Pixel::NUM_CHANNELS];
+#endif
 
 	protected:
 		// Instances cannot be destroyed through a base Image pointer

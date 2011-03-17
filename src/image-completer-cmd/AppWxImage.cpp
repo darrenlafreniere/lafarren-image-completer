@@ -47,32 +47,32 @@ static const AssertIdenticalRgbLayout g_assertIdenticalRgbLayout;
 
 bool AppWxImage::LoadAndValidate(const std::string& imagePath)
 {
-    bool result = false;
-    wxMessageOutput& msgOut = *wxMessageOutput::Get();
+	bool result = false;
+	wxMessageOutput& msgOut = *wxMessageOutput::Get();
 
-    if (!m_wxImage.LoadFile(imagePath))
-    {
-        // If LoadFile fails, it already prints an wxMessageOutput error for us.
-    }
-    else if (!m_wxImage.IsOk())
-    {
-        msgOut.Printf("The image was invalid.\n");
-    }
-    else if (m_wxImage.GetWidth() > LfnIc::Settings::IMAGE_WIDTH_MAX || m_wxImage.GetHeight() > LfnIc::Settings::IMAGE_HEIGHT_MAX)
-    {
-        msgOut.Printf("The image is too large. Max size: %dx%x.\n", LfnIc::Settings::IMAGE_WIDTH_MAX, LfnIc::Settings::IMAGE_HEIGHT_MAX);
-    }
-    else
-    {
-        result = true;
-    }
+	if (!m_wxImage.LoadFile(imagePath))
+	{
+		// If LoadFile fails, it already prints an wxMessageOutput error for us.
+	}
+	else if (!m_wxImage.IsOk())
+	{
+		msgOut.Printf("The image was invalid.\n");
+	}
+	else if (m_wxImage.GetWidth() > LfnIc::Settings::IMAGE_WIDTH_MAX || m_wxImage.GetHeight() > LfnIc::Settings::IMAGE_HEIGHT_MAX)
+	{
+		msgOut.Printf("The image is too large. Max size: %dx%x.\n", LfnIc::Settings::IMAGE_WIDTH_MAX, LfnIc::Settings::IMAGE_HEIGHT_MAX);
+	}
+	else
+	{
+		result = true;
+	}
 
-    return result;
+	return result;
 }
 
 void AppWxImage::Save()
 {
-  m_wxImage.SaveFile(m_filePath);
+	m_wxImage.SaveFile(m_filePath);
 }
 
 bool AppWxImage::IsValid() const
