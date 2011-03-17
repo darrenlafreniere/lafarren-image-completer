@@ -133,7 +133,8 @@ void AppITKImage::Save()
 
 bool AppITKImage::IsValid() const
 {
-	return m_image != NULL;
+	//return m_image != NULL;
+	return !m_image;
 }
 
 const std::string& AppITKImage::GetFilePath() const

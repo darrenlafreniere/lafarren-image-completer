@@ -29,6 +29,7 @@
 #include "SettingsText.h"
 
 #ifdef USE_ITK
+#pragma message("Main using ITK.")
 #include "AppITKImage.h"
 #include "AppITKMask.h"
 typedef AppITKImage AppImageType;
@@ -36,6 +37,7 @@ typedef AppITKMask AppMaskType;
 #endif
 
 #ifdef USE_WX
+#pragma message("Main using WX.")
 #include "AppWxImage.h"
 #include "AppWxMask.h"
 typedef AppWxImage AppImageType;

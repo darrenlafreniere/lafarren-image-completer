@@ -29,9 +29,9 @@
 
 
 AppData::AppData(const CommandLineOptions& options, Image& inputImage, Mask& mask, Image& outputImage)
-	: m_isValid(false)
-	, m_inputImage(inputImage)
+	: m_inputImage(inputImage)
 	, m_mask(mask)
+	, m_isValid(false)
 	, m_outputImage(outputImage)
 {
 	LfnIc::SettingsConstruct(m_settings, m_inputImage);
