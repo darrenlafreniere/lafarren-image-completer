@@ -152,7 +152,7 @@ namespace LfnIc
 		// BatchOpenImmediate
 		// BatchOpenQueued
 		//
-		// Opens an energy calculation batch based on the give width and
+		// Opens an energy calculation batch based on the given width and
 		// height, and left-top coordinate of the block against which the rest
 		// of the blocks are computed against (block A). If aMasked is true,
 		// then only the pixels intersecting with the known regions of block A

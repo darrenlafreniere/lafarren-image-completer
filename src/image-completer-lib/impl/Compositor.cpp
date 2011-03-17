@@ -52,7 +52,7 @@ LfnIc::Compositor* LfnIc::CompositorFactory::Create(CompositorPatchType patchTyp
 
 	CompositorRoot::PatchType::Factory* patchimageSourceFactory = NULL;
 	CompositorRoot::PatchBlender::Factory* patchBlenderFactory = NULL;
-#if 1 // TODO: add a compositor-output-blender command line optin
+#if 1 // TODO: add a compositor-output-blender command line option
 	CompositorRoot::OutputBlender* outputBlender = new OutputBlenderSoftMask;
 #else
 	CompositorRoot::OutputBlender* outputBlender = new OutputBlenderDebugSoftMaskIntensity;
