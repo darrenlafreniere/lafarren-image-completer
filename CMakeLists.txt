@@ -124,8 +124,8 @@ IF(USE_ITK)
   include(${ITK_USE_FILE})
 
   set(AppSources ${AppSources}
-    ${cmdsrc}/AppImageITK.cpp
-    ${cmdsrc}/AppMaskITK.cpp
+    ${cmdsrc}/AppITKImage.cpp
+    ${cmdsrc}/AppITKMask.cpp
     )
   set(LibrariesToLink ${LibrariesToLink} ${ITK_LIBRARIES})
 else(USE_ITK)

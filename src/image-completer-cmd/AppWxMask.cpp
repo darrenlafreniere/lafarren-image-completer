@@ -22,14 +22,14 @@
 #include "Pch.h"
 
 #ifdef USE_WX
-#include "AppMaskWx.h"
+#include "AppWxMask.h"
 #include "LfnIcSettings.h"
 
 #include "tech/MathUtils.h"
 
 #include "tech/DbgMem.h"
 
-AppMaskWx::AppMaskWx()
+AppWxMask::AppWxMask()
 	: m_width(0)
 	, m_height(0)
 	, m_offsetX(0)
@@ -37,7 +37,7 @@ AppMaskWx::AppMaskWx()
 {
 }
 
-bool AppMaskWx::LoadAndValidate(const std::string& imagePath, int offsetX, int offsetY)
+bool AppWxMask::LoadAndValidate(const std::string& imagePath, int offsetX, int offsetY)
 {
 	bool result = false;
 	wxMessageOutput& msgOut = *wxMessageOutput::Get();
@@ -83,7 +83,7 @@ bool AppMaskWx::LoadAndValidate(const std::string& imagePath, int offsetX, int o
 	return result;
 }
 
-LfnIc::Mask::Value AppMaskWx::GetValue(int x, int y) const
+LfnIc::Mask::Value AppWxMask::GetValue(int x, int y) const
 {
 	const int xMaskSpace = x - m_offsetX;
 	const int yMaskSpace = y - m_offsetY;
@@ -97,7 +97,7 @@ LfnIc::Mask::Value AppMaskWx::GetValue(int x, int y) const
 	return value;
 }
 
-LfnIc::Mask::Value AppMaskWx::ByteToMaskValue(unsigned char byte) const
+LfnIc::Mask::Value AppWxMask::ByteToMaskValue(unsigned char byte) const
 {
 	const int byteUnknown = 0;
 	const int byteIgnored = 128;

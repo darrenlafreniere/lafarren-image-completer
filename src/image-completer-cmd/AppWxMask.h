@@ -19,24 +19,22 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef ITK_MASK_H
-#define ITK_MASK_H
+#ifndef APP_WX_MASK_H
+#define APP_WX_MASK_H
 
-#ifdef USE_ITK
+#ifdef USE_WX
 
 #include <vector>
 #include "AppData.h"
-#include "itkImage.h"
+#include "LfnIcMask.h"
 
 //
-// Implements LfnIc::Mask, using a itk::Image to load and convert a mask image.
+// Implements LfnIc::Mask, using a wxImage to load and convert a mask image.
 //
-class AppMaskITK : public AppData::Mask
+class AppWxMask : public AppData::Mask
 {
 public:
-	AppMaskITK();
-
-	typedef itk::Image<unsigned char, 2> MaskImageType;
+	AppWxMask();
 
 	// The mask image can be smaller than the input image, and translated to a
 	// specific offset. This isn't yet supported via the command line arguments.
@@ -47,11 +45,12 @@ public:
 private:
 	Value ByteToMaskValue(unsigned char byte) const;
 
-	MaskImageType::Pointer m_mask;
-
+	std::vector<Value> m_values;
+	int m_width;
+	int m_height;
 	int m_offsetX;
 	int m_offsetY;
 };
 
-#endif // USE_ITK
+#endif // USE_WX
 #endif
