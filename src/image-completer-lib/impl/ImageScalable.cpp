@@ -23,6 +23,7 @@
 #include "ImageScalable.h"
 
 #include "tech/ImageUtils.h"
+#include "MaskScalable.h"
 
 #include "tech/DbgMem.h"
 
@@ -89,7 +90,7 @@ namespace LfnIc
 	class ImageScaledDown : public ImageConstInternal
 	{
 	public:
-		ImageScaledDown(const ImageConst& imageToScaleDown);
+		ImageScaledDown(const ImageConst& imageToScaleDown, const Mask& imageToScaleDownMask);
 		virtual ~ImageScaledDown();
 
 		virtual const Pixel* GetData() const;
@@ -106,7 +107,7 @@ namespace LfnIc
 	};
 }
 
-LfnIc::ImageScaledDown::ImageScaledDown(const ImageConst& imageToScaleDown)
+LfnIc::ImageScaledDown::ImageScaledDown(const ImageConst& imageToScaleDown, const Mask& imageToScaleDownMask)
 {
 	// Alias to reduce wordiness.
 	const int otherWidth = imageToScaleDown.GetWidth();
@@ -140,33 +141,72 @@ LfnIc::ImageScaledDown::ImageScaledDown(const ImageConst& imageToScaleDown)
 		for (int x = 0, otherX = 0; x < m_width; ++x, ++rgbCurrent, otherX += 2, otherRgbCurrentUpper += 2, otherRgbCurrentLower += 2)
 		{
 			wxASSERT(otherX < otherWidth);
-			float channel[Image::Pixel::NUM_CHANNELS];
-			for (int component = 0; component < Image::Pixel::NUM_CHANNELS; ++component)
-			{
-				channel[component] = otherRgbCurrentUpper[0].channel[component] + otherRgbCurrentLower[0].channel[component];
-			}
+			float channel[Image::Pixel::NUM_CHANNELS] = { 0.0f };
 
 			// numPixelsToAverage is the number of high resolution pixels we're
 			// collapsing/averaging into a single low resolution pixel. At most,
-			// this will be four. So far the left column's upper and lower pixels
-			// have been added. If we're not at the right edge of the high res
-			// image (checked just below), then the right upper and lower pixels
-			// will be added as well.
-			float numPixelsToAverage = 2.0f;
+			// this will be four, but may be zero if all four pixels are unknown.
+			float numPixelsToAverage = 0.0f;
+
+			// Read the right column of the 2x2 quad.
+			{
+				// Left-top of 2x2 quad.
+				if (imageToScaleDownMask.GetValue(otherX, otherY) == Mask::KNOWN)
+				{
+					numPixelsToAverage += 1.0f;
+					for (int component = 0; component < Image::Pixel::NUM_CHANNELS; ++component)
+					{
+						channel[component] += otherRgbCurrentUpper[0].channel[component];
+					}
+				}
+
+				// Left-bottom of 2x2 quad.
+				if (imageToScaleDownMask.GetValue(otherX, otherY + 1) == Mask::KNOWN)
+				{
+					numPixelsToAverage += 1.0f;
+					for (int component = 0; component < Image::Pixel::NUM_CHANNELS; ++component)
+					{
+						channel[component] += otherRgbCurrentLower[0].channel[component];
+					}
+				}
+			}
+
+			// Read the right column of the 2x2 quad. Make sure we don't read
+			// off the right-hand edge.
 			if ((otherX + 1) < otherWidth)
+			{
+				// Right-top of 2x2 quad.
+				if (imageToScaleDownMask.GetValue(otherX + 1, otherY) == Mask::KNOWN)
+				{
+					numPixelsToAverage += 1.0f;
+					for (int component = 0; component < Image::Pixel::NUM_CHANNELS; ++component)
+					{
+						channel[component] += otherRgbCurrentUpper[1].channel[component];
+					}
+				}
+
+				// Right-bottom of 2x2 quad.
+				if (imageToScaleDownMask.GetValue(otherX + 1, otherY + 1) == Mask::KNOWN)
+				{
+					numPixelsToAverage += 1.0f;
+					for (int component = 0; component < Image::Pixel::NUM_CHANNELS; ++component)
+					{
+						channel[component] += otherRgbCurrentLower[1].channel[component];
+					}
+				}
+			}
+
+			// Average the components if there's anything to average.
+			if (numPixelsToAverage > 0.0f)
 			{
 				for (int component = 0; component < Image::Pixel::NUM_CHANNELS; ++component)
 				{
-					channel[component] += otherRgbCurrentUpper[1].channel[component] + otherRgbCurrentLower[1].channel[component];
+					channel[component] /= numPixelsToAverage;
+					wxASSERT(channel[component] >= 0.0f && channel[component] <= 255.0f);
 				}
-				numPixelsToAverage = 4.0f;
-			}
-			for (int component = 0; component < Image::Pixel::NUM_CHANNELS; ++component)
-			{
-				channel[component] /= numPixelsToAverage;
-				wxASSERT(channel[component] >= 0.0f && channel[component] <= 255.0f);
 			}
 
+			// Assign the averaged components to the pixel.
 			for (int component = 0; component < Image::Pixel::NUM_CHANNELS; ++component)
 			{
 				rgbCurrent->channel[component] = channel[component];
@@ -198,8 +238,9 @@ int LfnIc::ImageScaledDown::GetHeight() const
 //
 // ImageScalable implementation
 //
-LfnIc::ImageScalable::ImageScalable(const Image& image) :
-m_depth(0)
+LfnIc::ImageScalable::ImageScalable(const Image& image, const MaskScalable& maskScalable)
+	: m_maskScalable(maskScalable)
+	, m_depth(0)
 {
 	// Delegate to original resolution Image at depth 0.
 	m_resolutions.push_back(new ImageConstDelegateToImage(image));
@@ -248,8 +289,14 @@ void LfnIc::ImageScalable::ScaleDown()
 	// If there's no mask for the next lower depth, create one from the current resolution.
 	if (static_cast<unsigned int>(m_depth) == m_resolutions.size() - 1)
 	{
+		// ImageScaledDown requires the mask to be at the same depth as the
+		// input image, in order to exclude unknown pixels from being averaged
+		// into the result. If this assert is hit, check the order of the
+		// scopedScaleDownAndUpInOrder Add() calls in LfnIc.cpp.
+		wxASSERT_MSG(m_depth == m_maskScalable.GetScaleDepth(), "MaskScalable is being scaled down before ImageScalable!");
+
 		const ImageConst& imageToScaleDown = GetCurrentResolution();
-		m_resolutions.push_back(new ImageScaledDown(imageToScaleDown));
+		m_resolutions.push_back(new ImageScaledDown(imageToScaleDown, m_maskScalable));
 	}
 
 	++m_depth;

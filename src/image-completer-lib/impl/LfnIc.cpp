@@ -125,6 +125,10 @@ namespace LfnIc
 
 		if (shouldEvaluateThisResolution)
 		{
+			// maskScalable MUST be scaled down after imageScalable, because
+			// imageScalable uses the current resolution of maskScalable to
+			// exclude unknown pixels from being averaged into the scaled down
+			// image. imageScalable will assert otherwise.
 			ScopedScaleDownAndUpInOrder scopedScaleDownAndUpInOrder;
 			scopedScaleDownAndUpInOrder.Add(settingsScalable);
 			scopedScaleDownAndUpInOrder.Add(imageScalable);
@@ -189,11 +193,10 @@ namespace LfnIc
         // it's safe to have multiple wxInitializer instances; they're
         // internally ref counted by wxWidgets.
         wxInitializer initializer;
-
         {
             SettingsScalable settingsScalable(settings);
-            ImageScalable imageScalable(inputImage);
-            MaskScalable maskScalable(imageScalable.GetWidth(), imageScalable.GetHeight(), mask);
+            MaskScalable maskScalable(inputImage.GetWidth(), inputImage.GetHeight(), mask);
+            ImageScalable imageScalable(inputImage, maskScalable);
             Compositor::Input compositorInput(settingsScalable, imageScalable, maskScalable);
             bool arePatchesValid = false;
 

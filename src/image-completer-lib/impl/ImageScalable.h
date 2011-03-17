@@ -29,6 +29,7 @@ namespace LfnIc
 {
 	// Forward declaration. Defined in ImageScalable.cpp.
 	class ImageConstInternal;
+	class MaskScalable;
 
 	//
 	// Implements both the Image and Scalable interfaces and provides an in
@@ -37,7 +38,7 @@ namespace LfnIc
 	class ImageScalable : public ImageConst, public Scalable
 	{
 	public:
-		ImageScalable(const Image& image);
+		ImageScalable(const Image& image, const MaskScalable& maskScalable);
 		virtual ~ImageScalable();
 
 		virtual const Pixel* GetData() const;
@@ -50,6 +51,8 @@ namespace LfnIc
 
 	private:
 		inline const ImageConstInternal& GetCurrentResolution() const { return *m_resolutions[m_depth]; }
+
+		const MaskScalable& m_maskScalable;
 
 		std::vector<ImageConstInternal*> m_resolutions;
 		int m_depth;
