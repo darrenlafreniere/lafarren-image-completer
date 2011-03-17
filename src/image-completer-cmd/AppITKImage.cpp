@@ -47,7 +47,7 @@ bool AppITKImage::LoadAndValidate(const std::string& imagePath)
 		m_image = AppImageITKType::New();
 	}
 
-	//m_image->Graft(reader->GetOutput());
+	// Deep copy
 
 	m_image->SetRegions(reader->GetOutput()->GetLargestPossibleRegion());
 	m_image->Allocate();
