@@ -19,34 +19,39 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef APP_WX_IMAGE_H
-#define APP_WX_IMAGE_H
+#ifndef APP_ITK_MASK_H
+#define APP_ITK_MASK_H
 
-#ifdef USE_WX
+#ifdef USE_ITK
 
+#include <vector>
 #include "AppData.h"
+#include "itkImage.h"
 
 //
-// Implements LfnIc::Image, using a wxImage to load, store, and save the data.
+// Implements LfnIc::Mask, using a itk::Image to load and convert a mask image.
 //
-class AppImageWx : public AppData::Image
+class AppITKMask : public AppData::Mask
 {
 public:
-	// LfnIc::Image interface
-	bool LoadAndValidate(const std::string& imagePath);
-	void Save();
-	virtual bool Init(int width, int height);
-	virtual bool IsValid() const;
-	virtual const std::string& GetFilePath() const;
-	virtual Pixel* GetData();
-	virtual const Pixel* GetData() const;
-	virtual int GetWidth() const;
-	virtual int GetHeight() const;
+	AppITKMask();
+
+	typedef itk::Image<unsigned char, 2> MaskImageType;
+
+	// The mask image can be smaller than the input image, and translated to a
+	// specific offset. This isn't yet supported via the command line arguments.
+	bool LoadAndValidate(const std::string& imagePath, int offsetX = 0, int offsetY = 0);
+
+	virtual Value GetValue(int x, int y) const;
 
 private:
-	// Internal data
-	wxImage m_wxImage;
+	Value ByteToMaskValue(unsigned char byte) const;
+
+	MaskImageType::Pointer m_mask;
+
+	int m_offsetX;
+	int m_offsetY;
 };
 
-#endif // USE_WX
+#endif // USE_ITK
 #endif

@@ -91,10 +91,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AppData.cpp" />
-    <ClCompile Include="AppImageITK.cpp" />
-    <ClCompile Include="AppImageWx.cpp" />
-    <ClCompile Include="AppMaskITK.cpp" />
-    <ClCompile Include="AppMaskWx.cpp" />
+    <ClCompile Include="AppITKImage.cpp" />
+    <ClCompile Include="AppITKMask.cpp" />
+    <ClCompile Include="AppWxImage.cpp" />
+    <ClCompile Include="AppWxMask.cpp" />
     <ClCompile Include="CommandLineOptions.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Pch.cpp">
@@ -107,10 +107,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppData.h" />
-    <ClInclude Include="AppImageITK.h" />
-    <ClInclude Include="AppImageWx.h" />
-    <ClInclude Include="AppMaskITK.h" />
-    <ClInclude Include="AppMaskWx.h" />
+    <ClInclude Include="AppITKImage.h" />
+    <ClInclude Include="AppITKMask.h" />
+    <ClInclude Include="AppWxImage.h" />
+    <ClInclude Include="AppWxMask.h" />
     <ClInclude Include="CommandLineOptions.h" />
     <ClInclude Include="Pch.h" />
     <ClInclude Include="SettingsText.h" />

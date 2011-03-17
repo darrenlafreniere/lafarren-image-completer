@@ -112,8 +112,8 @@ ${tech}/tech/Time.cpp
 #####################################
 set(AppSources
     ${cmdsrc}/Main.cpp
-    ${cmdsrc}/AppImageWx.cpp
-    ${cmdsrc}/AppMaskWx.cpp
+    ${cmdsrc}/AppWxImage.cpp
+    ${cmdsrc}/AppWxMask.cpp
     ${cmdsrc}/CommandLineOptions.cpp
     ${cmdsrc}/Pch.cpp
     ${cmdsrc}/SettingsText.cpp
@@ -127,8 +127,8 @@ IF(USE_ITK)
   include(${ITK_USE_FILE})
 
   set(AppSources ${AppSources}
-    ${cmdsrc}/AppImageITK.cpp
-    ${cmdsrc}/AppMaskITK.cpp
+    ${cmdsrc}/AppITKImage.cpp
+    ${cmdsrc}/AppITKMask.cpp
     )
   set(LibrariesToLink ${LibrariesToLink} ${ITK_LIBRARIES})
 ENDIF(USE_ITK)

@@ -19,27 +19,19 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef ITK_IMAGE_H
-#define ITK_IMAGE_H
+#ifndef APP_WX_IMAGE_H
+#define APP_WX_IMAGE_H
 
-#ifdef USE_ITK
+#ifdef USE_WX
 
 #include "AppData.h"
 
-#include "itkImage.h"
-#include "itkCovariantVector.h"
-
 //
-// Implements LfnIc::Image, using a itk::Image to load, store, and save the data.
+// Implements LfnIc::Image, using a wxImage to load, store, and save the data.
 //
-class AppImageITK : public AppData::Image
+class AppWxImage : public AppData::Image
 {
 public:
-	// AppImageITK interface
-	AppImageITK();
-	typedef itk::CovariantVector<LfnIc::Image::Pixel::PixelType, LfnIc::Image::Pixel::NUM_CHANNELS> ITKPixelType;
-	typedef itk::Image<ITKPixelType, 2> AppImageITKType;
-
 	// LfnIc::Image interface
 	bool LoadAndValidate(const std::string& imagePath);
 	void Save();
@@ -53,8 +45,8 @@ public:
 
 private:
 	// Internal data
-	AppImageITKType::Pointer m_image;
+	wxImage m_wxImage;
 };
 
-#endif // USE_ITK
+#endif // USE_WX
 #endif

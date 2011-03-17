@@ -19,38 +19,42 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef APP_WX_MASK_H
-#define APP_WX_MASK_H
+#ifndef APP_ITK_IMAGE_H
+#define APP_ITK_IMAGE_H
 
-#ifdef USE_WX
+#ifdef USE_ITK
 
-#include <vector>
 #include "AppData.h"
-#include "LfnIcMask.h"
+
+#include "itkImage.h"
+#include "itkCovariantVector.h"
 
 //
-// Implements LfnIc::Mask, using a wxImage to load and convert a mask image.
+// Implements LfnIc::Image, using a itk::Image to load, store, and save the data.
 //
-class AppMaskWx : public AppData::Mask
+class AppITKImage : public AppData::Image
 {
 public:
-	AppMaskWx();
+	// AppITKImage interface
+	AppITKImage();
+	typedef itk::CovariantVector<LfnIc::Image::Pixel::PixelType, LfnIc::Image::Pixel::NUM_CHANNELS> ITKPixelType;
+	typedef itk::Image<ITKPixelType, 2> AppImageITKType;
 
-	// The mask image can be smaller than the input image, and translated to a
-	// specific offset. This isn't yet supported via the command line arguments.
-	bool LoadAndValidate(const std::string& imagePath, int offsetX = 0, int offsetY = 0);
-
-	virtual Value GetValue(int x, int y) const;
+	// LfnIc::Image interface
+	bool LoadAndValidate(const std::string& imagePath);
+	void Save();
+	virtual bool Init(int width, int height);
+	virtual bool IsValid() const;
+	virtual const std::string& GetFilePath() const;
+	virtual Pixel* GetData();
+	virtual const Pixel* GetData() const;
+	virtual int GetWidth() const;
+	virtual int GetHeight() const;
 
 private:
-	Value ByteToMaskValue(unsigned char byte) const;
-
-	std::vector<Value> m_values;
-	int m_width;
-	int m_height;
-	int m_offsetX;
-	int m_offsetY;
+	// Internal data
+	AppImageITKType::Pointer m_image;
 };
 
-#endif // USE_WX
+#endif // USE_ITK
 #endif
