@@ -32,13 +32,16 @@
 #ifdef _MSC_VER
 #include <windows.h>
 #endif
-/*
-#define ASSERT_TECH_ATOMIC_SIZE(T) \
-wxASSERT(LfnTech::AtomicForceLinkValidationTests()); \
-wxCOMPILE_TIME_ASSERT(sizeof(T) == sizeof(AtomicNativeType), TypeMustBeSizeofAtomicNativeType)
-*/
+
+// FIXME: https://github.com/darrenlafreniere/lafarren-image-completer/issues#issue/28
+#ifdef UNIX
 #define ASSERT_TECH_ATOMIC_SIZE(T) \
 	wxCOMPILE_TIME_ASSERT(sizeof(T) == sizeof(AtomicNativeType), TypeMustBeSizeofAtomicNativeType)
+#else
+#define ASSERT_TECH_ATOMIC_SIZE(T) \
+	wxASSERT(LfnTech::AtomicForceLinkValidationTests()); \
+	wxCOMPILE_TIME_ASSERT(sizeof(T) == sizeof(AtomicNativeType), TypeMustBeSizeofAtomicNativeType)
+#endif
 
 namespace LfnTech
 {

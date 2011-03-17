@@ -102,7 +102,6 @@ namespace LfnIc
 		// Internal definitions
 		//
 
-		//static const int RGB_CHANNELS_NUM = 3;
 		static const int RGB_CHANNELS_NUM = Image::Pixel::NUM_CHANNELS;
 
 		union FftwInPlaceBuffer

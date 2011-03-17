@@ -40,7 +40,7 @@ namespace LfnIc
 
 	PixelFloat& PixelFloat::operator=(const PixelFloat& other)
 	{
-		for(unsigned int component = 0; component < static_cast<unsigned int>(PixelFloat::NUM_CHANNELS); component++)
+		for (int component = 0; component < PixelFloat::NUM_CHANNELS; ++component)
 		{
 			this->channel[component] = other.channel[component];
 		}
@@ -49,7 +49,7 @@ namespace LfnIc
 
 	PixelFloat& PixelFloat::operator+=(const PixelFloat& other)
 	{
-		for(unsigned int component = 0; component < static_cast<unsigned int>(PixelFloat::NUM_CHANNELS); component++)
+		for (int component = 0; component < PixelFloat::NUM_CHANNELS; ++component)
 		{
 			this->channel[component] += other.channel[component];
 		}
@@ -58,7 +58,7 @@ namespace LfnIc
 
 	PixelFloat& PixelFloat::operator-=(const PixelFloat& other)
 	{
-		for(unsigned int component = 0; component < static_cast<unsigned int>(PixelFloat::NUM_CHANNELS); component++)
+		for (int component = 0; component < PixelFloat::NUM_CHANNELS; ++component)
 		{
 			this->channel[component] -= other.channel[component];
 		}
@@ -67,7 +67,7 @@ namespace LfnIc
 
 	PixelFloat& PixelFloat::operator*=(float x)
 	{
-		for(unsigned int component = 0; component < static_cast<unsigned int>(PixelFloat::NUM_CHANNELS); component++)
+		for (int component = 0; component < PixelFloat::NUM_CHANNELS; ++component)
 		{
 			this->channel[component] *= x;
 		}
@@ -83,7 +83,7 @@ namespace LfnIc
 
 	PixelFloatRGB& PixelFloatRGB::operator=(const PixelFloatRGB& other)
 	{
-		for(unsigned int component = 0; component < static_cast<unsigned int>(PixelFloat::NUM_CHANNELS); component++)
+		for (int component = 0; component < PixelFloat::NUM_CHANNELS; ++component)
 		{
 			this->channel[component] = other.channel[component];
 		}
@@ -92,7 +92,7 @@ namespace LfnIc
 
 	PixelFloatRGB& PixelFloatRGB::operator+=(const PixelFloatRGB& other)
 	{
-		for(unsigned int component = 0; component < static_cast<unsigned int>(PixelFloat::NUM_CHANNELS); component++)
+		for (int component = 0; component < PixelFloat::NUM_CHANNELS; ++component)
 		{
 			this->channel[component] += other.channel[component];
 		}
@@ -101,7 +101,7 @@ namespace LfnIc
 
 	PixelFloatRGB& PixelFloatRGB::operator-=(const PixelFloatRGB& other)
 	{
-		for(unsigned int component = 0; component < static_cast<unsigned int>(PixelFloat::NUM_CHANNELS); component++)
+		for (int component = 0; component < PixelFloat::NUM_CHANNELS; ++component)
 		{
 			this->channel[component] -= other.channel[component];
 		}
@@ -110,7 +110,7 @@ namespace LfnIc
 
 	PixelFloatRGB& PixelFloatRGB::operator*=(float x)
 	{
-		for(unsigned int component = 0; component < static_cast<unsigned int>(PixelFloat::NUM_CHANNELS); component++)
+		for (int component = 0; component < PixelFloat::NUM_CHANNELS; ++component)
 		{
 			this->channel[component] *= x;
 		}
@@ -122,7 +122,7 @@ namespace LfnIc
 	//
 	inline void CopyRgbValue(PixelFloat& to, const Image::Pixel& from)
 	{
-		for(unsigned int component = 0; component < static_cast<unsigned int>(PixelFloat::NUM_CHANNELS); component++)
+		for (int component = 0; component < PixelFloat::NUM_CHANNELS; ++component)
 		{
 			to.channel[component] = static_cast<float>(from.channel[component]) / 255.0f;
 		}
@@ -130,7 +130,7 @@ namespace LfnIc
 
 	inline void CopyRgbValue(Image::Pixel& to, const PixelFloat& from)
 	{
-		for(unsigned int component = 0; component < static_cast<unsigned int>(PixelFloat::NUM_CHANNELS); component++)
+		for (int component = 0; component < PixelFloat::NUM_CHANNELS; ++component)
 		{
 			to.channel[component] = static_cast<unsigned char>(from.channel[component] * 255.0f);
 		}

@@ -40,7 +40,7 @@ void LfnIc::OutputBlenderDebugSoftMaskIntensity::Blend(const Compositor::Input& 
 		const float ia = 1.0f - *softMaskDataPtr;
 		const float intensity = (1.0f - ia);
 		PixelFloat& dest = *destRgbDataPtr;
-		for(unsigned int component = 0; component < static_cast<unsigned int>(PixelFloat::NUM_CHANNELS); component++)
+		for (int component = 0; component < PixelFloat::NUM_CHANNELS; ++component)
 		{
 			dest.channel[component] = intensity;
 		}

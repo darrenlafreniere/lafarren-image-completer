@@ -28,7 +28,7 @@ namespace LfnIc
 {
 	class ImageConst;
 
-	// An tuple of floats, where each component is [0.0, 1.0].
+	// A set of float components, where each component is [0.0, 1.0].
 	class PixelFloat
 	{
 	public:

@@ -245,15 +245,7 @@ void LfnIc::MaskInternal::CreateLowerLodsFromHighest()
 							for (int u = 0; u < nu; ++u)
 							{
 								wxASSERT((lodPrevX + u) < lodPrevWidth);
-								//wxASSERT((lodPrevY + v) < lodPrevHeight);
-								if((lodPrevY + v) >= lodPrevHeight)
-								{
-									std::cout << "lodPrevY: " << lodPrevY << std::endl;
-									std::cout << "v: " << v << std::endl;
-									std::cout << "lodPrevY + v: " << lodPrevY + v << std::endl;
-									std::cout << "lodPrevHeight: " << lodPrevHeight << std::endl;
-									wxASSERT(0);
-								}
+								wxASSERT((lodPrevY + v) < lodPrevHeight);
 								const Value prevLodValueAtUV = lodPrevBuffer[LfnTech::GetRowMajorIndex(lodPrevWidth, lodPrevX + u, lodPrevY + v)];
 								if (!hasSetInitialValue)
 								{

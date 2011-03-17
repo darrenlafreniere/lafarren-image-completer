@@ -77,7 +77,7 @@ static LfnIc::PixelFloat GetRainbowColor(float alpha)
 	const float blendAlpha = (alpha - refAlphaLow) / refAlphaStep;
 
 	LfnIc::PixelFloat pixel;
-	for(unsigned int component = 0; component < static_cast<unsigned int>(LfnIc::PixelFloatRGB::NUM_CHANNELS); component++)
+	for (int component = 0; component < LfnIc::PixelFloatRGB::NUM_CHANNELS; ++component)
 	{
 		pixel.channel[component] = colorLow.channel[component] + blendAlpha * (colorHigh.channel[component] - colorLow.channel[component]);
 	}
@@ -111,7 +111,7 @@ const LfnIc::ImageFloat& LfnIc::PatchTypeDebugPatchOrder::Get(const Patch& patch
 
 	for (int i = 0, n = m_patchImage.GetWidth() * m_patchImage.GetHeight(); i < n; ++i)
 	{
-		for(unsigned int component = 0; component < static_cast<unsigned int>(LfnIc::PixelFloatRGB::NUM_CHANNELS); component++)
+		for (int component = 0; component < LfnIc::PixelFloatRGB::NUM_CHANNELS; ++component)
 		{
 			m_patchImage.GetData()[i].channel[component] = rgb.channel[component];
 		}

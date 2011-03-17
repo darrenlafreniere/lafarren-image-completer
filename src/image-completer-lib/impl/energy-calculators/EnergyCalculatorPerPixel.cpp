@@ -74,9 +74,9 @@ namespace LfnIc
 
 			// d[x] = component delta
 			// e = dr^2 + dg^2 + db^2
-			const uint32 dr = a.channel[0]   - b.channel[0];
+			const uint32 dr = a.channel[0] - b.channel[0];
 			const uint32 dg = a.channel[1] - b.channel[1];
-			const uint32 db = a.channel[2]  - b.channel[2];
+			const uint32 db = a.channel[2] - b.channel[2];
 			return (dr * dr) + (dg * dg) + (db * db);
 		}
 	};
@@ -95,11 +95,13 @@ namespace LfnIc
 			const Image::Pixel& b = bSrcRow[x];
 
 			float squaredDifference = 0;
-			for(unsigned int i = 0; i < static_cast<unsigned int>(Image::Pixel::NUM_CHANNELS); i++)
+			for (int i = 0; i < Image::Pixel::NUM_CHANNELS; ++i)
 			{
 #ifdef USE_FLOAT_PIXELS
 				squaredDifference += LfnIc::Image::ComponentWeights[i] * (a.channel[i] - b.channel[i]) *
 					LfnIc::Image::ComponentWeights[i] * (a.channel[i] - b.channel[i]);
+#else
+				wxASSERT(false, "USE_FLOAT_PIXELS is undefined; EnergyCalculatorPerPixel.cpp's PolicyNoMaskGeneral cannot calculate squared differences.");
 #endif
 			}
 			return squaredDifference;
@@ -245,7 +247,7 @@ namespace LfnIc
 
 		wxASSERT(energy64Bit >= ENERGY_MIN && energy64Bit <= ENERGY_MAX);
 		return energy64Bit;
-	} // end static inline Energy CalculateEnergy
+	}
 
 	template<>
 	inline Energy CalculateEnergy<PolicyNoMaskGeneral>(
@@ -286,8 +288,8 @@ namespace LfnIc
 		}
 
 		return totalEnergy;
-	} // end static inline Energy CalculateEnergy general pixels
-} // end namespace LfnIc
+	}
+}
 
 //
 // EnergyCalculatorPerPixel implementation
@@ -371,7 +373,7 @@ LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::Calculate(int bLeft, int bTop) co
 	}
 	else
 	{
-		if(typeid(unsigned char) == typeid(Image::Pixel::PixelType) && Image::Pixel::NUM_CHANNELS == 3)
+		if (typeid(unsigned char) == typeid(Image::Pixel::PixelType) && Image::Pixel::NUM_CHANNELS == 3)
 		{
 			return CalculateNoMask<PolicyNoMask>(bLeft, bTop);
 		}

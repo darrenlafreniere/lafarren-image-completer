@@ -58,7 +58,7 @@ bool LfnIc::CompositorRoot::Compose(const Input& input, Image& outputImage) cons
 	ImageFloat outputImageFloat(inputImage);
 	{
 		PixelFloat zeroPixel;
-		for(unsigned int i = 0; i < static_cast<unsigned int>(PixelFloat::NUM_CHANNELS); i++)
+		for (int i = 0; i < PixelFloat::NUM_CHANNELS; ++i)
 		{
 			zeroPixel.channel[i] = 0.0f;
 		}
