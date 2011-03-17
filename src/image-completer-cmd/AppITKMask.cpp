@@ -22,18 +22,18 @@
 #include "Pch.h"
 
 #ifdef USE_ITK
-#include "AppMaskITK.h"
+#include "AppITKMask.h"
 
 #include "tech/MathUtils.h"
 #include "tech/DbgMem.h"
 
 #include "itkImageFileReader.h"
 
-AppMaskITK::AppMaskITK() : m_offsetX(0), m_offsetY(0)
+AppITKMask::AppITKMask() : m_offsetX(0), m_offsetY(0)
 {
 }
 
-bool AppMaskITK::LoadAndValidate(const std::string& imagePath, int offsetX, int offsetY)
+bool AppITKMask::LoadAndValidate(const std::string& imagePath, int offsetX, int offsetY)
 {
 	typedef itk::ImageFileReader<MaskImageType> ReaderType;
 
@@ -50,7 +50,7 @@ bool AppMaskITK::LoadAndValidate(const std::string& imagePath, int offsetX, int 
 	return true;
 }
 
-LfnIc::Mask::Value AppMaskITK::GetValue(int x, int y) const
+LfnIc::Mask::Value AppITKMask::GetValue(int x, int y) const
 {
 	const int xMaskSpace = x - m_offsetX;
 	const int yMaskSpace = y - m_offsetY;
@@ -70,7 +70,7 @@ LfnIc::Mask::Value AppMaskITK::GetValue(int x, int y) const
 	return value;
 }
 
-LfnIc::Mask::Value AppMaskITK::ByteToMaskValue(unsigned char byte) const
+LfnIc::Mask::Value AppITKMask::ByteToMaskValue(unsigned char byte) const
 {
 	const int byteUnknown = 0;
 	const int byteIgnored = 128;

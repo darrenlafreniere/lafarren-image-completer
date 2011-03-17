@@ -22,7 +22,7 @@
 #include "Pch.h"
 
 #ifdef USE_ITK
-#include "AppImageITK.h"
+#include "AppITKImage.h"
 
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
@@ -32,12 +32,12 @@
 
 float LfnIc::Image::ComponentWeights[Pixel::NUM_CHANNELS];
 
-AppImageITK::AppImageITK()
+AppITKImage::AppITKImage()
 {
 	m_image = NULL;
 }
 
-bool AppImageITK::LoadAndValidate(const std::string& imagePath)
+bool AppITKImage::LoadAndValidate(const std::string& imagePath)
 {
 	typedef itk::ImageFileReader<AppImageITKType> ReaderType;
 	ReaderType::Pointer reader = ReaderType::New();
@@ -109,7 +109,7 @@ bool AppImageITK::LoadAndValidate(const std::string& imagePath)
 	return true;
 }
 
-void AppImageITK::Save()
+void AppITKImage::Save()
 {
 	// If the image is RGB and unsigned char, write it to the specified output file (likely png)
 	typedef itk::ImageFileWriter<AppImageITKType> WriterType;
@@ -131,17 +131,17 @@ void AppImageITK::Save()
 	writer->Update();
 }
 
-bool AppImageITK::IsValid() const
+bool AppITKImage::IsValid() const
 {
 	return m_image != NULL;
 }
 
-const std::string& AppImageITK::GetFilePath() const
+const std::string& AppITKImage::GetFilePath() const
 {
 	return m_filePath;
 }
 
-bool AppImageITK::Init(int width, int height)
+bool AppITKImage::Init(int width, int height)
 {
 	itk::Index<2> start;
 	start.Fill(0);
@@ -164,22 +164,22 @@ bool AppImageITK::Init(int width, int height)
 	return true;
 }
 
-LfnIc::Image::Pixel* AppImageITK::GetData()
+LfnIc::Image::Pixel* AppITKImage::GetData()
 {
 	return reinterpret_cast<LfnIc::Image::Pixel*>(m_image->GetBufferPointer());
 }
 
-const LfnIc::Image::Pixel* AppImageITK::GetData() const
+const LfnIc::Image::Pixel* AppITKImage::GetData() const
 {
 	return reinterpret_cast<const LfnIc::Image::Pixel*>(m_image->GetBufferPointer());
 }
 
-int AppImageITK::GetWidth() const
+int AppITKImage::GetWidth() const
 {
 	return m_image->GetLargestPossibleRegion().GetSize()[0];
 }
 
-int AppImageITK::GetHeight() const
+int AppITKImage::GetHeight() const
 {
 	return m_image->GetLargestPossibleRegion().GetSize()[1];
 }

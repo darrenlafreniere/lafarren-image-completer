@@ -29,17 +29,17 @@
 #include "SettingsText.h"
 
 #ifdef USE_ITK
-#include "AppImageITK.h"
-#include "AppMaskITK.h"
-typedef AppImageITK AppImageType;
-typedef AppMaskITK AppMaskType;
+#include "AppITKImage.h"
+#include "AppITKMask.h"
+typedef AppITKImage AppImageType;
+typedef AppITKMask AppMaskType;
 #endif
 
 #ifdef USE_WX
-#include "AppImageWx.h"
-#include "AppMaskWx.h"
-typedef AppImageWx AppImageType;
-typedef AppMaskWx AppMaskType;
+#include "AppWxImage.h"
+#include "AppWxMask.h"
+typedef AppWxImage AppImageType;
+typedef AppWxMask AppMaskType;
 #endif // USE_WX
 
 #include "tech/DbgMem.h"

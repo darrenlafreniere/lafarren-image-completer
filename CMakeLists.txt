@@ -116,8 +116,8 @@ if(USE_FLOAT_PIXELS EQUAL OFF)
 MESSAGE("Building Wx example")
   add_executable(ImageCompleter
     ${cmdsrc}/Main.cpp
-    ${cmdsrc}/AppImageWx.cpp
-    ${cmdsrc}/AppMaskWx.cpp
+    ${cmdsrc}/AppWxImage.cpp
+    ${cmdsrc}/AppWxMask.cpp
     ${cmdsrc}/CommandLineOptions.cpp
     ${cmdsrc}/Pch.cpp
     ${cmdsrc}/SettingsText.cpp)
@@ -140,8 +140,8 @@ IF(USE_ITK)
 
   add_executable(ImageCompleterITK
     ${cmdsrc}/Main.cpp
-    ${cmdsrc}/AppImageITK.cpp
-    ${cmdsrc}/AppMaskITK.cpp
+    ${cmdsrc}/AppITKImage.cpp
+    ${cmdsrc}/AppITKMask.cpp
     ${cmdsrc}/CommandLineOptions.cpp
     ${cmdsrc}/Pch.cpp
     ${cmdsrc}/SettingsText.cpp
