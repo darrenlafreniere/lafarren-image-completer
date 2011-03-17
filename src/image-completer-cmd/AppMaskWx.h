@@ -23,20 +23,22 @@
 #define APP_WX_MASK_H
 
 #ifdef USE_WX
+
 #include <vector>
+#include "AppData.h"
 #include "LfnIcMask.h"
 
 //
 // Implements LfnIc::Mask, using a wxImage to load and convert a mask image.
 //
-class AppMaskWx : public LfnIc::Mask
+class AppMaskWx : public AppData::Mask
 {
 public:
 	AppMaskWx();
 
 	// The mask image can be smaller than the input image, and translated to a
 	// specific offset. This isn't yet supported via the command line arguments.
-	virtual bool LoadAndValidate(const std::string& imagePath, int offsetX = 0, int offsetY = 0);
+	bool LoadAndValidate(const std::string& imagePath, int offsetX = 0, int offsetY = 0);
 
 	virtual Value GetValue(int x, int y) const;
 

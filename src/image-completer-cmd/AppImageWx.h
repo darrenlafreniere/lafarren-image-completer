@@ -23,17 +23,18 @@
 #define APP_WX_IMAGE_H
 
 #ifdef USE_WX
-#include "LfnIcImage.h"
+
+#include "AppData.h"
 
 //
 // Implements LfnIc::Image, using a wxImage to load, store, and save the data.
 //
-class AppImageWx : public LfnIc::Image
+class AppImageWx : public AppData::Image
 {
 public:
 	// LfnIc::Image interface
-	virtual bool LoadAndValidate(const std::string& imagePath);
-	virtual void Save();
+	bool LoadAndValidate(const std::string& imagePath);
+	void Save();
 	virtual bool Init(int width, int height);
 	virtual bool IsValid() const;
 	virtual const std::string& GetFilePath() const;

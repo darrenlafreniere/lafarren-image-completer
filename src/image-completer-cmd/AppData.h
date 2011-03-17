@@ -34,14 +34,27 @@ class CommandLineOptions;
 class AppData
 {
 public:
-	AppData(const CommandLineOptions& options, LfnIc::Image* inputImage, LfnIc::Mask* mask, LfnIc::Image* outputImage);
+	class Image : public LfnIc::Image
+	{
+	public:
+		inline void SetFilePath(const std::string& filePath) { m_filePath = filePath; }
+
+	protected:
+		std::string m_filePath;
+	};
+
+	class Mask : public LfnIc::Mask
+	{
+	};
+
+	AppData(const CommandLineOptions& options, Image& inputImage, Mask& mask, Image& outputImage);
 	bool IsValid() const;
-	LfnIc::Image* GetOutputImage();
+	Image& GetOutputImage();
 
 	const LfnIc::Settings& GetSettings();
-	const LfnIc::Image* GetInputImage();
-	const LfnIc::Mask* GetMask();
-	const LfnIc::Image* GetOutputImage() const;
+	const Image& GetInputImage();
+	const Mask& GetMask();
+	const Image& GetOutputImage() const;
 	std::istream* GetPatchesIstream();
 	std::ostream* GetPatchesOstream();
 
@@ -49,9 +62,9 @@ private:
 	void ApplyCommandLineOptionsToSettings(const CommandLineOptions& options);
 
 	// Internal data
-	LfnIc::Image* m_inputImage;
-	LfnIc::Mask* m_mask;
-	LfnIc::Image* m_outputImage;
+	Image& m_inputImage;
+	Mask& m_mask;
+	Image& m_outputImage;
 
 	LfnIc::Settings m_settings;
 

@@ -31,9 +31,6 @@ namespace LfnIc
 		// Use typedef and consts rather than enum to enforce single byte storage:
 		typedef char Value;
 
-		// Load the mask image from a file
-		virtual bool LoadAndValidate(const std::string& imagePath){return false;}
-
 		// Indeterminate is used for lower levels of detail (lod > 0),
 		// where the region in question contains both unknown and known
 		// pixels. Examination at a higher level of detail may be required.

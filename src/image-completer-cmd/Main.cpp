@@ -76,7 +76,8 @@ int main(int argc, char** argv)
 			mask.LoadAndValidate(options.GetMaskImagePath());
 
 			AppImageType outputImage;
-			AppData appData(options, &inputImage, &mask, &outputImage);
+			AppData appData(options, inputImage, mask, outputImage);
+
 			if (appData.IsValid())
 			{
 				if (options.ShouldShowSettings())
@@ -89,16 +90,16 @@ int main(int argc, char** argv)
 				{
 					succeeded = LfnIc::Complete(
 						appData.GetSettings(),
-						*(appData.GetInputImage()),
-						*(appData.GetMask()),
-						*(appData.GetOutputImage()),
+						appData.GetInputImage(),
+						appData.GetMask(),
+						appData.GetOutputImage(),
 						appData.GetPatchesIstream(),
 						appData.GetPatchesOstream());
 
 					if (succeeded)
 					{
-						appData.GetOutputImage()->Save();
-						wxMessageOutput::Get()->Printf("Completed image and wrote %s.\n", appData.GetOutputImage()->GetFilePath().c_str());
+						outputImage.Save();
+						wxMessageOutput::Get()->Printf("Completed image and wrote %s.\n", outputImage.GetFilePath().c_str());
 					}
 					else
 					{

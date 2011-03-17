@@ -24,7 +24,7 @@
 
 #ifdef USE_ITK
 
-#include "LfnIcImage.h"
+#include "AppData.h"
 
 #include "itkImage.h"
 #include "itkCovariantVector.h"
@@ -32,7 +32,7 @@
 //
 // Implements LfnIc::Image, using a itk::Image to load, store, and save the data.
 //
-class AppImageITK : public LfnIc::Image
+class AppImageITK : public AppData::Image
 {
 public:
 	// AppImageITK interface
@@ -42,7 +42,7 @@ public:
 
 	// LfnIc::Image interface
 	bool LoadAndValidate(const std::string& imagePath);
-	virtual void Save();
+	void Save();
 	virtual bool Init(int width, int height);
 	virtual bool IsValid() const;
 	virtual const std::string& GetFilePath() const;

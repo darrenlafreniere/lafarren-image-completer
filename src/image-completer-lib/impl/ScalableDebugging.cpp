@@ -55,7 +55,6 @@ namespace LfnIc
 		virtual const Pixel* GetData() const { return reinterpret_cast<const LfnIc::Image::Pixel*>(m_wxImage.GetData()); }
 		virtual int GetWidth() const { return m_wxImage.GetWidth(); }
 		virtual int GetHeight() const { return m_wxImage.GetHeight(); }
-		virtual bool LoadAndValidate(const std::string& imagePath) {return false;}
 
 	private:
 		// Internal data

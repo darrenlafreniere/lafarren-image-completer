@@ -28,14 +28,13 @@
 #include "tech/DbgMem.h"
 
 
-AppData::AppData(const CommandLineOptions& options, LfnIc::Image* inputImage, LfnIc::Mask* mask, LfnIc::Image* outputImage)
+AppData::AppData(const CommandLineOptions& options, Image& inputImage, Mask& mask, Image& outputImage)
 	: m_isValid(false)
+	, m_inputImage(inputImage)
+	, m_mask(mask)
+	, m_outputImage(outputImage)
 {
-	m_inputImage = inputImage;
-	m_mask = mask;
-	m_outputImage = outputImage;
-
-	LfnIc::SettingsConstruct(m_settings, *(m_inputImage));
+	LfnIc::SettingsConstruct(m_settings, m_inputImage);
 
 	ApplyCommandLineOptionsToSettings(options);
 	SettingsText::PrintInvalidMembers settingsTextPrintInvalidMembers;
@@ -50,8 +49,8 @@ AppData::AppData(const CommandLineOptions& options, LfnIc::Image* inputImage, Lf
 
 		if (options.ShouldRunImageCompletion())
 		{
-			m_inputImage->SetFilePath(options.GetInputImagePath());
-			m_outputImage->SetFilePath(options.GetOutputImagePath());
+			m_inputImage.SetFilePath(options.GetInputImagePath());
+			m_outputImage.SetFilePath(options.GetOutputImagePath());
 
 #if ENABLE_PATCHES_INPUT_OUTPUT
 			if (options.HasInputPatchesPath())
@@ -80,22 +79,22 @@ const LfnIc::Settings& AppData::GetSettings()
 	return m_settings;
 }
 
-const LfnIc::Image* AppData::GetInputImage()
+const AppData::Image& AppData::GetInputImage()
 {
 	return m_inputImage;
 }
 
-const LfnIc::Mask* AppData::GetMask()
+const AppData::Mask& AppData::GetMask()
 {
 	return m_mask;
 }
 
-LfnIc::Image* AppData::GetOutputImage()
+AppData::Image& AppData::GetOutputImage()
 {
 	return m_outputImage;
 }
 
-const LfnIc::Image* AppData::GetOutputImage() const
+const AppData::Image& AppData::GetOutputImage() const
 {
 	return m_outputImage;
 }
