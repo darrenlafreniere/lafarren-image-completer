@@ -28,6 +28,7 @@
 #include "tech/DbgMem.h"
 
 #include "itkImageFileReader.h"
+#include "itkImageRegionConstIterator.h"
 
 AppITKMask::AppITKMask() : m_offsetX(0), m_offsetY(0)
 {
@@ -48,6 +49,21 @@ bool AppITKMask::LoadAndValidate(const std::string& imagePath, int offsetX, int 
 	m_offsetY = offsetY;
 
 	return true;
+}
+
+bool AppITKMask::HasKnownPixel() const
+{
+  itk::ImageRegionConstIterator<MaskImageType> maskIterator(m_mask, m_mask->GetLargestPossibleRegion());
+
+  while(!maskIterator.IsAtEnd())
+  {
+      if(ByteToMaskValue(maskIterator.Get()) == KNOWN)
+      {
+          return true;
+      }
+      ++maskIterator;
+  }
+  return false;
 }
 
 LfnIc::Mask::Value AppITKMask::GetValue(int x, int y) const

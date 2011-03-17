@@ -43,6 +43,9 @@ IF(UNIX)
 ENDIF(UNIX)
 
 set(USE_ITK OFF CACHE BOOL "Use ITK?")
+IF(USE_ITK)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_ITK")
+ENDIF(USE_ITK)
 
 set(USE_FLOAT_PIXELS OFF CACHE BOOL "Use float pixels?")
 IF(USE_FLOAT_PIXELS)
@@ -120,6 +123,7 @@ set(AppSources
 set(LibrariesToLink ${wxWidgets_LIBRARIES} Tech ImageCompleterLib)
 
 IF(USE_ITK)
+message("using ITK")
   find_package(ITK REQUIRED)
   include(${ITK_USE_FILE})
 
@@ -129,9 +133,10 @@ IF(USE_ITK)
     )
   set(LibrariesToLink ${LibrariesToLink} ${ITK_LIBRARIES})
 else(USE_ITK)
+message("using wx")
   set(AppSources ${AppSources}
-    ${cmdsrc}/AppImageWx.cpp
-    ${cmdsrc}/AppMaskWx.cpp
+    ${cmdsrc}/AppWxImage.cpp
+    ${cmdsrc}/AppWxMask.cpp
     )
 ENDIF(USE_ITK)
 

@@ -164,7 +164,7 @@ namespace LfnIc
 			image.GetHeight() <= LfnIc::Settings::IMAGE_HEIGHT_MAX;
 	}
 
-	bool Complete(
+	CompletionResult Complete(
 		const Settings& settings,
 		const Image& inputImage,
 		const Mask& mask,
@@ -172,86 +172,93 @@ namespace LfnIc
 		std::istream* patchesIstream,
 		std::ostream* patchesOstream)
 	{
-		bool succeeded = false;
-
-		if (ValidateImage(inputImage))
+		if (!ValidateImage(inputImage))
 		{
-			// In Windows, this project is compiled into its own dll, with its
-			// own global memory space, and statically links against wxWidgets.
-			// Therefore, even if the host application contains its own
-			// wxInitializer, this dll needs one as well. For other project
-			// configurations, where this is statically built into the host,
-			// it's safe to have multiple wxInitializer instances; they're
-			// internally ref counted by wxWidgets.
-			wxInitializer initializer;
+          return CompletionFailedInputIsInvalid;
+        }
 
-			{
-				SettingsScalable settingsScalable(settings);
-				ImageScalable imageScalable(inputImage);
-				MaskScalable maskScalable(imageScalable.GetWidth(), imageScalable.GetHeight(), mask);
-				Compositor::Input compositorInput(settingsScalable, imageScalable, maskScalable);
-				bool arePatchesValid = false;
+        if (!mask.HasKnownPixel())
+        {
+          return CompletionFailedInputHasNoKnownData;
+        }
+        // In Windows, this project is compiled into its own dll, with its
+        // own global memory space, and statically links against wxWidgets.
+        // Therefore, even if the host application contains its own
+        // wxInitializer, this dll needs one as well. For other project
+        // configurations, where this is statically built into the host,
+        // it's safe to have multiple wxInitializer instances; they're
+        // internally ref counted by wxWidgets.
+        wxInitializer initializer;
 
-				if (patchesIstream)
-				{
-					// A patches istream was provided; read the patches from it rather
-					// than taking the time to solve via Priority-BP. This is useful
-					// when developing new compositors.
-					arePatchesValid = ReadPatches(*patchesIstream, compositorInput.patches);
-				}
-				else
-				{
-					TECH_TIME_PROFILE("ImageCompleter::Complete - Priority-BP");
+        {
+            SettingsScalable settingsScalable(settings);
+            ImageScalable imageScalable(inputImage);
+            MaskScalable maskScalable(imageScalable.GetWidth(), imageScalable.GetHeight(), mask);
+            Compositor::Input compositorInput(settingsScalable, imageScalable, maskScalable);
+            bool arePatchesValid = false;
 
-					// Construct priority-bp related data, passing in the required dependencies.
-					EnergyCalculatorContainer energyCalculatorContainer(settingsScalable, imageScalable, maskScalable);
-					LabelSet labelSet(settingsScalable, imageScalable, maskScalable);
-					NodeSet nodeSet(settingsScalable, imageScalable, maskScalable, labelSet, energyCalculatorContainer);
-					PriorityBpRunner priorityBpRunner(settingsScalable, nodeSet);
+            if (patchesIstream)
+            {
+                // A patches istream was provided; read the patches from it rather
+                // than taking the time to solve via Priority-BP. This is useful
+                // when developing new compositors.
+                arePatchesValid = ReadPatches(*patchesIstream, compositorInput.patches);
+            }
+            else
+            {
+                TECH_TIME_PROFILE("ImageCompleter::Complete - Priority-BP");
 
-					// Recurse and scale down to a quickly solvable resolution, then
-					// scale back up, using each lower resolution data to help solve
-					// the higher resolution.
-					RecurivelyRunFromLowestToNextHighestResolution(
-						settingsScalable,
-						imageScalable,
-						maskScalable,
-						energyCalculatorContainer,
-						labelSet,
-						nodeSet,
-						priorityBpRunner,
-						outputImage.GetFilePath(),
-						1);
+                // Construct priority-bp related data, passing in the required dependencies.
+                EnergyCalculatorContainer energyCalculatorContainer(settingsScalable, imageScalable, maskScalable);
+                LabelSet labelSet(settingsScalable, imageScalable, maskScalable);
+                NodeSet nodeSet(settingsScalable, imageScalable, maskScalable, labelSet, energyCalculatorContainer);
+                PriorityBpRunner priorityBpRunner(settingsScalable, nodeSet);
 
-					// Original resolution pass
-					priorityBpRunner.RunAndGetPatches(compositorInput.patches);
-					arePatchesValid = true;
-				}
+                // Recurse and scale down to a quickly solvable resolution, then
+                // scale back up, using each lower resolution data to help solve
+                // the higher resolution.
+                RecurivelyRunFromLowestToNextHighestResolution(
+                    settingsScalable,
+                    imageScalable,
+                    maskScalable,
+                    energyCalculatorContainer,
+                    labelSet,
+                    nodeSet,
+                    priorityBpRunner,
+                    outputImage.GetFilePath(),
+                    1);
 
-				// Composite the output image based on the patches that Priority-BP
-				// solved.
-				if (arePatchesValid)
-				{
-					// An ostream was provided to write the patches to.
-					if (patchesOstream)
-					{
-						WritePatches(*patchesOstream, compositorInput.patches);
-					}
+                // Original resolution pass
+                priorityBpRunner.RunAndGetPatches(compositorInput.patches);
+                arePatchesValid = true;
+            }
 
-					{
-						TECH_TIME_PROFILE("ImageCompleter::Complete - Compositing");
-						std::auto_ptr<Compositor> compositor(CompositorFactory::Create(settingsScalable.compositorPatchType, settingsScalable.compositorPatchBlender));
-						if (compositor.get())
-						{
-							compositor->Compose(compositorInput, outputImage);
-						}
-					}
-				}
-			}
+            // Composite the output image based on the patches that Priority-BP
+            // solved.
+            if (arePatchesValid)
+            {
+                // An ostream was provided to write the patches to.
+                if (patchesOstream)
+                {
+                    WritePatches(*patchesOstream, compositorInput.patches);
+                }
 
-			succeeded = outputImage.IsValid();
-		}
+                {
+                    TECH_TIME_PROFILE("ImageCompleter::Complete - Compositing");
+                    std::auto_ptr<Compositor> compositor(CompositorFactory::Create(settingsScalable.compositorPatchType, settingsScalable.compositorPatchBlender));
+                    if (compositor.get())
+                    {
+                        compositor->Compose(compositorInput, outputImage);
+                    }
+                }
+            }
+        }
 
-		return succeeded;
-	}
-}
+        if(!outputImage.IsValid())
+        {
+            return CompletionFailedOutputIsInvalid;
+        }
+
+		return CompletionSucceeded;
+	} // end Complete()
+} // end namespace LfnIc
