@@ -112,8 +112,6 @@ ${tech}/tech/Time.cpp
 #####################################
 set(AppSources
     ${cmdsrc}/Main.cpp
-    ${cmdsrc}/AppImageWx.cpp
-    ${cmdsrc}/AppMaskWx.cpp
     ${cmdsrc}/CommandLineOptions.cpp
     ${cmdsrc}/Pch.cpp
     ${cmdsrc}/SettingsText.cpp
@@ -122,7 +120,6 @@ set(AppSources
 set(LibrariesToLink ${wxWidgets_LIBRARIES} Tech ImageCompleterLib)
 
 IF(USE_ITK)
-  MESSAGE("Building ITK example")
   find_package(ITK REQUIRED)
   include(${ITK_USE_FILE})
 
@@ -131,6 +128,11 @@ IF(USE_ITK)
     ${cmdsrc}/AppMaskITK.cpp
     )
   set(LibrariesToLink ${LibrariesToLink} ${ITK_LIBRARIES})
+else(USE_ITK)
+  set(AppSources ${AppSources}
+    ${cmdsrc}/AppImageWx.cpp
+    ${cmdsrc}/AppMaskWx.cpp
+    )
 ENDIF(USE_ITK)
 
 add_executable(ImageCompleter ${AppSources})
