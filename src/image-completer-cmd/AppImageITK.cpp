@@ -34,7 +34,7 @@ float LfnIc::Image::ComponentWeights[Pixel::NUM_CHANNELS];
 
 AppImageITK::AppImageITK()
 {
-	m_Image = NULL;
+	m_image = NULL;
 }
 
 bool AppImageITK::LoadAndValidate(const std::string& imagePath)
@@ -44,18 +44,18 @@ bool AppImageITK::LoadAndValidate(const std::string& imagePath)
 	reader->SetFileName(imagePath);
 	reader->Update();
 
-	if(!m_Image)
+	if(!m_image)
 	{
-		m_Image = AppImageITKType::New();
+		m_image = AppImageITKType::New();
 	}
 
-	//m_Image->Graft(reader->GetOutput());
+	//m_image->Graft(reader->GetOutput());
 
-	m_Image->SetRegions(reader->GetOutput()->GetLargestPossibleRegion());
-	m_Image->Allocate();
+	m_image->SetRegions(reader->GetOutput()->GetLargestPossibleRegion());
+	m_image->Allocate();
 
 	itk::ImageRegionConstIterator<AppImageITKType> inputIterator(reader->GetOutput(), reader->GetOutput()->GetLargestPossibleRegion());
-	itk::ImageRegionIterator<AppImageITKType> outputIterator(m_Image, m_Image->GetLargestPossibleRegion());
+	itk::ImageRegionIterator<AppImageITKType> outputIterator(m_image, m_image->GetLargestPossibleRegion());
 
 	while(!inputIterator.IsAtEnd())
 	{
@@ -94,7 +94,7 @@ bool AppImageITK::LoadAndValidate(const std::string& imagePath)
 		typedef itk::NthElementImageAdaptor<AppImageITKType, float> ImageAdaptorType;
 		ImageAdaptorType::Pointer adaptor = ImageAdaptorType::New();
 		adaptor->SelectNthElement(i);
-		adaptor->SetImage(m_Image);
+		adaptor->SetImage(m_image);
 
 		typedef itk::MinimumMaximumImageCalculator <ImageAdaptorType> ImageCalculatorFilterType;
 		ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New();
@@ -114,7 +114,7 @@ void AppImageITK::Save()
 	// If the image is RGB and unsigned char, write it to the specified output file (likely png)
 	typedef itk::ImageFileWriter<AppImageITKType> WriterType;
 	WriterType::Pointer writer = WriterType::New();
-	writer->SetInput(m_Image);
+	writer->SetInput(m_image);
 
 	if(typeid(unsigned char) == typeid(Image::Pixel::PixelType) && Image::Pixel::NUM_CHANNELS == 3)
 	{
@@ -133,7 +133,7 @@ void AppImageITK::Save()
 
 bool AppImageITK::IsValid() const
 {
-	return m_Image != NULL;
+	return m_image != NULL;
 }
 
 const std::string& AppImageITK::GetFilePath() const
@@ -152,36 +152,36 @@ bool AppImageITK::Init(int width, int height)
 
 	itk::ImageRegion<2> region(start,size);
 
-	if(!m_Image)
+	if(!m_image)
 	{
-		m_Image = AppImageITKType::New();
+		m_image = AppImageITKType::New();
 	}
 
-	m_Image->SetRegions(region);
-	m_Image->Allocate();
-	m_Image->FillBuffer(itk::NumericTraits<ITKPixelType>::Zero);
+	m_image->SetRegions(region);
+	m_image->Allocate();
+	m_image->FillBuffer(itk::NumericTraits<ITKPixelType>::Zero);
 
 	return true;
 }
 
 LfnIc::Image::Pixel* AppImageITK::GetData()
 {
-	return reinterpret_cast<LfnIc::Image::Pixel*>(m_Image->GetBufferPointer());
+	return reinterpret_cast<LfnIc::Image::Pixel*>(m_image->GetBufferPointer());
 }
 
 const LfnIc::Image::Pixel* AppImageITK::GetData() const
 {
-	return reinterpret_cast<const LfnIc::Image::Pixel*>(m_Image->GetBufferPointer());
+	return reinterpret_cast<const LfnIc::Image::Pixel*>(m_image->GetBufferPointer());
 }
 
 int AppImageITK::GetWidth() const
 {
-	return m_Image->GetLargestPossibleRegion().GetSize()[0];
+	return m_image->GetLargestPossibleRegion().GetSize()[0];
 }
 
 int AppImageITK::GetHeight() const
 {
-	return m_Image->GetLargestPossibleRegion().GetSize()[1];
+	return m_image->GetLargestPossibleRegion().GetSize()[1];
 }
 
 #endif // USE_ITK

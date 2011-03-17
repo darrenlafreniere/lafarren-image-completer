@@ -53,7 +53,7 @@ public:
 
 private:
 	// Internal data
-	AppImageITKType::Pointer m_Image;
+	AppImageITKType::Pointer m_image;
 };
 
 #endif // USE_ITK
