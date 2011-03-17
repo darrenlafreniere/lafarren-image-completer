@@ -1,32 +1,35 @@
 //
 // Copyright 2010, Darren Lafreniere
 // <http://www.lafarren.com/image-completer/>
-// 
+//
 // This file is part of lafarren.com's Image Completer.
-// 
+//
 // Image Completer is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Image Completer is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with Image Completer, named License.txt. If not, see
 // <http://www.gnu.org/licenses/>.
 //
 
 #include "Pch.h"
-#include "AppWxMask.h"
+
+#ifdef USE_WX
+#include "AppMaskWx.h"
+#include "LfnIcSettings.h"
 
 #include "tech/MathUtils.h"
 
 #include "tech/DbgMem.h"
 
-AppWxMask::AppWxMask()
+AppMaskWx::AppMaskWx()
 	: m_width(0)
 	, m_height(0)
 	, m_offsetX(0)
@@ -34,14 +37,36 @@ AppWxMask::AppWxMask()
 {
 }
 
-void AppWxMask::Init(const wxImage& maskImage, int offsetX, int offsetY)
+bool AppMaskWx::LoadAndValidate(const std::string& imagePath, int offsetX, int offsetY)
 {
-	wxASSERT(maskImage.IsOk());
-	const wxImage& maskImageGreyscale = maskImage.ConvertToGreyscale();
+	bool result = false;
+	wxMessageOutput& msgOut = *wxMessageOutput::Get();
+
+	wxImage mask;
+
+	if (!mask.LoadFile(imagePath))
+	{
+		// If LoadFile fails, it already prints an wxMessageOutput error for us.
+	}
+	else if (!mask.IsOk())
+	{
+		msgOut.Printf("The image was invalid.\n");
+	}
+	else if (mask.GetWidth() > LfnIc::Settings::IMAGE_WIDTH_MAX || mask.GetHeight() > LfnIc::Settings::IMAGE_HEIGHT_MAX)
+	{
+		msgOut.Printf("The image is too large. Max size: %dx%x.\n", LfnIc::Settings::IMAGE_WIDTH_MAX, LfnIc::Settings::IMAGE_HEIGHT_MAX);
+	}
+	else
+	{
+		result = true;
+	}
+
+	wxASSERT(mask.IsOk());
+	const wxImage& maskImageGreyscale = mask.ConvertToGreyscale();
 	wxASSERT(maskImageGreyscale.IsOk());
 
-	m_width = maskImage.GetWidth();
-	m_height = maskImage.GetHeight();
+	m_width = mask.GetWidth();
+	m_height = mask.GetHeight();
 	m_offsetX = offsetX;
 	m_offsetY = offsetY;
 	m_values.resize(m_width * m_height);
@@ -54,9 +79,11 @@ void AppWxMask::Init(const wxImage& maskImage, int offsetX, int offsetY)
 		wxASSERT(rgbPtr[i].red == rgbPtr[i].blue);
 		m_values[i] = ByteToMaskValue(rgbPtr[i].red);
 	}
+
+	return result;
 }
 
-LfnIc::Mask::Value AppWxMask::GetValue(int x, int y) const
+LfnIc::Mask::Value AppMaskWx::GetValue(int x, int y) const
 {
 	const int xMaskSpace = x - m_offsetX;
 	const int yMaskSpace = y - m_offsetY;
@@ -70,7 +97,7 @@ LfnIc::Mask::Value AppWxMask::GetValue(int x, int y) const
 	return value;
 }
 
-LfnIc::Mask::Value AppWxMask::ByteToMaskValue(unsigned char byte) const
+LfnIc::Mask::Value AppMaskWx::ByteToMaskValue(unsigned char byte) const
 {
 	const int byteUnknown = 0;
 	const int byteIgnored = 128;
@@ -93,3 +120,5 @@ LfnIc::Mask::Value AppWxMask::ByteToMaskValue(unsigned char byte) const
 		}
 	}
 }
+
+#endif // USE_WX

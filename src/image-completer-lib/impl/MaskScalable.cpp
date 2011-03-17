@@ -86,7 +86,7 @@ private:
 
 LfnIc::MaskInternal::MaskInternal(int width, int height, const Mask& maskToCopy) :
 m_width(width),
-m_height(height)
+	m_height(height)
 {
 	// Create lod 0 to be the same size as the input image, copying
 	// `'s values at each point.

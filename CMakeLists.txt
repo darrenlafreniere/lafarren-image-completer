@@ -24,7 +24,7 @@ set(cmdsrc src/image-completer-cmd)
 set(ImageCompleterDir src/image-completer-lib/impl)
 set(tech src/tech)
 
-include_directories(lib/tacus/ src/image-completer-cmd src/image-completer-lib src/image-completer-lib/api src/image-completer-lib/impl src/image-completer-lib/impl/compositors src/image-completer-lib/impl/energy-calculators src/tech/tech src/tech)
+include_directories(src/image-completer-cmd src/image-completer-lib src/image-completer-lib/api src/image-completer-lib/impl src/image-completer-lib/impl/compositors src/image-completer-lib/impl/energy-calculators src/tech/tech src/tech)
 
 #If you want to enable the patches to be composited using Poisson blending, set this flag to ON (requires TAUCS to be installed).
 set(USE_POISSON OFF CACHE BOOL "Use Poisson blending?")
@@ -42,6 +42,16 @@ IF(UNIX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUNIX")
 ENDIF(UNIX)
 
+set(USE_ITK OFF CACHE BOOL "Use ITK?")
+
+set(USE_FLOAT_PIXELS OFF CACHE BOOL "Use float pixels?")
+IF(USE_FLOAT_PIXELS)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_FLOAT_PIXELS")
+ENDIF(USE_FLOAT_PIXELS)
+
+set(PIXEL_DIMENSION 3 CACHE STRING "Dimensionality of pixels?") #cmake doesn't have an "INT" variable type, so treat it as a string
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPIXEL_DIMENSION=${PIXEL_DIMENSION}")
+
 ###############
 #if Eigen is setup correctly, we would want to enable Poisson blending
 IF(USE_POISSON)
@@ -51,6 +61,9 @@ IF(USE_POISSON)
 ENDIF(USE_POISSON)
 
 set(ImageCompleterSources ${ImageCompleterSources}
+
+${cmdsrc}/AppData.cpp
+
 ${ImageCompleterDir}/Compositor.cpp
 ${ImageCompleterDir}/ConstNodeLabels.cpp
 ${ImageCompleterDir}/EnergyCalculatorContainer.cpp
@@ -98,20 +111,47 @@ ${tech}/tech/Time.cpp
 
 #####################################
 
+# We can only use the wxImage class if pixels are unsigned char and length 3
+if(USE_FLOAT_PIXELS EQUAL OFF)
+MESSAGE("Building Wx example")
+  add_executable(ImageCompleter
+    ${cmdsrc}/Main.cpp
+    ${cmdsrc}/AppImageWx.cpp
+    ${cmdsrc}/AppMaskWx.cpp
+    ${cmdsrc}/CommandLineOptions.cpp
+    ${cmdsrc}/Pch.cpp
+    ${cmdsrc}/SettingsText.cpp)
 
-add_executable(ImageCompleter ${cmdsrc}/Main.cpp
+  set(LibrariesToLink ${wxWidgets_LIBRARIES} Tech ImageCompleterLib)
 
-${cmdsrc}/AppData.cpp
-${cmdsrc}/AppWxImage.cpp
-${cmdsrc}/AppWxMask.cpp
-${cmdsrc}/CommandLineOptions.cpp
-${cmdsrc}/Pch.cpp
-${cmdsrc}/SettingsText.cpp)
+  IF(USE_POISSON)
+    set(LibrariesToLink ${LibrariesToLink} umfpack)
+  ENDIF(USE_POISSON)
 
-set(LibrariesToLink ${wxWidgets_LIBRARIES} Tech ImageCompleterLib)
+  target_link_libraries(ImageCompleter ${LibrariesToLink})
+endif(USE_FLOAT_PIXELS EQUAL OFF)
 
-IF(USE_POISSON)
-  set(LibrariesToLink ${LibrariesToLink} umfpack)
-ENDIF(USE_POISSON)
+######################################
+# optional ITK demo
+IF(USE_ITK)
+  MESSAGE("Building ITK example")
+  find_package(ITK REQUIRED)
+  include(${ITK_USE_FILE})
 
-target_link_libraries(ImageCompleter ${LibrariesToLink})
+  add_executable(ImageCompleterITK
+    ${cmdsrc}/Main.cpp
+    ${cmdsrc}/AppImageITK.cpp
+    ${cmdsrc}/AppMaskITK.cpp
+    ${cmdsrc}/CommandLineOptions.cpp
+    ${cmdsrc}/Pch.cpp
+    ${cmdsrc}/SettingsText.cpp
+    )
+
+  set(LibrariesToLinkITK ${wxWidgets_LIBRARIES} Tech ImageCompleterLib)
+
+  IF(USE_POISSON)
+    set(LibrariesToLinkITK ${LibrariesToLinkITK} umfpack)
+  ENDIF(USE_POISSON)
+
+  target_link_libraries(ImageCompleterITK ${wxWidgets_LIBRARIES} ${ITK_LIBRARIES} ${LibrariesToLinkITK})
+ENDIF(USE_ITK)

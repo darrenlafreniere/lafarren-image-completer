@@ -22,8 +22,8 @@
 #ifndef APP_DATA_H
 #define APP_DATA_H
 
-#include "AppWxImage.h"
-#include "AppWxMask.h"
+#include "LfnIcImage.h"
+#include "LfnIcMask.h"
 #include "LfnIcSettings.h"
 
 class CommandLineOptions;
@@ -34,16 +34,27 @@ class CommandLineOptions;
 class AppData
 {
 public:
-	AppData(const CommandLineOptions& options);
-	bool IsValid() const;
-	AppWxImage& GetOutputWxImage();
+	class Image : public LfnIc::Image
+	{
+	public:
+		inline void SetFilePath(const std::string& filePath) { m_filePath = filePath; }
 
-	// LfnIc::Host interface
+	protected:
+		std::string m_filePath;
+	};
+
+	class Mask : public LfnIc::Mask
+	{
+	};
+
+	AppData(const CommandLineOptions& options, Image& inputImage, Mask& mask, Image& outputImage);
+	bool IsValid() const;
+	Image& GetOutputImage();
+
 	const LfnIc::Settings& GetSettings();
-	const LfnIc::Image& GetInputImage();
-	const LfnIc::Mask& GetMask();
-	LfnIc::Image& GetOutputImage();
-	const LfnIc::Image& GetOutputImage() const;
+	const Image& GetInputImage();
+	const Mask& GetMask();
+	const Image& GetOutputImage() const;
 	std::istream* GetPatchesIstream();
 	std::ostream* GetPatchesOstream();
 
@@ -51,9 +62,9 @@ private:
 	void ApplyCommandLineOptionsToSettings(const CommandLineOptions& options);
 
 	// Internal data
-	AppWxImage m_inputImage;
-	AppWxMask m_mask;
-	AppWxImage m_outputImage;
+	Image& m_inputImage;
+	Mask& m_mask;
+	Image& m_outputImage;
 
 	LfnIc::Settings m_settings;
 

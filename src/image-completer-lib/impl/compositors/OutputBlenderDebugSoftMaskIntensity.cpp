@@ -1,19 +1,19 @@
 //
 // Copyright 2010, Darren Lafreniere
 // <http://www.lafarren.com/image-completer/>
-// 
+//
 // This file is part of lafarren.com's Image Completer.
-// 
+//
 // Image Completer is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Image Completer is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with Image Completer, named License.txt. If not, see
 // <http://www.gnu.org/licenses/>.
@@ -31,7 +31,7 @@ void LfnIc::OutputBlenderDebugSoftMaskIntensity::Blend(const Compositor::Input& 
 	CreateSoftMask(input, softMask);
 
 	const float* softMaskDataPtr = &softMask[0];
-	RgbFloat* destRgbDataPtr = outputImageFloat.GetRgb();
+	PixelFloat* destRgbDataPtr = outputImageFloat.GetData();
 
 	const int imageNumPixels = outputImageFloat.GetWidth() * outputImageFloat.GetHeight();
 	for (int i = 0; i < imageNumPixels; ++i, ++destRgbDataPtr, ++softMaskDataPtr)
@@ -39,7 +39,10 @@ void LfnIc::OutputBlenderDebugSoftMaskIntensity::Blend(const Compositor::Input& 
 		// Blend s into d based on the inverse alpha
 		const float ia = 1.0f - *softMaskDataPtr;
 		const float intensity = (1.0f - ia);
-		RgbFloat& dest = *destRgbDataPtr;
-		dest.r = dest.g = dest.b = intensity;
+		PixelFloat& dest = *destRgbDataPtr;
+		for (int component = 0; component < PixelFloat::NUM_CHANNELS; ++component)
+		{
+			dest.channel[component] = intensity;
+		}
 	}
 }

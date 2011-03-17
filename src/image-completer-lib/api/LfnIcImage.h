@@ -1,19 +1,19 @@
 //
 // Copyright 2010, Darren Lafreniere
 // <http://www.lafarren.com/image-completer/>
-// 
+//
 // This file is part of lafarren.com's Image Completer.
-// 
+//
 // Image Completer is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Image Completer is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with Image Completer, named License.txt. If not, see
 // <http://www.gnu.org/licenses/>.
@@ -23,6 +23,13 @@
 #define LFN_IC_IMAGE_H
 
 #include <iostream>
+#include <string>
+
+// PIXEL_DIMENSION may be defined by the build environment. If not
+// specified, default to 3 components and assume RGB.
+#ifndef PIXEL_DIMENSION
+#define PIXEL_DIMENSION 3
+#endif
 
 namespace LfnIc
 {
@@ -31,7 +38,7 @@ namespace LfnIc
 	class Image
 	{
 	public:
-		struct Rgb;
+		struct Pixel;
 
 		// Non-const method to initialize the image to the specified width
 		// and height. Any existing rgb data is not necessarily reserved.
@@ -49,8 +56,8 @@ namespace LfnIc
 		// result points to the upperleft-most pixel and the buffer is
 		// stored in row-major order, where the start of each row is
 		// separated by GetStride() bytes.
-		virtual Rgb* GetRgb() = 0;
-		virtual const Rgb* GetRgb() const = 0;
+		virtual Pixel* GetData() = 0;
+		virtual const Pixel* GetData() const = 0;
 
 		// Returns the image's width.
 		virtual int GetWidth() const = 0;
@@ -58,39 +65,25 @@ namespace LfnIc
 		// Returns the image's height.
 		virtual int GetHeight() const = 0;
 
-		// Rgb structure allows for access to the data using long-hand
+		// Pixel structure allows for access to the data using long-hand
 		// component names, short-hand component names, or a channel array.
-		struct Rgb
+		struct Pixel
 		{
-			inline Rgb() {}
-			inline Rgb(unsigned char r, unsigned char g, unsigned char b) : r(r), g(g), b(b) {}
+#ifdef USE_FLOAT_PIXELS
+			typedef float PixelType;
+#else
+			typedef unsigned char PixelType;
+#endif
 
-			static const int NUM_CHANNELS = 3;
+			static const int NUM_CHANNELS = PIXEL_DIMENSION;
 
-			union
-			{
-				struct
-				{
-					union
-					{
-						unsigned char red;
-						unsigned char r;
-					};
-					union
-					{
-						unsigned char green;
-						unsigned char g;
-					};
-					union
-					{
-						unsigned char blue;
-						unsigned char b;
-					};
-				};
-
-				unsigned char channel[NUM_CHANNELS];
-			};
+			PixelType channel[NUM_CHANNELS];
 		};
+
+#ifdef USE_FLOAT_PIXELS
+		// This variable must be defined in any Image subclass that is built with USE_FLOAT_PIXELS
+		static float ComponentWeights[Pixel::NUM_CHANNELS];
+#endif
 
 	protected:
 		// Instances cannot be destroyed through a base Image pointer

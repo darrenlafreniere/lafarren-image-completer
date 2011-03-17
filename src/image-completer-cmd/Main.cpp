@@ -28,6 +28,20 @@
 #include "LfnIc.h"
 #include "SettingsText.h"
 
+#ifdef USE_ITK
+#include "AppImageITK.h"
+#include "AppMaskITK.h"
+typedef AppImageITK AppImageType;
+typedef AppMaskITK AppMaskType;
+#endif
+
+#ifdef USE_WX
+#include "AppImageWx.h"
+#include "AppMaskWx.h"
+typedef AppImageWx AppImageType;
+typedef AppMaskWx AppMaskType;
+#endif // USE_WX
+
 #include "tech/DbgMem.h"
 
 int main(int argc, char** argv)
@@ -55,7 +69,15 @@ int main(int argc, char** argv)
 		const CommandLineOptions options(argc, argv);
 		if (options.IsValid())
 		{
-			AppData appData(options);
+			AppImageType inputImage;
+			inputImage.LoadAndValidate(options.GetInputImagePath());
+
+			AppMaskType mask;
+			mask.LoadAndValidate(options.GetMaskImagePath());
+
+			AppImageType outputImage;
+			AppData appData(options, inputImage, mask, outputImage);
+
 			if (appData.IsValid())
 			{
 				if (options.ShouldShowSettings())
@@ -76,8 +98,7 @@ int main(int argc, char** argv)
 
 					if (succeeded)
 					{
-						AppWxImage& outputImage = appData.GetOutputWxImage();
-						outputImage.GetwxImage().SaveFile(outputImage.GetFilePath());
+						outputImage.Save();
 						wxMessageOutput::Get()->Printf("Completed image and wrote %s.\n", outputImage.GetFilePath().c_str());
 					}
 					else

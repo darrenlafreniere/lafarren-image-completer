@@ -1,19 +1,19 @@
 //
 // Copyright 2010, Darren Lafreniere
 // <http://www.lafarren.com/image-completer/>
-// 
+//
 // This file is part of lafarren.com's Image Completer.
-// 
+//
 // Image Completer is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Image Completer is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with Image Completer, named License.txt. If not, see
 // <http://www.gnu.org/licenses/>.
@@ -57,7 +57,12 @@ bool LfnIc::CompositorRoot::Compose(const Input& input, Image& outputImage) cons
 
 	ImageFloat outputImageFloat(inputImage);
 	{
-		ImageFloat patchesBlended(inputImage.GetWidth(), inputImage.GetHeight(), RgbFloat(0.0f, 0.0f, 0.0f));
+		PixelFloat zeroPixel;
+		for (int i = 0; i < PixelFloat::NUM_CHANNELS; ++i)
+		{
+			zeroPixel.channel[i] = 0.0f;
+		}
+		ImageFloat patchesBlended(inputImage.GetWidth(), inputImage.GetHeight(), zeroPixel);
 
 		const int patchesNum = input.patches.size();
 		if (patchesNum > 0)

@@ -1,61 +1,52 @@
 //
 // Copyright 2010, Darren Lafreniere
 // <http://www.lafarren.com/image-completer/>
-// 
+//
 // This file is part of lafarren.com's Image Completer.
-// 
+//
 // Image Completer is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Image Completer is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with Image Completer, named License.txt. If not, see
 // <http://www.gnu.org/licenses/>.
 //
 
+#ifndef APP_WX_IMAGE_H
+#define APP_WX_IMAGE_H
+
+#ifdef USE_WX
+
+#include "AppData.h"
+
 //
-// Header to be precompiled
+// Implements LfnIc::Image, using a wxImage to load, store, and save the data.
 //
+class AppImageWx : public AppData::Image
+{
+public:
+	// LfnIc::Image interface
+	bool LoadAndValidate(const std::string& imagePath);
+	void Save();
+	virtual bool Init(int width, int height);
+	virtual bool IsValid() const;
+	virtual const std::string& GetFilePath() const;
+	virtual Pixel* GetData();
+	virtual const Pixel* GetData() const;
+	virtual int GetWidth() const;
+	virtual int GetHeight() const;
 
-#ifndef PCH_H
-#define PCH_H
+private:
+	// Internal data
+	wxImage m_wxImage;
+};
 
-// If not explicitly defining USE_ITK, default to USE_WX.
-#ifdef USE_ITK
-	#ifndef USE_FLOAT_PIXELS
-		#error "image-completer-lib must be built with USE_FLOAT_PIXELS defined when USE_ITK is defined"
-	#endif
-#else
-	#define USE_WX
-#endif
-
-// Compile time switches:
-#define TECH_PROFILE 1
-#define TECH_PROFILE_MACROS 1
-
-#ifdef _DEBUG
-	#include <crtdbg.h>
-	#define DEBUG_NEW new(_NORMAL_BLOCK ,__FILE__, __LINE__)
-#else
-	#define DEBUG_NEW new
-#endif
-
-#include <algorithm>
-#include <fstream>
-#include <iostream>
-#include <map>
-#include <math.h>
-#include <memory>
-#include <set>
-#include <vector>
-
-// wxWidgets headers
-#include "wx/wx.h"
-
+#endif // USE_WX
 #endif

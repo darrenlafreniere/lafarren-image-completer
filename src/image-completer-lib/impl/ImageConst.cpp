@@ -43,7 +43,7 @@ const std::string& LfnIc::ImageConst::GetFilePath() const
 	return empty;
 }
 
-LfnIc::Image::Rgb* LfnIc::ImageConst::GetRgb()
+LfnIc::Image::Pixel* LfnIc::ImageConst::GetData()
 {
 	// Not supported, and not expected to be called.
 	wxASSERT(false);
