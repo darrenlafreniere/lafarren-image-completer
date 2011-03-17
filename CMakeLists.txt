@@ -110,48 +110,33 @@ ${tech}/tech/Time.cpp
 )
 
 #####################################
-
-# We can only use the wxImage class if pixels are unsigned char and length 3
-if(USE_FLOAT_PIXELS EQUAL OFF)
-MESSAGE("Building Wx example")
-  add_executable(ImageCompleter
+set(AppSources
     ${cmdsrc}/Main.cpp
     ${cmdsrc}/AppImageWx.cpp
     ${cmdsrc}/AppMaskWx.cpp
     ${cmdsrc}/CommandLineOptions.cpp
     ${cmdsrc}/Pch.cpp
-    ${cmdsrc}/SettingsText.cpp)
+    ${cmdsrc}/SettingsText.cpp
+)
 
-  set(LibrariesToLink ${wxWidgets_LIBRARIES} Tech ImageCompleterLib)
+set(LibrariesToLink ${wxWidgets_LIBRARIES} Tech ImageCompleterLib)
 
-  IF(USE_POISSON)
-    set(LibrariesToLink ${LibrariesToLink} umfpack)
-  ENDIF(USE_POISSON)
-
-  target_link_libraries(ImageCompleter ${LibrariesToLink})
-endif(USE_FLOAT_PIXELS EQUAL OFF)
-
-######################################
-# optional ITK demo
 IF(USE_ITK)
   MESSAGE("Building ITK example")
   find_package(ITK REQUIRED)
   include(${ITK_USE_FILE})
 
-  add_executable(ImageCompleterITK
-    ${cmdsrc}/Main.cpp
+  set(AppSources ${AppSources}
     ${cmdsrc}/AppImageITK.cpp
     ${cmdsrc}/AppMaskITK.cpp
-    ${cmdsrc}/CommandLineOptions.cpp
-    ${cmdsrc}/Pch.cpp
-    ${cmdsrc}/SettingsText.cpp
     )
-
-  set(LibrariesToLinkITK ${wxWidgets_LIBRARIES} Tech ImageCompleterLib)
-
-  IF(USE_POISSON)
-    set(LibrariesToLinkITK ${LibrariesToLinkITK} umfpack)
-  ENDIF(USE_POISSON)
-
-  target_link_libraries(ImageCompleterITK ${wxWidgets_LIBRARIES} ${ITK_LIBRARIES} ${LibrariesToLinkITK})
+  set(LibrariesToLink ${LibrariesToLink} ${ITK_LIBRARIES})
 ENDIF(USE_ITK)
+
+add_executable(ImageCompleter ${AppSources})
+
+IF(USE_POISSON)
+  set(LibrariesToLink ${LibrariesToLink} umfpack)
+ENDIF(USE_POISSON)
+
+target_link_libraries(ImageCompleter ${LibrariesToLink})
