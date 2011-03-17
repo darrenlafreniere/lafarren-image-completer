@@ -25,6 +25,12 @@
 #include <iostream>
 #include <string>
 
+// PIXEL_DIMENSION may be defined by the build environment. If not
+// specified, default to 3 components and assume RGB.
+#ifndef PIXEL_DIMENSION
+#define PIXEL_DIMENSION 3
+#endif
+
 namespace LfnIc
 {
 	// Image interface. Used for both reading the input image and
@@ -80,7 +86,7 @@ namespace LfnIc
 			typedef unsigned char PixelType;
 #endif
 
-			static const int NUM_CHANNELS = PIXEL_DIMENSION; // This is a variable set in CMake
+			static const int NUM_CHANNELS = PIXEL_DIMENSION;
 
 			PixelType channel[NUM_CHANNELS];
 		};
