@@ -41,8 +41,8 @@ bool AppMaskITK::LoadAndValidate(const std::string& imagePath, int offsetX, int 
 	reader->SetFileName(imagePath);
 	reader->Update();
 
-	this->m_mask = MaskImageType::New();
-	this->m_mask->Graft(reader->GetOutput());
+	m_mask = MaskImageType::New();
+	m_mask->Graft(reader->GetOutput());
 
 	m_offsetX = offsetX;
 	m_offsetY = offsetY;
@@ -55,8 +55,8 @@ LfnIc::Mask::Value AppMaskITK::GetValue(int x, int y) const
 	const int xMaskSpace = x - m_offsetX;
 	const int yMaskSpace = y - m_offsetY;
 
-	const int width = this->m_mask->GetLargestPossibleRegion().GetSize()[0];
-	const int height = this->m_mask->GetLargestPossibleRegion().GetSize()[1];
+	const int width = m_mask->GetLargestPossibleRegion().GetSize()[0];
+	const int height = m_mask->GetLargestPossibleRegion().GetSize()[1];
 
 	Value value = Mask::KNOWN;
 	if (xMaskSpace >= 0 && yMaskSpace >= 0 && xMaskSpace < width && yMaskSpace < height)
@@ -64,7 +64,7 @@ LfnIc::Mask::Value AppMaskITK::GetValue(int x, int y) const
 		itk::Index<2> index;
 		index[0] = x;
 		index[1] = y;
-		value = ByteToMaskValue(this->m_mask->GetPixel(index));
+		value = ByteToMaskValue(m_mask->GetPixel(index));
 	}
 
 	return value;

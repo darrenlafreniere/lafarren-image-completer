@@ -49,7 +49,7 @@ bool AppImageITK::LoadAndValidate(const std::string& imagePath)
 		m_Image = AppImageITKType::New();
 	}
 
-	//this->m_Image->Graft(reader->GetOutput());
+	//m_Image->Graft(reader->GetOutput());
 
 	m_Image->SetRegions(reader->GetOutput()->GetLargestPossibleRegion());
 	m_Image->Allocate();
@@ -114,7 +114,7 @@ void AppImageITK::Save()
 	// If the image is RGB and unsigned char, write it to the specified output file (likely png)
 	typedef itk::ImageFileWriter<AppImageITKType> WriterType;
 	WriterType::Pointer writer = WriterType::New();
-	writer->SetInput(this->m_Image);
+	writer->SetInput(m_Image);
 
 	if(typeid(unsigned char) == typeid(Image::Pixel::PixelType) && Image::Pixel::NUM_CHANNELS == 3)
 	{
