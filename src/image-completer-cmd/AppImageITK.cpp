@@ -21,7 +21,7 @@
 
 #include "Pch.h"
 
-#ifdef USE_IK
+#ifdef USE_ITK
 #include "AppImageITK.h"
 
 #include "itkImageFileReader.h"
@@ -184,4 +184,4 @@ int AppImageITK::GetHeight() const
 	return m_Image->GetLargestPossibleRegion().GetSize()[1];
 }
 
-#endif // USE_IK
+#endif // USE_ITK

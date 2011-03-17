@@ -28,7 +28,7 @@
 #include "LfnIc.h"
 #include "SettingsText.h"
 
-#ifdef USE_IK
+#ifdef USE_ITK
 #include "AppImageITK.h"
 #include "AppMaskITK.h"
 typedef AppImageITK AppImageType;

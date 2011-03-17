@@ -22,7 +22,7 @@
 #ifndef ITK_IMAGE_H
 #define ITK_IMAGE_H
 
-#ifdef USE_IK
+#ifdef USE_ITK
 
 #include "LfnIcImage.h"
 
@@ -56,5 +56,5 @@ private:
 	AppImageITKType::Pointer m_Image;
 };
 
-#endif // USE_IK
+#endif // USE_ITK
 #endif

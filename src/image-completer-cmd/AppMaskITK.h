@@ -22,7 +22,7 @@
 #ifndef ITK_MASK_H
 #define ITK_MASK_H
 
-#ifdef USE_IK
+#ifdef USE_ITK
 
 #include <vector>
 
@@ -55,5 +55,5 @@ private:
 	int m_offsetY;
 };
 
-#endif // USE_IK
+#endif // USE_ITK
 #endif

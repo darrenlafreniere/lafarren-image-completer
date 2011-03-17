@@ -21,7 +21,7 @@
 
 #include "Pch.h"
 
-#ifdef USE_IK
+#ifdef USE_ITK
 #include "AppMaskITK.h"
 
 #include "tech/MathUtils.h"
@@ -94,4 +94,4 @@ LfnIc::Mask::Value AppMaskITK::ByteToMaskValue(unsigned char byte) const
 	}
 }
 
-#endif // USE_IK
+#endif // USE_ITK
