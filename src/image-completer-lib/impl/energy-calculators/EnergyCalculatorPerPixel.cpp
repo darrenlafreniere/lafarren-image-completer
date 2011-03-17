@@ -101,7 +101,7 @@ namespace LfnIc
 				squaredDifference += LfnIc::Image::ComponentWeights[i] * (a.channel[i] - b.channel[i]) *
 					LfnIc::Image::ComponentWeights[i] * (a.channel[i] - b.channel[i]);
 #else
-				wxASSERT(false, "USE_FLOAT_PIXELS is undefined; EnergyCalculatorPerPixel.cpp's PolicyNoMaskGeneral cannot calculate squared differences.");
+				wxASSERT_MSG(false, "USE_FLOAT_PIXELS is undefined; EnergyCalculatorPerPixel.cpp's PolicyNoMaskGeneral cannot calculate squared differences.");
 #endif
 			}
 			return squaredDifference;
