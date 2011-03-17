@@ -51,7 +51,7 @@ public:
 	virtual int GetWidth() const;
 	virtual int GetHeight() const;
 
-    float GetComponentWeight(unsigned int component);
+    float GetComponentWeight(unsigned int component) const;
 private:
 	// Internal data
 	AppImageITKType::Pointer m_image;

@@ -107,7 +107,7 @@ bool AppITKImage::LoadAndValidate(const std::string& imagePath)
 	return true;
 }
 
-float AppITKImage::GetComponentWeight(unsigned int component)
+float AppITKImage::GetComponentWeight(unsigned int component) const
 {
   if(component >= static_cast<unsigned int>(Pixel::NUM_CHANNELS))
   {

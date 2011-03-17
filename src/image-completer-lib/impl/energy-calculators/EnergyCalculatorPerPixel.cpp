@@ -67,7 +67,7 @@ namespace LfnIc
 		inline void OnBRow(int bSrcIndex) {}
 
 		// See MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY for why this uses uint32.
-		FORCE_INLINE uint32 CalculateSquaredDifference(const Image::Pixel* aSrcRow, const Image::Pixel* bSrcRow, int x)
+		FORCE_INLINE uint32 CalculateSquaredDifference(const Image::Pixel* aSrcRow, const Image::Pixel* bSrcRow, int x, std::vector<float>& componentWeights)
 		{
 			const Image::Pixel& a = aSrcRow[x];
 			const Image::Pixel& b = bSrcRow[x];
@@ -88,18 +88,12 @@ namespace LfnIc
 		inline void OnARow(int aSrcIndex) {}
 		inline void OnBRow(int bSrcIndex) {}
 
-		FORCE_INLINE uint32 CalculateSquaredDifference(const Image::Pixel* aSrcRow, const Image::Pixel* bSrcRow, int x)
+		FORCE_INLINE uint32 CalculateSquaredDifference(const Image::Pixel* aSrcRow, const Image::Pixel* bSrcRow, int x, std::vector<float>& componentWeights)
 		{
 			const Image::Pixel& a = aSrcRow[x];
 			const Image::Pixel& b = bSrcRow[x];
 
 			float squaredDifference = 0;
-
-            float componentWeights[Image::Pixel::NUM_CHANNELS];
-            for(int i = 0; i < Image::Pixel::NUM_CHANNELS; i++)
-            {
-                //componentWeights[i] = m_inputImage->GetComponentWeight(i);
-            }
 
 			for (int i = 0; i < Image::Pixel::NUM_CHANNELS; ++i)
 			{
@@ -113,7 +107,8 @@ namespace LfnIc
 	//
 	// PolicyMask - base class for testing one of the regions against the mask
 	//
-	class PolicyMask : public PolicyNoMask
+    template<typename POLICY>
+	class PolicyMask : public POLICY
 	{
 	public:
 		typedef PolicyNoMask Super;
@@ -124,10 +119,10 @@ namespace LfnIc
 		}
 
 		// See MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY for why this uses uint32.
-		inline uint32 CalculateSquaredDifference(const Image::Pixel* aSrcRow, const Image::Pixel* bSrcRow, int x)
+		inline uint32 CalculateSquaredDifference(const Image::Pixel* aSrcRow, const Image::Pixel* bSrcRow, int x, std::vector<float>& componentWeights)
 		{
 			return (!m_lodRow || m_lodRow[x] == Mask::KNOWN)
-				? Super::CalculateSquaredDifference(aSrcRow, bSrcRow, x)
+				? Super::CalculateSquaredDifference(aSrcRow, bSrcRow, x, componentWeights)
 				: 0;
 		}
 
@@ -139,10 +134,10 @@ namespace LfnIc
 	//
 	// PolicyMaskA - tests region A against the mask
 	//
-	class PolicyMaskA : public PolicyMask
+	class PolicyMaskA : public PolicyMask<PolicyNoMask>
 	{
 	public:
-		typedef PolicyMask Super;
+		typedef PolicyMask<PolicyNoMask> Super;
 
 		inline void OnARow(int aSrcIndex)
 		{
@@ -150,19 +145,16 @@ namespace LfnIc
 		}
 	};
 
-	//
-	// PolicyMaskA - tests region B against the mask
-	//
-	class PolicyMaskB : public PolicyMask
-	{
-	public:
-		typedef PolicyMask Super;
+    class PolicyMaskAGeneral : public PolicyMask<PolicyNoMaskGeneral>
+    {
+    public:
+        typedef PolicyMask<PolicyNoMaskGeneral> Super;
 
-		inline void OnBRow(int bSrcIndex)
-		{
-			m_lodRow = m_lodBuffer ? (m_lodBuffer + bSrcIndex) : NULL;
-		}
-	};
+        inline void OnARow(int aSrcIndex)
+        {
+            m_lodRow = m_lodBuffer ? (m_lodBuffer + aSrcIndex) : NULL;
+        }
+    };
 
 	//
 	// General purpose energy calculation template. Performs masking via a policy
@@ -174,7 +166,7 @@ namespace LfnIc
 		const ImageConst& inputImage, const MaskLod* mask,
 		int width, int height,
 		int aLeft, int aTop,
-		int bLeft, int bTop)
+		int bLeft, int bTop, std::vector<float>& componentWeights)
 	{
 		Energy energy64Bit = Energy(0);
 
@@ -211,7 +203,7 @@ namespace LfnIc
 				{
 					for (int x = 0; x < width; ++x)
 					{
-						energyU32Bit += policy.CalculateSquaredDifference(aRow, bRow, x++);
+						energyU32Bit += policy.CalculateSquaredDifference(aRow, bRow, x++, componentWeights);
 					}
 				}
 				else
@@ -225,7 +217,7 @@ namespace LfnIc
 
 						while (x < stripWidth)
 						{
-							energyU32Bit += policy.CalculateSquaredDifference(aRow, bRow, x++);
+							energyU32Bit += policy.CalculateSquaredDifference(aRow, bRow, x++, componentWeights);
 						}
 
 						if (shouldDumpBatchAfterStrip)
@@ -256,7 +248,7 @@ namespace LfnIc
 		const ImageConst& inputImage, const MaskLod* mask,
 		int width, int height,
 		int aLeft, int aTop,
-		int bLeft, int bTop)
+		int bLeft, int bTop, std::vector<float>& componentWeights)
 	{
 		const int imageWidth = inputImage.GetWidth();
 		const int imageHeight = inputImage.GetHeight();
@@ -284,7 +276,7 @@ namespace LfnIc
 
 				for (int x = 0; x < width; ++x)
 				{
-					totalEnergy += policy.CalculateSquaredDifference(aRow, bRow, x++);
+					totalEnergy += policy.CalculateSquaredDifference(aRow, bRow, x++, componentWeights);
 				}
 			}
 		}
@@ -369,22 +361,36 @@ LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::Calculate(int bLeft, int bTop) co
 {
 	wxASSERT(m_batchState != BatchStateClosed);
 
-	if (m_batchParams.aMasked)
-	{
-		return CalculateMaskA(bLeft, bTop);
-	}
-	else
-	{
-		if (typeid(unsigned char) == typeid(Image::Pixel::PixelType) && Image::Pixel::NUM_CHANNELS == 3)
-		{
-			return CalculateNoMask<PolicyNoMask>(bLeft, bTop);
-		}
-		else
-		{
-			return CalculateNoMask<PolicyNoMaskGeneral>(bLeft, bTop);
-		}
-	}
-}
+    std::vector<float> componentWeights(Image::Pixel::NUM_CHANNELS);
+    if (typeid(unsigned char) == typeid(Image::Pixel::PixelType) && Image::Pixel::NUM_CHANNELS == 3)
+    {
+        if (m_batchParams.aMasked)
+        {
+              return CalculateMaskA<PolicyNoMask>(bLeft, bTop, componentWeights);
+        }
+        else
+        {
+              return CalculateNoMask<PolicyNoMask>(bLeft, bTop, componentWeights);
+        }
+    }
+    else
+    {
+        // Compute weights
+        for(int i = 0; i < Image::Pixel::NUM_CHANNELS; i++)
+        {
+            componentWeights[i] = m_inputImage.GetComponentWeight(i);
+        }
+
+        if (m_batchParams.aMasked)
+        {
+              return CalculateMaskA<PolicyNoMaskGeneral>(bLeft, bTop, componentWeights);
+        }
+        else
+        {
+              return CalculateNoMask<PolicyNoMaskGeneral>(bLeft, bTop, componentWeights);
+        }
+    }
+} // end Calculate
 
 LfnIc::EnergyCalculator::BatchQueued::Handle LfnIc::EnergyCalculatorPerPixel::QueueCalculation(int bLeft, int bTop)
 {
@@ -454,22 +460,23 @@ LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::GetResult(BatchQueued::Handle han
 }
 
 template <typename POLICY>
-LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::CalculateNoMask(int bLeft, int bTop) const
+LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::CalculateNoMask(int bLeft, int bTop, std::vector<float>& componentWeights) const
 {
 	return CalculateEnergy<POLICY>(
 		m_inputImage, NULL,
 		m_batchParams.width, m_batchParams.height,
 		m_batchParams.aLeft, m_batchParams.aTop,
-		bLeft, bTop);
+		bLeft, bTop, componentWeights);
 }
 
-LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::CalculateMaskA(int bLeft, int bTop) const
+template<typename POLICY>
+LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::CalculateMaskA(int bLeft, int bTop, std::vector<float>& componentWeights) const
 {
 	return CalculateEnergy<PolicyMaskA>(
 		m_inputImage, &m_mask,
 		m_batchParams.width, m_batchParams.height,
 		m_batchParams.aLeft, m_batchParams.aTop,
-		bLeft, bTop);
+		bLeft, bTop, componentWeights);
 }
 
 LfnIc::EnergyCalculatorPerPixel::QueuedCalculationAndResultIndexBuffer::QueuedCalculationAndResultIndexBuffer(EnergyCalculatorPerPixel& energyCalculatorPerPixel) :
