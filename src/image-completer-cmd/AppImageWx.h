@@ -28,7 +28,7 @@
 //
 // Implements LfnIc::Image, using a wxImage to load, store, and save the data.
 //
-class AppWxImage : public LfnIc::Image
+class AppImageWx : public LfnIc::Image
 {
 public:
 	// LfnIc::Image interface

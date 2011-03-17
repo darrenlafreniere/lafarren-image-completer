@@ -25,7 +25,7 @@
 #include "AppImageWx.h"
 #include "LfnIcSettings.h"
 
-bool AppWxImage::LoadAndValidate(const std::string& imagePath)
+bool AppImageWx::LoadAndValidate(const std::string& imagePath)
 {
 	bool result = false;
 	wxMessageOutput& msgOut = *wxMessageOutput::Get();
@@ -50,42 +50,42 @@ bool AppWxImage::LoadAndValidate(const std::string& imagePath)
 	return result;
 }
 
-void AppWxImage::Save()
+void AppImageWx::Save()
 {
 	m_wxImage.SaveFile(m_filePath);
 }
 
-bool AppWxImage::IsValid() const
+bool AppImageWx::IsValid() const
 {
 	return m_wxImage.Ok();
 }
 
-const std::string& AppWxImage::GetFilePath() const
+const std::string& AppImageWx::GetFilePath() const
 {
 	return m_filePath;
 }
 
-bool AppWxImage::Init(int width, int height)
+bool AppImageWx::Init(int width, int height)
 {
 	return m_wxImage.Create(width, height, false);
 }
 
-LfnIc::Image::Pixel* AppWxImage::GetData()
+LfnIc::Image::Pixel* AppImageWx::GetData()
 {
 	return reinterpret_cast<LfnIc::Image::Pixel*>(m_wxImage.GetData());
 }
 
-const LfnIc::Image::Pixel* AppWxImage::GetData() const
+const LfnIc::Image::Pixel* AppImageWx::GetData() const
 {
 	return reinterpret_cast<const LfnIc::Image::Pixel*>(m_wxImage.GetData());
 }
 
-int AppWxImage::GetWidth() const
+int AppImageWx::GetWidth() const
 {
 	return m_wxImage.GetWidth();
 }
 
-int AppWxImage::GetHeight() const
+int AppImageWx::GetHeight() const
 {
 	return m_wxImage.GetHeight();
 }

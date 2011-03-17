@@ -32,13 +32,13 @@
 //
 // Implements LfnIc::Image, using a itk::Image to load, store, and save the data.
 //
-class ITKImage : public LfnIc::Image
+class AppImageITK : public LfnIc::Image
 {
 public:
-	// ITKImage interface
-	ITKImage();
+	// AppImageITK interface
+	AppImageITK();
 	typedef itk::CovariantVector<LfnIc::Image::Pixel::PixelType, LfnIc::Image::Pixel::NUM_CHANNELS> ITKPixelType;
-	typedef itk::Image<ITKPixelType, 2> ITKImageType;
+	typedef itk::Image<ITKPixelType, 2> AppImageITKType;
 
 	// LfnIc::Image interface
 	bool LoadAndValidate(const std::string& imagePath);
@@ -53,7 +53,7 @@ public:
 
 private:
 	// Internal data
-	ITKImageType::Pointer m_Image;
+	AppImageITKType::Pointer m_Image;
 };
 
 #endif // USE_IK

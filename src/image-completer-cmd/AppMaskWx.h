@@ -29,10 +29,10 @@
 //
 // Implements LfnIc::Mask, using a wxImage to load and convert a mask image.
 //
-class AppWxMask : public LfnIc::Mask
+class AppMaskWx : public LfnIc::Mask
 {
 public:
-	AppWxMask();
+	AppMaskWx();
 
 	// The mask image can be smaller than the input image, and translated to a
 	// specific offset. This isn't yet supported via the command line arguments.

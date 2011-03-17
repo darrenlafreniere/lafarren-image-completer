@@ -31,15 +31,15 @@
 #ifdef USE_IK
 #include "AppImageITK.h"
 #include "AppMaskITK.h"
-typedef ITKImage AppImageType;
-typedef ITKMask AppMaskType;
+typedef AppImageITK AppImageType;
+typedef AppMaskITK AppMaskType;
 #endif
 
 #ifdef USE_WX
 #include "AppImageWx.h"
 #include "AppMaskWx.h"
-typedef AppWxImage AppImageType;
-typedef AppWxMask AppMaskType;
+typedef AppImageWx AppImageType;
+typedef AppMaskWx AppMaskType;
 #endif // USE_WX
 
 #include "tech/DbgMem.h"

@@ -29,11 +29,11 @@
 
 #include "itkImageFileReader.h"
 
-ITKMask::ITKMask() : m_offsetX(0), m_offsetY(0)
+AppMaskITK::AppMaskITK() : m_offsetX(0), m_offsetY(0)
 {
 }
 
-bool ITKMask::LoadAndValidate(const std::string& imagePath, int offsetX, int offsetY)
+bool AppMaskITK::LoadAndValidate(const std::string& imagePath, int offsetX, int offsetY)
 {
 	typedef itk::ImageFileReader<MaskImageType> ReaderType;
 
@@ -50,7 +50,7 @@ bool ITKMask::LoadAndValidate(const std::string& imagePath, int offsetX, int off
 	return true;
 }
 
-LfnIc::Mask::Value ITKMask::GetValue(int x, int y) const
+LfnIc::Mask::Value AppMaskITK::GetValue(int x, int y) const
 {
 	const int xMaskSpace = x - m_offsetX;
 	const int yMaskSpace = y - m_offsetY;
@@ -70,7 +70,7 @@ LfnIc::Mask::Value ITKMask::GetValue(int x, int y) const
 	return value;
 }
 
-LfnIc::Mask::Value ITKMask::ByteToMaskValue(unsigned char byte) const
+LfnIc::Mask::Value AppMaskITK::ByteToMaskValue(unsigned char byte) const
 {
 	const int byteUnknown = 0;
 	const int byteIgnored = 128;

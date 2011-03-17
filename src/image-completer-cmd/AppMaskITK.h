@@ -33,10 +33,10 @@
 //
 // Implements LfnIc::Mask, using a itk::Image to load and convert a mask image.
 //
-class ITKMask : public LfnIc::Mask
+class AppMaskITK : public LfnIc::Mask
 {
 public:
-	ITKMask();
+	AppMaskITK();
 
 	typedef itk::Image<unsigned char, 2> MaskImageType;
 
