@@ -20,7 +20,7 @@
 //
 
 #include "Pch.h"
-#include "ITKMask.h"
+#include "AppMaskITK.h"
 
 #include "tech/MathUtils.h"
 #include "tech/DbgMem.h"

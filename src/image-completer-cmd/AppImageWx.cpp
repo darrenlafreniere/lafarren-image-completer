@@ -20,7 +20,7 @@
 //
 
 #include "Pch.h"
-#include "AppWxImage.h"
+#include "AppImageWx.h"
 #include "LfnIcSettings.h"
 
 // Make sure that wxWidgets wxImage::RGBValue and LfnIc::Image::Rgb

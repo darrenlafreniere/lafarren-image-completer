@@ -20,7 +20,7 @@
 //
 
 #include "Pch.h"
-#include "AppWxMask.h"
+#include "AppMaskWx.h"
 #include "LfnIcSettings.h"
 
 #include "tech/MathUtils.h"

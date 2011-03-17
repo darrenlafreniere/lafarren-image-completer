@@ -27,8 +27,8 @@
 #include "CommandLineOptions.h"
 #include "LfnIc.h"
 #include "SettingsText.h"
-#include "AppWxImage.h"
-#include "AppWxMask.h"
+#include "AppImageWx.h"
+#include "AppMaskWx.h"
 
 #include "tech/DbgMem.h"
 

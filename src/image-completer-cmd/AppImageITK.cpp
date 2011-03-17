@@ -21,7 +21,7 @@
 
 #include "Pch.h"
 
-#include "ITKImage.h"
+#include "AppImageITK.h"
 
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"

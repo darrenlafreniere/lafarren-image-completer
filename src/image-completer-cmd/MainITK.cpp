@@ -27,8 +27,8 @@
 #include "CommandLineOptions.h"
 #include "LfnIc.h"
 #include "SettingsText.h"
-#include "ITKImage.h"
-#include "ITKMask.h"
+#include "AppImageITK.h"
+#include "AppMaskITK.h"
 
 #include "tech/DbgMem.h"
 
