@@ -51,9 +51,12 @@ public:
 	virtual int GetWidth() const;
 	virtual int GetHeight() const;
 
+    float GetComponentWeight(unsigned int component);
 private:
 	// Internal data
 	AppImageITKType::Pointer m_image;
+
+    float m_componentWeights[Pixel::NUM_CHANNELS];
 };
 
 #endif // USE_ITK

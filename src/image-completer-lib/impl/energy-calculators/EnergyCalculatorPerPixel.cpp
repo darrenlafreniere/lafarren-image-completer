@@ -88,21 +88,23 @@ namespace LfnIc
 		inline void OnARow(int aSrcIndex) {}
 		inline void OnBRow(int bSrcIndex) {}
 
-		// See MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY for why this uses uint32.
 		FORCE_INLINE uint32 CalculateSquaredDifference(const Image::Pixel* aSrcRow, const Image::Pixel* bSrcRow, int x)
 		{
 			const Image::Pixel& a = aSrcRow[x];
 			const Image::Pixel& b = bSrcRow[x];
 
 			float squaredDifference = 0;
+
+            float componentWeights[Image::Pixel::NUM_CHANNELS];
+            for(int i = 0; i < Image::Pixel::NUM_CHANNELS; i++)
+            {
+                //componentWeights[i] = m_inputImage->GetComponentWeight(i);
+            }
+
 			for (int i = 0; i < Image::Pixel::NUM_CHANNELS; ++i)
 			{
-#ifdef USE_FLOAT_PIXELS
-				squaredDifference += LfnIc::Image::ComponentWeights[i] * (a.channel[i] - b.channel[i]) *
-					LfnIc::Image::ComponentWeights[i] * (a.channel[i] - b.channel[i]);
-#else
-				wxASSERT_MSG(false, "USE_FLOAT_PIXELS is undefined; EnergyCalculatorPerPixel.cpp's PolicyNoMaskGeneral cannot calculate squared differences.");
-#endif
+				squaredDifference += componentWeights[i] * (a.channel[i] - b.channel[i]) *
+					componentWeights[i] * (a.channel[i] - b.channel[i]);
 			}
 			return squaredDifference;
 		}

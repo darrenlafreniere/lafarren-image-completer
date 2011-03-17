@@ -30,7 +30,7 @@
 #include "itkNthElementImageAdaptor.h"
 #include "itkMinimumMaximumImageCalculator.h"
 
-float LfnIc::Image::ComponentWeights[Pixel::NUM_CHANNELS];
+float AppITKImage::m_componentWeights[Pixel::NUM_CHANNELS];
 
 AppITKImage::AppITKImage()
 {
@@ -107,6 +107,16 @@ bool AppITKImage::LoadAndValidate(const std::string& imagePath)
 	std::cout << std::endl;
 
 	return true;
+}
+
+float AppITKImage::GetComponentWeight(unsigned int component)
+{
+  if(component >= Pixel::NUM_CHANNELS)
+  {
+      std::cerr << "Requested weight for component " << component << " and there are only " << Pixel::NUM_CHANNELS << " components!" << std::endl;
+      exit(-1);
+  }
+  return m_componentWeights[component];
 }
 
 void AppITKImage::Save()
