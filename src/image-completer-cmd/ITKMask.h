@@ -44,12 +44,6 @@ public:
 
     virtual bool LoadAndValidate(const std::string& imagePath, int offsetX = 0, int offsetY = 0);
 
-    // Returns the mask's width.
-    int GetWidth() const;
-
-    // Returns the mask's height.
-    int GetHeight() const;
-
 private:
 	Value ByteToMaskValue(unsigned char byte) const;
 

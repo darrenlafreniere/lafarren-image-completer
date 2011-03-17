@@ -48,18 +48,6 @@ bool ITKMask::LoadAndValidate(const std::string& imagePath, int offsetX, int off
   return true;
 }
 
-// Returns the mask's width.
-int ITKMask::GetWidth() const
-{
-    return this->m_mask->GetLargestPossibleRegion().GetSize()[0];
-}
-
-// Returns the mask's height.
-int ITKMask::GetHeight() const
-{
-    return this->m_mask->GetLargestPossibleRegion().GetSize()[1];
-}
-
 LfnIc::Mask::Value ITKMask::GetValue(int x, int y) const
 {
 	const int xMaskSpace = x - m_offsetX;
