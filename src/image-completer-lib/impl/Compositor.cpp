@@ -25,6 +25,7 @@
 #include "compositors/CompositorRoot.h"
 #include "compositors/OutputBlenderDebugSoftMaskIntensity.h"
 #include "compositors/OutputBlenderSoftMask.h"
+#include "compositors/OutputBlenderNone.h"
 #include "compositors/PatchBlenderNone.h"
 #include "compositors/PatchBlenderPriority.h"
 #include "compositors/PatchTypeNormal.h"
@@ -52,11 +53,10 @@ LfnIc::Compositor* LfnIc::CompositorFactory::Create(CompositorPatchType patchTyp
 
 	CompositorRoot::PatchType::Factory* patchimageSourceFactory = NULL;
 	CompositorRoot::PatchBlender::Factory* patchBlenderFactory = NULL;
-#if 1 // TODO: add a compositor-output-blender command line option
-	CompositorRoot::OutputBlender* outputBlender = new OutputBlenderSoftMask;
-#else
-	CompositorRoot::OutputBlender* outputBlender = new OutputBlenderDebugSoftMaskIntensity;
-#endif
+    // TODO: add a compositor-output-blender command line option
+	//CompositorRoot::OutputBlender* outputBlender = new OutputBlenderSoftMask;
+	//CompositorRoot::OutputBlender* outputBlender = new OutputBlenderDebugSoftMaskIntensity;
+    CompositorRoot::OutputBlender* outputBlender = new OutputBlenderNone;
 
 	switch (patchType)
 	{

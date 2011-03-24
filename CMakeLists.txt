@@ -89,6 +89,7 @@ ${ImageCompleterDir}/compositors/CompositorUtils.cpp
 ${ImageCompleterDir}/compositors/ImageFloat.cpp
 ${ImageCompleterDir}/compositors/OutputBlenderDebugSoftMaskIntensity.cpp
 ${ImageCompleterDir}/compositors/OutputBlenderSoftMask.cpp
+${ImageCompleterDir}/compositors/OutputBlenderNone.cpp
 ${ImageCompleterDir}/compositors/PatchBlenderNone.cpp
 ${ImageCompleterDir}/compositors/PatchBlenderPriority.cpp
 ${ImageCompleterDir}/compositors/PatchTypeDebugPatchOrder.cpp
