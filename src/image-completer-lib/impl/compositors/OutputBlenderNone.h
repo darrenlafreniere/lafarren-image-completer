@@ -19,23 +19,20 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef COMPOSITOR_UTILS_H
-#define COMPOSITOR_UTILS_H
+#ifndef OUTPUT_BLENDER_NONE_H
+#define OUTPUT_BLENDER_NONE_H
 
-#include "Compositor.h"
-#include "LfnIcMask.h"
+#include "CompositorRoot.h"
 
 namespace LfnIc
 {
-	// Given the input mask, this method creates a soft mask of image
-	// WxH alpha values. The unknown regions are feathered outward to
-	// smooth the transition over the known-unknown boundaries.
-	void CreateSoftMask(const Compositor::Input& input, std::vector<float>& out);
+    class ImageFloat;
 
-    inline float MaskValueToAlpha(Mask::Value maskValue)
+    class OutputBlenderNone : public CompositorRoot::OutputBlender
     {
-        return (maskValue == Mask::UNKNOWN) ? 0.0f : 1.0f;
-    }
+    public:
+        virtual void Blend(const Compositor::Input& input, const ImageFloat& patchesBlended, ImageFloat& outputImageFloat) const;
+    };
 }
 
-#endif
+#endif // OUTPUT_BLENDER_NONE_H
