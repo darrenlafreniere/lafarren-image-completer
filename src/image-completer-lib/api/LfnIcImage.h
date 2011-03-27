@@ -70,14 +70,14 @@ namespace LfnIc
 		struct Pixel
 		{
 #ifdef USE_FLOAT_PIXELS
-			typedef float PixelType;
+			typedef float ChannelType;
 #else
-			typedef unsigned char PixelType;
+			typedef unsigned char ChannelType;
 #endif
 
 			static const int NUM_CHANNELS = PIXEL_DIMENSION;
 
-			PixelType channel[NUM_CHANNELS];
+			ChannelType channel[NUM_CHANNELS];
 		};
 
 		virtual float GetComponentWeight(unsigned int component) const { return 1.0; }

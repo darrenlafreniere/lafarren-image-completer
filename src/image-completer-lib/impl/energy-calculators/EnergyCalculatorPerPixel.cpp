@@ -362,7 +362,7 @@ LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::Calculate(int bLeft, int bTop) co
 	wxASSERT(m_batchState != BatchStateClosed);
 
 	std::vector<float> componentWeights(Image::Pixel::NUM_CHANNELS);
-	if (typeid(unsigned char) == typeid(Image::Pixel::PixelType) && Image::Pixel::NUM_CHANNELS == 3)
+	if (typeid(unsigned char) == typeid(Image::Pixel::ChannelType) && Image::Pixel::NUM_CHANNELS == 3)
 	{
 		if (m_batchParams.aMasked)
 		{

@@ -96,7 +96,7 @@ void LfnIc::ImageFloat::CopyTo(Image& output) const
 			Image::Pixel& outRgb = outRgbData[i];
 			for (int component = 0; component < PixelFloat::NUM_CHANNELS; ++component)
 			{
-				outRgb.channel[component] = static_cast<Image::Pixel::PixelType>((inRgb.channel[component] * 255));
+				outRgb.channel[component] = static_cast<Image::Pixel::ChannelType>((inRgb.channel[component] * 255));
 			}
 		}
 	}
