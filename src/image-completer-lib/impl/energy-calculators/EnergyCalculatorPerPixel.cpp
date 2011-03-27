@@ -59,7 +59,7 @@ namespace LfnIc
 	// This policy, along with the non-specialized CalculateEnergy function, provide
 	// an extremely efficient implementation for pixels with exactly 3 unsigned char channels.
 	//
-	class PolicyNoMask
+	class PolicyNoMask_24BitRgb
 	{
 	public:
 		inline void OnPreLoop(const Mask* mask) {}
@@ -81,7 +81,7 @@ namespace LfnIc
 		}
 	};
 
-	class PolicyNoMaskGeneral
+	class PolicyNoMask_General
 	{
 	public:
 		inline void OnPreLoop(const Mask* mask) {}
@@ -133,10 +133,10 @@ namespace LfnIc
 	//
 	// PolicyMaskA - tests region A against the mask
 	//
-	class PolicyMaskA : public PolicyMask<PolicyNoMask>
+	class PolicyMaskA_24BitRgb : public PolicyMask<PolicyNoMask_24BitRgb>
 	{
 	public:
-		typedef PolicyMask<PolicyNoMask> Super;
+		typedef PolicyMask<PolicyNoMask_24BitRgb> Super;
 
 		inline void OnARow(int aSrcIndex)
 		{
@@ -144,10 +144,10 @@ namespace LfnIc
 		}
 	};
 
-	class PolicyMaskAGeneral : public PolicyMask<PolicyNoMaskGeneral>
+	class PolicyMaskA_General : public PolicyMask<PolicyNoMask_General>
 	{
 	public:
-		typedef PolicyMask<PolicyNoMaskGeneral> Super;
+		typedef PolicyMask<PolicyNoMask_General> Super;
 
 		inline void OnARow(int aSrcIndex)
 		{
@@ -243,7 +243,7 @@ namespace LfnIc
 	}
 
 	template<>
-	inline Energy CalculateEnergy<PolicyNoMaskGeneral>(
+	inline Energy CalculateEnergy<PolicyNoMask_General>(
 		const ImageConst& inputImage, const MaskLod* mask,
 		int width, int height,
 		int aLeft, int aTop,
@@ -260,7 +260,7 @@ namespace LfnIc
 		float totalEnergy = 0.0;
 		if (width > 0 && height > 0)
 		{
-			PolicyNoMaskGeneral policy;
+			PolicyNoMask_General policy;
 			policy.OnPreLoop(mask);
 
 			const Image::Pixel* inputImageRgb = inputImage.GetData();
@@ -364,22 +364,22 @@ LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::Calculate(int bLeft, int bTop) co
 	{
 		if (m_batchParams.aMasked)
 		{
-			return CalculateMaskA<PolicyNoMask>(bLeft, bTop);
+			return CalculateMaskA<PolicyNoMask_24BitRgb>(bLeft, bTop);
 		}
 		else
 		{
-			return CalculateNoMask<PolicyNoMask>(bLeft, bTop);
+			return CalculateNoMask<PolicyNoMask_24BitRgb>(bLeft, bTop);
 		}
 	}
 	else
 	{
 		if (m_batchParams.aMasked)
 		{
-			return CalculateMaskA<PolicyNoMaskGeneral>(bLeft, bTop);
+			return CalculateMaskA<PolicyNoMask_General>(bLeft, bTop);
 		}
 		else
 		{
-			return CalculateNoMask<PolicyNoMaskGeneral>(bLeft, bTop);
+			return CalculateNoMask<PolicyNoMask_General>(bLeft, bTop);
 		}
 	}
 } // end Calculate
@@ -464,7 +464,7 @@ LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::CalculateNoMask(int bLeft, int bT
 template<typename POLICY>
 LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::CalculateMaskA(int bLeft, int bTop) const
 {
-	return CalculateEnergy<PolicyMaskA>(
+	return CalculateEnergy<PolicyMaskA_24BitRgb>(
 		m_inputImage, &m_mask,
 		m_batchParams.width, m_batchParams.height,
 		m_batchParams.aLeft, m_batchParams.aTop,
