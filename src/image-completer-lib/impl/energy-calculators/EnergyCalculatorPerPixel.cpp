@@ -232,47 +232,6 @@ namespace LfnIc
 		wxASSERT(energy64Bit >= ENERGY_MIN && energy64Bit <= ENERGY_MAX);
 		return energy64Bit;
 	}
-
-	template<>
-	inline Energy CalculateEnergy<PolicyNoMask_General>(
-		const ImageConst& inputImage, const MaskLod* mask,
-		int width, int height,
-		int aLeft, int aTop,
-		int bLeft, int bTop)
-	{
-		const int imageWidth = inputImage.GetWidth();
-		const int imageHeight = inputImage.GetHeight();
-
-		EnergyCalculatorUtils::ClampToMinBoundary(aLeft, bLeft, width, 0);
-		EnergyCalculatorUtils::ClampToMinBoundary(aTop, bTop, height, 0);
-		EnergyCalculatorUtils::ClampToMaxBoundary(aLeft, bLeft, width, imageWidth);
-		EnergyCalculatorUtils::ClampToMaxBoundary(aTop, bTop, height, imageHeight);
-
-		float totalEnergy = 0.0;
-		if (width > 0 && height > 0)
-		{
-			PolicyNoMask_General policy;
-			policy.OnPreLoop(mask);
-
-			const Image::Pixel* inputImageRgb = inputImage.GetData();
-			int aRowIndex = LfnTech::GetRowMajorIndex(imageWidth, aLeft, aTop);
-			int bRowIndex = LfnTech::GetRowMajorIndex(imageWidth, bLeft, bTop);
-			for (int y = 0; y < height; ++y, aRowIndex += imageWidth, bRowIndex += imageWidth)
-			{
-				const Image::Pixel* aRow = inputImageRgb + aRowIndex;
-				const Image::Pixel* bRow = inputImageRgb + bRowIndex;
-				policy.OnARow(aRowIndex);
-				policy.OnBRow(bRowIndex);
-
-				for (int x = 0; x < width; ++x)
-				{
-					totalEnergy += policy.CalculateSquaredDifference(aRow, bRow, x++);
-				}
-			}
-		}
-
-		return totalEnergy;
-	}
 }
 
 //
