@@ -65,8 +65,6 @@ namespace LfnIc
 		// Returns the image's height.
 		virtual int GetHeight() const = 0;
 
-		virtual float GetChannelWeight(unsigned int channel) const { return 1.0; }
-
 		// Structure of a single image pixel.
 		struct Pixel
 		{

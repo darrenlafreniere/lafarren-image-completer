@@ -50,13 +50,10 @@ public:
 	virtual const Pixel* GetData() const;
 	virtual int GetWidth() const;
 	virtual int GetHeight() const;
-	virtual float GetChannelWeight(unsigned int channel) const;
 
 private:
 	// Internal data
 	AppImageITKType::Pointer m_image;
-
-	float m_channelWeights[Pixel::NUM_CHANNELS];
 };
 
 #endif // USE_ITK

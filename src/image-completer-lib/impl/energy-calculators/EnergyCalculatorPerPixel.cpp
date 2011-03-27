@@ -67,7 +67,7 @@ namespace LfnIc
 		inline void OnBRow(int bSrcIndex) {}
 
 		// See MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY for why this uses uint32.
-		FORCE_INLINE uint32 CalculateSquaredDifference(const Image::Pixel* aSrcRow, const Image::Pixel* bSrcRow, int x, std::vector<float>& channelWeights)
+		FORCE_INLINE uint32 CalculateSquaredDifference(const Image::Pixel* aSrcRow, const Image::Pixel* bSrcRow, int x)
 		{
 			const Image::Pixel& a = aSrcRow[x];
 			const Image::Pixel& b = bSrcRow[x];
@@ -88,7 +88,7 @@ namespace LfnIc
 		inline void OnARow(int aSrcIndex) {}
 		inline void OnBRow(int bSrcIndex) {}
 
-		FORCE_INLINE uint32 CalculateSquaredDifference(const Image::Pixel* aSrcRow, const Image::Pixel* bSrcRow, int x, std::vector<float>& channelWeights)
+		FORCE_INLINE uint32 CalculateSquaredDifference(const Image::Pixel* aSrcRow, const Image::Pixel* bSrcRow, int x)
 		{
 			const Image::Pixel& a = aSrcRow[x];
 			const Image::Pixel& b = bSrcRow[x];
@@ -97,8 +97,7 @@ namespace LfnIc
 
 			for (int i = 0; i < Image::Pixel::NUM_CHANNELS; ++i)
 			{
-				squaredDifference += channelWeights[i] * (a.channel[i] - b.channel[i]) *
-					channelWeights[i] * (a.channel[i] - b.channel[i]);
+				squaredDifference += (a.channel[i] - b.channel[i]) * (a.channel[i] - b.channel[i]);
 			}
 			return squaredDifference;
 		}
@@ -119,10 +118,10 @@ namespace LfnIc
 		}
 
 		// See MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY for why this uses uint32.
-		inline uint32 CalculateSquaredDifference(const Image::Pixel* aSrcRow, const Image::Pixel* bSrcRow, int x, std::vector<float>& channelWeights)
+		inline uint32 CalculateSquaredDifference(const Image::Pixel* aSrcRow, const Image::Pixel* bSrcRow, int x)
 		{
 			return (!m_lodRow || m_lodRow[x] == Mask::KNOWN)
-				? Super::CalculateSquaredDifference(aSrcRow, bSrcRow, x, channelWeights)
+				? Super::CalculateSquaredDifference(aSrcRow, bSrcRow, x)
 				: 0;
 		}
 
@@ -166,7 +165,7 @@ namespace LfnIc
 		const ImageConst& inputImage, const MaskLod* mask,
 		int width, int height,
 		int aLeft, int aTop,
-		int bLeft, int bTop, std::vector<float>& channelWeights)
+		int bLeft, int bTop)
 	{
 		Energy energy64Bit = Energy(0);
 
@@ -203,7 +202,7 @@ namespace LfnIc
 				{
 					for (int x = 0; x < width; ++x)
 					{
-						energyU32Bit += policy.CalculateSquaredDifference(aRow, bRow, x++, channelWeights);
+						energyU32Bit += policy.CalculateSquaredDifference(aRow, bRow, x++);
 					}
 				}
 				else
@@ -217,7 +216,7 @@ namespace LfnIc
 
 						while (x < stripWidth)
 						{
-							energyU32Bit += policy.CalculateSquaredDifference(aRow, bRow, x++, channelWeights);
+							energyU32Bit += policy.CalculateSquaredDifference(aRow, bRow, x++);
 						}
 
 						if (shouldDumpBatchAfterStrip)
@@ -248,7 +247,7 @@ namespace LfnIc
 		const ImageConst& inputImage, const MaskLod* mask,
 		int width, int height,
 		int aLeft, int aTop,
-		int bLeft, int bTop, std::vector<float>& channelWeights)
+		int bLeft, int bTop)
 	{
 		const int imageWidth = inputImage.GetWidth();
 		const int imageHeight = inputImage.GetHeight();
@@ -276,7 +275,7 @@ namespace LfnIc
 
 				for (int x = 0; x < width; ++x)
 				{
-					totalEnergy += policy.CalculateSquaredDifference(aRow, bRow, x++, channelWeights);
+					totalEnergy += policy.CalculateSquaredDifference(aRow, bRow, x++);
 				}
 			}
 		}
@@ -361,33 +360,26 @@ LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::Calculate(int bLeft, int bTop) co
 {
 	wxASSERT(m_batchState != BatchStateClosed);
 
-	std::vector<float> channelWeights(Image::Pixel::NUM_CHANNELS);
 	if (LfnIc::Image::PixelInfo::IS_24_BIT_RGB)
 	{
 		if (m_batchParams.aMasked)
 		{
-			return CalculateMaskA<PolicyNoMask>(bLeft, bTop, channelWeights);
+			return CalculateMaskA<PolicyNoMask>(bLeft, bTop);
 		}
 		else
 		{
-			return CalculateNoMask<PolicyNoMask>(bLeft, bTop, channelWeights);
+			return CalculateNoMask<PolicyNoMask>(bLeft, bTop);
 		}
 	}
 	else
 	{
-		// Compute weights
-		for (int i = 0; i < Image::Pixel::NUM_CHANNELS; i++)
-		{
-			channelWeights[i] = m_inputImage.GetChannelWeight(i);
-		}
-
 		if (m_batchParams.aMasked)
 		{
-			return CalculateMaskA<PolicyNoMaskGeneral>(bLeft, bTop, channelWeights);
+			return CalculateMaskA<PolicyNoMaskGeneral>(bLeft, bTop);
 		}
 		else
 		{
-			return CalculateNoMask<PolicyNoMaskGeneral>(bLeft, bTop, channelWeights);
+			return CalculateNoMask<PolicyNoMaskGeneral>(bLeft, bTop);
 		}
 	}
 } // end Calculate
@@ -460,23 +452,23 @@ LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::GetResult(BatchQueued::Handle han
 }
 
 template <typename POLICY>
-LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::CalculateNoMask(int bLeft, int bTop, std::vector<float>& channelWeights) const
+LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::CalculateNoMask(int bLeft, int bTop) const
 {
 	return CalculateEnergy<POLICY>(
 		m_inputImage, NULL,
 		m_batchParams.width, m_batchParams.height,
 		m_batchParams.aLeft, m_batchParams.aTop,
-		bLeft, bTop, channelWeights);
+		bLeft, bTop);
 }
 
 template<typename POLICY>
-LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::CalculateMaskA(int bLeft, int bTop, std::vector<float>& channelWeights) const
+LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::CalculateMaskA(int bLeft, int bTop) const
 {
 	return CalculateEnergy<PolicyMaskA>(
 		m_inputImage, &m_mask,
 		m_batchParams.width, m_batchParams.height,
 		m_batchParams.aLeft, m_batchParams.aTop,
-		bLeft, bTop, channelWeights);
+		bLeft, bTop);
 }
 
 LfnIc::EnergyCalculatorPerPixel::QueuedCalculationAndResultIndexBuffer::QueuedCalculationAndResultIndexBuffer(EnergyCalculatorPerPixel& energyCalculatorPerPixel) :
