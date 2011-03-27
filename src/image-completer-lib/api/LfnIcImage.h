@@ -65,6 +65,8 @@ namespace LfnIc
 		// Returns the image's height.
 		virtual int GetHeight() const = 0;
 
+		virtual float GetComponentWeight(unsigned int component) const { return 1.0; }
+
 		// Pixel structure allows for access to the data using long-hand
 		// component names, short-hand component names, or a channel array.
 		struct Pixel
@@ -74,13 +76,29 @@ namespace LfnIc
 #else
 			typedef unsigned char ChannelType;
 #endif
-
 			static const int NUM_CHANNELS = PIXEL_DIMENSION;
 
 			ChannelType channel[NUM_CHANNELS];
 		};
 
-		virtual float GetComponentWeight(unsigned int component) const { return 1.0; }
+		//
+		// Pixel type info. Use PixelInfo directly rather than PixelInfoBase.
+		//
+		template<typename ImagePixelChannelType, int ImagePixelNumChannels>
+		struct PixelInfoBase
+		{
+			static const bool IS_24_BIT_RGB = false;
+		};
+
+		template<>
+		struct PixelInfoBase<unsigned char, 3>
+		{
+			static const bool IS_24_BIT_RGB = true;
+		};
+
+		struct PixelInfo : public PixelInfoBase<Pixel::ChannelType, Pixel::NUM_CHANNELS>
+		{
+		};
 
 	protected:
 		// Instances cannot be destroyed through a base Image pointer

@@ -124,7 +124,7 @@ void AppITKImage::Save()
 	WriterType::Pointer writer = WriterType::New();
 	writer->SetInput(m_image);
 
-	if(typeid(unsigned char) == typeid(Image::Pixel::PixelType) && Image::Pixel::NUM_CHANNELS == 3)
+	if (LfnIc::Image::PixelInfo::IS_24_BIT_RGB)
 	{
 		writer->SetFileName(m_filePath);
 	}
