@@ -68,23 +68,23 @@ bool AppITKImage::LoadAndValidate(const std::string& imagePath)
 	/*
 	for (int i = 0; i < LfnIc::Image::Pixel::NUM_CHANNELS; i++)
 	{
-		LfnIc::Image::ComponentWeights[i] = 1.0;
+		m_channelWeights[i] = 1.0;
 	}
 	*/
 
 	// Manual weights
 	/*
-	LfnIc::Image::ComponentWeights[0] = .1;
-	LfnIc::Image::ComponentWeights[1] = .1;
-	LfnIc::Image::ComponentWeights[2] = .1;
-	LfnIc::Image::ComponentWeights[3] = 200.0;
+	m_channelWeights[0] = .1;
+	m_channelWeights[1] = .1;
+	m_channelWeights[2] = .1;
+	m_channelWeights[3] = 200.0;
 	*/
 
 	// Uniform weighting - set the weight of each channel so it has the perceived range of 255
 	// If a channel already has the range 255, the weight is set to 1. If a channel has a range smaller
 	// than 255, its weight will be > 1. If a channel has a weight larger than 255, its weight will be set to < 1.
 	// A weight should never be negative. There is no magic to scaling to 255, it is just that usually there will be some
-	// RGB type components so 255 should make several of the weights close to 1.
+	// RGB type channels so 255 should make several of the weights close to 1.
 
 	std::cout << "Weights: ";
 	for (int i = 0; i < LfnIc::Image::Pixel::NUM_CHANNELS; i++)
@@ -99,22 +99,22 @@ bool AppITKImage::LoadAndValidate(const std::string& imagePath)
 		imageCalculatorFilter->SetImage(adaptor);
 		imageCalculatorFilter->Compute();
 
-		m_componentWeights[i] = 255. / (imageCalculatorFilter->GetMaximum() - imageCalculatorFilter->GetMinimum());
-		std::cout << m_componentWeights[i] << " ";
+		m_channelWeights[i] = 255. / (imageCalculatorFilter->GetMaximum() - imageCalculatorFilter->GetMinimum());
+		std::cout << m_channelWeights[i] << " ";
 	}
 	std::cout << std::endl;
 
 	return true;
 }
 
-float AppITKImage::GetComponentWeight(unsigned int component) const
+float AppITKImage::GetChannelWeight(unsigned int channel) const
 {
-	if(component >= static_cast<unsigned int>(Pixel::NUM_CHANNELS))
+	if(channel >= static_cast<unsigned int>(Pixel::NUM_CHANNELS))
 	{
-		std::cerr << "Requested weight for component " << component << " and there are only " << Pixel::NUM_CHANNELS << " components!" << std::endl;
+		std::cerr << "Requested weight for channel " << channel << " and there are only " << Pixel::NUM_CHANNELS << " channels!" << std::endl;
 		exit(-1);
 	}
-	return m_componentWeights[component];
+	return m_channelWeights[channel];
 }
 
 void AppITKImage::Save()

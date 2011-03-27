@@ -37,7 +37,7 @@ class AppITKImage : public AppData::Image
 public:
 	// AppITKImage interface
 	AppITKImage();
-	typedef itk::CovariantVector<LfnIc::Image::Pixel::PixelType, LfnIc::Image::Pixel::NUM_CHANNELS> ITKPixelType;
+	typedef itk::CovariantVector<LfnIc::Image::Pixel::ChannelType, LfnIc::Image::Pixel::NUM_CHANNELS> ITKPixelType;
 	typedef itk::Image<ITKPixelType, 2> AppImageITKType;
 
 	// LfnIc::Image interface
@@ -50,13 +50,13 @@ public:
 	virtual const Pixel* GetData() const;
 	virtual int GetWidth() const;
 	virtual int GetHeight() const;
-	virtual float GetComponentWeight(unsigned int component) const;
+	virtual float GetChannelWeight(unsigned int channel) const;
 
 private:
 	// Internal data
 	AppImageITKType::Pointer m_image;
 
-	float m_componentWeights[Pixel::NUM_CHANNELS];
+	float m_channelWeights[Pixel::NUM_CHANNELS];
 };
 
 #endif // USE_ITK

@@ -26,7 +26,7 @@
 #include <string>
 
 // PIXEL_DIMENSION may be defined by the build environment. If not
-// specified, default to 3 components and assume RGB.
+// specified, assume RGB and default to 3 channels.
 #ifndef PIXEL_DIMENSION
 #define PIXEL_DIMENSION 3
 #endif
@@ -65,10 +65,9 @@ namespace LfnIc
 		// Returns the image's height.
 		virtual int GetHeight() const = 0;
 
-		virtual float GetComponentWeight(unsigned int component) const { return 1.0; }
+		virtual float GetChannelWeight(unsigned int channel) const { return 1.0; }
 
-		// Pixel structure allows for access to the data using long-hand
-		// component names, short-hand component names, or a channel array.
+		// Structure of a single image pixel.
 		struct Pixel
 		{
 #ifdef USE_FLOAT_PIXELS
