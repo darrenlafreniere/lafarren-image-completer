@@ -107,7 +107,7 @@ namespace LfnIc
 	//
 	// PolicyMask - base class for testing one of the regions against the mask
 	//
-    template<typename POLICY>
+	template<typename POLICY>
 	class PolicyMask : public POLICY
 	{
 	public:
@@ -145,16 +145,16 @@ namespace LfnIc
 		}
 	};
 
-    class PolicyMaskAGeneral : public PolicyMask<PolicyNoMaskGeneral>
-    {
-    public:
-        typedef PolicyMask<PolicyNoMaskGeneral> Super;
+	class PolicyMaskAGeneral : public PolicyMask<PolicyNoMaskGeneral>
+	{
+	public:
+		typedef PolicyMask<PolicyNoMaskGeneral> Super;
 
-        inline void OnARow(int aSrcIndex)
-        {
-            m_lodRow = m_lodBuffer ? (m_lodBuffer + aSrcIndex) : NULL;
-        }
-    };
+		inline void OnARow(int aSrcIndex)
+		{
+			m_lodRow = m_lodBuffer ? (m_lodBuffer + aSrcIndex) : NULL;
+		}
+	};
 
 	//
 	// General purpose energy calculation template. Performs masking via a policy
@@ -361,35 +361,35 @@ LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::Calculate(int bLeft, int bTop) co
 {
 	wxASSERT(m_batchState != BatchStateClosed);
 
-    std::vector<float> componentWeights(Image::Pixel::NUM_CHANNELS);
-    if (typeid(unsigned char) == typeid(Image::Pixel::PixelType) && Image::Pixel::NUM_CHANNELS == 3)
-    {
-        if (m_batchParams.aMasked)
-        {
-              return CalculateMaskA<PolicyNoMask>(bLeft, bTop, componentWeights);
-        }
-        else
-        {
-              return CalculateNoMask<PolicyNoMask>(bLeft, bTop, componentWeights);
-        }
-    }
-    else
-    {
-        // Compute weights
-        for(int i = 0; i < Image::Pixel::NUM_CHANNELS; i++)
-        {
-            componentWeights[i] = m_inputImage.GetComponentWeight(i);
-        }
+	std::vector<float> componentWeights(Image::Pixel::NUM_CHANNELS);
+	if (typeid(unsigned char) == typeid(Image::Pixel::PixelType) && Image::Pixel::NUM_CHANNELS == 3)
+	{
+		if (m_batchParams.aMasked)
+		{
+			return CalculateMaskA<PolicyNoMask>(bLeft, bTop, componentWeights);
+		}
+		else
+		{
+			return CalculateNoMask<PolicyNoMask>(bLeft, bTop, componentWeights);
+		}
+	}
+	else
+	{
+		// Compute weights
+		for(int i = 0; i < Image::Pixel::NUM_CHANNELS; i++)
+		{
+			componentWeights[i] = m_inputImage.GetComponentWeight(i);
+		}
 
-        if (m_batchParams.aMasked)
-        {
-              return CalculateMaskA<PolicyNoMaskGeneral>(bLeft, bTop, componentWeights);
-        }
-        else
-        {
-              return CalculateNoMask<PolicyNoMaskGeneral>(bLeft, bTop, componentWeights);
-        }
-    }
+		if (m_batchParams.aMasked)
+		{
+			return CalculateMaskA<PolicyNoMaskGeneral>(bLeft, bTop, componentWeights);
+		}
+		else
+		{
+			return CalculateNoMask<PolicyNoMaskGeneral>(bLeft, bTop, componentWeights);
+		}
+	}
 } // end Calculate
 
 LfnIc::EnergyCalculator::BatchQueued::Handle LfnIc::EnergyCalculatorPerPixel::QueueCalculation(int bLeft, int bTop)

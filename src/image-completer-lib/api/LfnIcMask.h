@@ -52,8 +52,8 @@ namespace LfnIc
 		// internal boundaries, this method is expected to return KNOWN.
 		virtual Value GetValue(int x, int y) const = 0;
 
-        // Determine if the mask has at least one known pixel. This is not pure virtual because MaskScalable should always be true.
-        virtual bool HasKnownPixel() const {return true;}
+		// Determine if the mask has at least one known pixel. This is not pure virtual because MaskScalable should always be true.
+		virtual bool HasKnownPixel() const {return true;}
 
 	protected:
 		// Cannot destroy Mask instance through a pointer to this base.

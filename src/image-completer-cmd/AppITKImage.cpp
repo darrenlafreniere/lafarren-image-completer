@@ -109,12 +109,12 @@ bool AppITKImage::LoadAndValidate(const std::string& imagePath)
 
 float AppITKImage::GetComponentWeight(unsigned int component) const
 {
-  if(component >= static_cast<unsigned int>(Pixel::NUM_CHANNELS))
-  {
-      std::cerr << "Requested weight for component " << component << " and there are only " << Pixel::NUM_CHANNELS << " components!" << std::endl;
-      exit(-1);
-  }
-  return m_componentWeights[component];
+	if(component >= static_cast<unsigned int>(Pixel::NUM_CHANNELS))
+	{
+		std::cerr << "Requested weight for component " << component << " and there are only " << Pixel::NUM_CHANNELS << " components!" << std::endl;
+		exit(-1);
+	}
+	return m_componentWeights[component];
 }
 
 void AppITKImage::Save()

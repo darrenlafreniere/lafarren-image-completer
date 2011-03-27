@@ -78,7 +78,7 @@ int main(int argc, char** argv)
 			mask.LoadAndValidate(options.GetMaskImagePath());
 
 			AppImageType outputImage;
-            outputImage.Init(inputImage.GetWidth(), inputImage.GetHeight());
+			outputImage.Init(inputImage.GetWidth(), inputImage.GetHeight());
 
 			AppData appData(options, inputImage, mask, outputImage);
 
