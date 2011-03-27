@@ -80,7 +80,7 @@ namespace LfnIc
 			PixelType channel[NUM_CHANNELS];
 		};
 
-		virtual float GetComponentWeight(unsigned int component) const {return 1.0;}
+		virtual float GetComponentWeight(unsigned int component) const { return 1.0; }
 
 	protected:
 		// Instances cannot be destroyed through a base Image pointer

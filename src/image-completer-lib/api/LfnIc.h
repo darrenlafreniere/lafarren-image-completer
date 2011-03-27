@@ -38,10 +38,13 @@ namespace LfnIc
 
 	enum CompletionResult
 	{
+
 		CompletionSucceeded,
+
 		CompletionFailedInputIsInvalid,
 		CompletionFailedOutputIsInvalid,
 		CompletionFailedInputHasNoKnownData,
+		CompletionFailedForUnknownReasons,
 	};
 
 	//

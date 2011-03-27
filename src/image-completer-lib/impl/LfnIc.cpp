@@ -176,92 +176,100 @@ namespace LfnIc
 		std::istream* patchesIstream,
 		std::ostream* patchesOstream)
 	{
+		CompletionResult result = CompletionFailedForUnknownReasons;
+
 		if (!ValidateImage(inputImage))
 		{
-			return CompletionFailedInputIsInvalid;
+			result = CompletionFailedInputIsInvalid;
 		}
-
-		if (!mask.HasKnownPixel())
+		else if (!mask.HasKnownPixel())
 		{
-			return CompletionFailedInputHasNoKnownData;
+			result = CompletionFailedInputHasNoKnownData;
 		}
-		// In Windows, this project is compiled into its own dll, with its
-		// own global memory space, and statically links against wxWidgets.
-		// Therefore, even if the host application contains its own
-		// wxInitializer, this dll needs one as well. For other project
-		// configurations, where this is statically built into the host,
-		// it's safe to have multiple wxInitializer instances; they're
-		// internally ref counted by wxWidgets.
-		wxInitializer initializer;
+		else
 		{
-			SettingsScalable settingsScalable(settings);
-			MaskScalable maskScalable(inputImage.GetWidth(), inputImage.GetHeight(), mask);
-			ImageScalable imageScalable(inputImage, maskScalable);
-			Compositor::Input compositorInput(settingsScalable, imageScalable, maskScalable);
-			bool arePatchesValid = false;
-
-			if (patchesIstream)
+			// In Windows, this project is compiled into its own dll, with its
+			// own global memory space, and statically links against wxWidgets.
+			// Therefore, even if the host application contains its own
+			// wxInitializer, this dll needs one as well. For other project
+			// configurations, where this is statically built into the host,
+			// it's safe to have multiple wxInitializer instances; they're
+			// internally ref counted by wxWidgets.
+			wxInitializer initializer;
 			{
-				// A patches istream was provided; read the patches from it rather
-				// than taking the time to solve via Priority-BP. This is useful
-				// when developing new compositors.
-				arePatchesValid = ReadPatches(*patchesIstream, compositorInput.patches);
-			}
-			else
-			{
-				TECH_TIME_PROFILE("ImageCompleter::Complete - Priority-BP");
+				SettingsScalable settingsScalable(settings);
+				MaskScalable maskScalable(inputImage.GetWidth(), inputImage.GetHeight(), mask);
+				ImageScalable imageScalable(inputImage, maskScalable);
+				Compositor::Input compositorInput(settingsScalable, imageScalable, maskScalable);
+				bool arePatchesValid = false;
 
-				// Construct priority-bp related data, passing in the required dependencies.
-				EnergyCalculatorContainer energyCalculatorContainer(settingsScalable, imageScalable, maskScalable);
-				LabelSet labelSet(settingsScalable, imageScalable, maskScalable);
-				NodeSet nodeSet(settingsScalable, imageScalable, maskScalable, labelSet, energyCalculatorContainer);
-				PriorityBpRunner priorityBpRunner(settingsScalable, nodeSet);
-
-				// Recurse and scale down to a quickly solvable resolution, then
-				// scale back up, using each lower resolution data to help solve
-				// the higher resolution.
-				RecurivelyRunFromLowestToNextHighestResolution(
-					settingsScalable,
-					imageScalable,
-					maskScalable,
-					energyCalculatorContainer,
-					labelSet,
-					nodeSet,
-					priorityBpRunner,
-					outputImage.GetFilePath(),
-					1);
-
-				// Original resolution pass
-				priorityBpRunner.RunAndGetPatches(compositorInput.patches);
-				arePatchesValid = true;
-			}
-
-			// Composite the output image based on the patches that Priority-BP
-			// solved.
-			if (arePatchesValid)
-			{
-				// An ostream was provided to write the patches to.
-				if (patchesOstream)
+				if (patchesIstream)
 				{
-					WritePatches(*patchesOstream, compositorInput.patches);
+					// A patches istream was provided; read the patches from it rather
+					// than taking the time to solve via Priority-BP. This is useful
+					// when developing new compositors.
+					arePatchesValid = ReadPatches(*patchesIstream, compositorInput.patches);
+				}
+				else
+				{
+					TECH_TIME_PROFILE("ImageCompleter::Complete - Priority-BP");
+
+					// Construct priority-bp related data, passing in the required dependencies.
+					EnergyCalculatorContainer energyCalculatorContainer(settingsScalable, imageScalable, maskScalable);
+					LabelSet labelSet(settingsScalable, imageScalable, maskScalable);
+					NodeSet nodeSet(settingsScalable, imageScalable, maskScalable, labelSet, energyCalculatorContainer);
+					PriorityBpRunner priorityBpRunner(settingsScalable, nodeSet);
+
+					// Recurse and scale down to a quickly solvable resolution, then
+					// scale back up, using each lower resolution data to help solve
+					// the higher resolution.
+					RecurivelyRunFromLowestToNextHighestResolution(
+						settingsScalable,
+						imageScalable,
+						maskScalable,
+						energyCalculatorContainer,
+						labelSet,
+						nodeSet,
+						priorityBpRunner,
+						outputImage.GetFilePath(),
+						1);
+
+					// Original resolution pass
+					priorityBpRunner.RunAndGetPatches(compositorInput.patches);
+					arePatchesValid = true;
 				}
 
+				// Composite the output image based on the patches that Priority-BP
+				// solved.
+				if (arePatchesValid)
 				{
-					TECH_TIME_PROFILE("ImageCompleter::Complete - Compositing");
-					std::auto_ptr<Compositor> compositor(CompositorFactory::Create(settingsScalable.compositorPatchType, settingsScalable.compositorPatchBlender));
-					if (compositor.get())
+					// An ostream was provided to write the patches to.
+					if (patchesOstream)
 					{
-						compositor->Compose(compositorInput, outputImage);
+						WritePatches(*patchesOstream, compositorInput.patches);
+					}
+
+					{
+						TECH_TIME_PROFILE("ImageCompleter::Complete - Compositing");
+						std::auto_ptr<Compositor> compositor(CompositorFactory::Create(settingsScalable.compositorPatchType, settingsScalable.compositorPatchBlender));
+						if (compositor.get())
+						{
+							const bool compositionSucceeded = compositor->Compose(compositorInput, outputImage);
+
+							if (compositionSucceeded && outputImage.IsValid())
+							{
+								result = CompletionSucceeded;
+							}
+							else
+							{
+								result = CompletionFailedOutputIsInvalid;
+							}
+						}
 					}
 				}
 			}
 		}
 
-		if(!outputImage.IsValid())
-		{
-			return CompletionFailedOutputIsInvalid;
-		}
-
-		return CompletionSucceeded;
-	} // end Complete()
-} // end namespace LfnIc
+		return result;
+	}
+}

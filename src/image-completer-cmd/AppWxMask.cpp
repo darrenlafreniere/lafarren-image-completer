@@ -39,7 +39,7 @@ AppWxMask::AppWxMask()
 
 bool AppWxMask::HasKnownPixel() const
 {
-	for(unsigned int i = 0; i < m_values.size(); i++)
+	for (int i = 0, n = m_values.size(); i < n; i++)
 	{
 		if(m_values[i] == KNOWN)
 		{

@@ -48,7 +48,7 @@ typedef AppWxMask AppMaskType;
 
 int main(int argc, char** argv)
 {
-	LfnIc::CompletionResult completionResult;
+	LfnIc::CompletionResult completionResult = LfnIc::CompletionFailedForUnknownReasons;
 	printf("\nlafarren.com\nImage Completion Using Efficient Belief Propagation\n");
 
 	wxInitializer initializer;
@@ -78,8 +78,6 @@ int main(int argc, char** argv)
 			mask.LoadAndValidate(options.GetMaskImagePath());
 
 			AppImageType outputImage;
-			outputImage.Init(inputImage.GetWidth(), inputImage.GetHeight());
-
 			AppData appData(options, inputImage, mask, outputImage);
 
 			if (appData.IsValid())

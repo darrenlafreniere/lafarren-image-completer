@@ -50,8 +50,8 @@ public:
 	virtual const Pixel* GetData() const;
 	virtual int GetWidth() const;
 	virtual int GetHeight() const;
+	virtual float GetComponentWeight(unsigned int component) const;
 
-	float GetComponentWeight(unsigned int component) const;
 private:
 	// Internal data
 	AppImageITKType::Pointer m_image;

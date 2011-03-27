@@ -37,9 +37,9 @@ void LfnIc::OutputBlenderNone::Blend(const Compositor::Input& input, const Image
 
     const Mask& mask = input.mask;
 
-    for(int y = 0; y < patchesBlended.GetHeight(); ++y)
+    for (int y = 0; y < patchesBlended.GetHeight(); ++y)
     {
-        for(int x = 0; x < patchesBlended.GetWidth(); ++x)
+        for (int x = 0; x < patchesBlended.GetWidth(); ++x)
         {
             LfnTech::BlendInto(destPixelPtr->channel, srcPixelPtr->channel, 1.0 - MaskValueToAlpha(mask.GetValue(x,y)), Image::Pixel::NUM_CHANNELS);
             ++destPixelPtr;

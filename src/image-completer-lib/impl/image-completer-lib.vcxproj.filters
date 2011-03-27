@@ -73,6 +73,9 @@
     <ClCompile Include="ImageScalable.cpp" />
     <ClCompile Include="LfnIc.cpp" />
     <ClCompile Include="MaskScalable.cpp" />
+    <ClCompile Include="compositors\OutputBlenderNone.cpp">
+      <Filter>compositors</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="compositors\CompositorUtils.h">
@@ -161,6 +164,9 @@
     </ClInclude>
     <ClInclude Include="MaskLod.h" />
     <ClInclude Include="MaskScalable.h" />
+    <ClInclude Include="compositors\OutputBlenderNone.h">
+      <Filter>compositors</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="energy-calculators\EnergyCalculatorUtils.inl">

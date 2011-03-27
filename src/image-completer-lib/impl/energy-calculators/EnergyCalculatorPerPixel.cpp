@@ -376,7 +376,7 @@ LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::Calculate(int bLeft, int bTop) co
 	else
 	{
 		// Compute weights
-		for(int i = 0; i < Image::Pixel::NUM_CHANNELS; i++)
+		for (int i = 0; i < Image::Pixel::NUM_CHANNELS; i++)
 		{
 			componentWeights[i] = m_inputImage.GetComponentWeight(i);
 		}

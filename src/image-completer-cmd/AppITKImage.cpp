@@ -66,9 +66,9 @@ bool AppITKImage::LoadAndValidate(const std::string& imagePath)
 
 	// Un-weighted
 	/*
-	for(unsigned int i = 0; i < static_cast<unsigned int>(LfnIc::Image::Pixel::NUM_CHANNELS); i++)
+	for (int i = 0; i < LfnIc::Image::Pixel::NUM_CHANNELS; i++)
 	{
-	LfnIc::Image::ComponentWeights[i] = 1.0;
+		LfnIc::Image::ComponentWeights[i] = 1.0;
 	}
 	*/
 
@@ -87,7 +87,7 @@ bool AppITKImage::LoadAndValidate(const std::string& imagePath)
 	// RGB type components so 255 should make several of the weights close to 1.
 
 	std::cout << "Weights: ";
-	for(unsigned int i = 0; i < static_cast<unsigned int>(LfnIc::Image::Pixel::NUM_CHANNELS); i++)
+	for (int i = 0; i < LfnIc::Image::Pixel::NUM_CHANNELS; i++)
 	{
 		typedef itk::NthElementImageAdaptor<AppImageITKType, float> ImageAdaptorType;
 		ImageAdaptorType::Pointer adaptor = ImageAdaptorType::New();
