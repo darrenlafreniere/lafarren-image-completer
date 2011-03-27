@@ -62,6 +62,7 @@ namespace LfnIc
 	class PolicyNoMask_24BitRgb
 	{
 	public:
+		static const bool HAS_MASK = false;
 		inline void OnPreLoop(const Mask* mask) {}
 		inline void OnARow(int aSrcIndex) {}
 		inline void OnBRow(int bSrcIndex) {}
@@ -84,6 +85,7 @@ namespace LfnIc
 	class PolicyNoMask_General
 	{
 	public:
+		static const bool HAS_MASK = false;
 		inline void OnPreLoop(const Mask* mask) {}
 		inline void OnARow(int aSrcIndex) {}
 		inline void OnBRow(int bSrcIndex) {}
@@ -111,6 +113,7 @@ namespace LfnIc
 	{
 	public:
 		typedef POLICY_NO_MASK Super;
+		static const bool HAS_MASK = true;
 
 		inline void OnPreLoop(const MaskLod* mask)
 		{
@@ -314,7 +317,7 @@ LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::Calculate(int bLeft, int bTop) co
 	{
 		if (m_batchParams.aMasked)
 		{
-			return CalculateMaskA<PolicyNoMask_24BitRgb>(bLeft, bTop);
+			return CalculateMaskA<PolicyMaskA_24BitRgb>(bLeft, bTop);
 		}
 		else
 		{
@@ -325,7 +328,7 @@ LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::Calculate(int bLeft, int bTop) co
 	{
 		if (m_batchParams.aMasked)
 		{
-			return CalculateMaskA<PolicyNoMask_General>(bLeft, bTop);
+			return CalculateMaskA<PolicyMaskA_General>(bLeft, bTop);
 		}
 		else
 		{
@@ -404,6 +407,7 @@ LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::GetResult(BatchQueued::Handle han
 template <typename POLICY>
 LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::CalculateNoMask(int bLeft, int bTop) const
 {
+	wxCOMPILE_TIME_ASSERT(!POLICY::HAS_MASK, CalculateNoMask_IsCalledWithAMaskPolicy);
 	return CalculateEnergy<POLICY>(
 		m_inputImage, NULL,
 		m_batchParams.width, m_batchParams.height,
@@ -414,7 +418,8 @@ LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::CalculateNoMask(int bLeft, int bT
 template<typename POLICY>
 LfnIc::Energy LfnIc::EnergyCalculatorPerPixel::CalculateMaskA(int bLeft, int bTop) const
 {
-	return CalculateEnergy<PolicyMaskA_24BitRgb>(
+	wxCOMPILE_TIME_ASSERT(POLICY::HAS_MASK, CalculateMaskA_IsCalledWithANoMaskPolicy);
+	return CalculateEnergy<POLICY>(
 		m_inputImage, &m_mask,
 		m_batchParams.width, m_batchParams.height,
 		m_batchParams.aLeft, m_batchParams.aTop,
