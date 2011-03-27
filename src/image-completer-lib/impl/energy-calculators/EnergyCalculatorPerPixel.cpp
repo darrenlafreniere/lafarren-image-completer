@@ -133,27 +133,18 @@ namespace LfnIc
 	//
 	// PolicyMaskA - tests region A against the mask
 	//
-	class PolicyMaskA_24BitRgb : public PolicyMask<PolicyNoMask_24BitRgb>
+	template<typename POLICY_NO_MASK>
+	class PolicyMaskA : public PolicyMask<POLICY_NO_MASK>
 	{
 	public:
-		typedef PolicyMask<PolicyNoMask_24BitRgb> Super;
-
 		inline void OnARow(int aSrcIndex)
 		{
 			m_lodRow = m_lodBuffer ? (m_lodBuffer + aSrcIndex) : NULL;
 		}
 	};
 
-	class PolicyMaskA_General : public PolicyMask<PolicyNoMask_General>
-	{
-	public:
-		typedef PolicyMask<PolicyNoMask_General> Super;
-
-		inline void OnARow(int aSrcIndex)
-		{
-			m_lodRow = m_lodBuffer ? (m_lodBuffer + aSrcIndex) : NULL;
-		}
-	};
+	typedef PolicyMaskA<PolicyNoMask_24BitRgb> PolicyMaskA_24BitRgb;
+	typedef PolicyMaskA<PolicyNoMask_General> PolicyMaskA_General;
 
 	//
 	// General purpose energy calculation template. Performs masking via a policy
