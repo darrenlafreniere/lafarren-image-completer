@@ -37,18 +37,6 @@ AppWxMask::AppWxMask()
 {
 }
 
-bool AppWxMask::HasKnownPixel() const
-{
-	for (int i = 0, n = m_values.size(); i < n; i++)
-	{
-		if(m_values[i] == KNOWN)
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
 bool AppWxMask::LoadAndValidate(const std::string& imagePath, int offsetX, int offsetY)
 {
 	bool result = false;

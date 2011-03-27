@@ -43,7 +43,7 @@ public:
 	bool LoadAndValidate(const std::string& imagePath, int offsetX = 0, int offsetY = 0);
 
 	virtual Value GetValue(int x, int y) const;
-	virtual bool HasKnownPixel() const;
+
 private:
 	Value ByteToMaskValue(unsigned char byte) const;
 

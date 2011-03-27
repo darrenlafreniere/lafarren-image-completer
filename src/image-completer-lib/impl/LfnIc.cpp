@@ -168,6 +168,24 @@ namespace LfnIc
 			image.GetHeight() <= LfnIc::Settings::IMAGE_HEIGHT_MAX;
 	}
 
+	bool HasAnyKnownPixels(int inputImageWidth, int inputImageHeight, const Mask& mask)
+	{
+		bool foundKnownPixel = false;
+		for (int y = 0; y < inputImageHeight; ++y)
+		{
+			for (int x = 0; x < inputImageWidth; ++x)
+			{
+				if (mask.GetValue(x, y) == Mask::KNOWN)
+				{
+					foundKnownPixel = true;
+					break;
+				}
+			}
+		}
+
+		return foundKnownPixel;
+	}
+
 	CompletionResult Complete(
 		const Settings& settings,
 		const Image& inputImage,
@@ -182,7 +200,7 @@ namespace LfnIc
 		{
 			result = CompletionFailedInputIsInvalid;
 		}
-		else if (!mask.HasKnownPixel())
+		else if (!HasAnyKnownPixels(inputImage.GetWidth(), inputImage.GetHeight(), mask))
 		{
 			result = CompletionFailedInputHasNoKnownData;
 		}
