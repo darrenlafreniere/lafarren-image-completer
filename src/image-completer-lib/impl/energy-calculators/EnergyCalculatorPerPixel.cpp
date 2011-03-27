@@ -106,11 +106,11 @@ namespace LfnIc
 	//
 	// PolicyMask - base class for testing one of the regions against the mask
 	//
-	template<typename POLICY>
-	class PolicyMask : public POLICY
+	template<typename POLICY_NO_MASK>
+	class PolicyMask : public POLICY_NO_MASK
 	{
 	public:
-		typedef PolicyNoMask Super;
+		typedef POLICY_NO_MASK Super;
 
 		inline void OnPreLoop(const MaskLod* mask)
 		{
