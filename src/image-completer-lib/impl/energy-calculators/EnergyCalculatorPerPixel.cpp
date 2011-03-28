@@ -197,7 +197,7 @@ namespace LfnIc
 			POLICY policy;
 			policy.OnPreLoop(mask);
 
-			POLICY::ResultType energyBunch = 0;
+			typename POLICY::ResultType energyBunch = 0;
 			int numPixelsInBunch = 0;
 			const bool canFitInSingleBunch = (width * height) <= policy.GetMaxPixelsPerBunch();
 
