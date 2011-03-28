@@ -31,8 +31,8 @@
 #endif
 #include "EnergyCalculatorUtils.h"
 #include "ImageConst.h"
-#include "Mask.h"
 #include "LfnIcSettings.h"
+#include "MaskLod.h"
 
 #include "tech/DbgMem.h"
 
@@ -80,7 +80,7 @@ namespace LfnIc
 	{
 	public:
 		FillPolicyChannel(const ImageConst& inputImage, int channel) :
-		  m_imageRgb(inputImage.GetRgb()),
+		  m_imagePixel(inputImage.GetData()),
 			  m_channel(channel)
 		  {
 		  }
@@ -88,11 +88,11 @@ namespace LfnIc
 		  // rowMajorIndex length is based on EnergyCalculatorFft::m_inputWidth
 		  inline FftReal GetReal(int rowMajorIndex) const
 		  {
-			  return m_imageRgb[rowMajorIndex].channel[m_channel];
+			  return m_imagePixel[rowMajorIndex].channel[m_channel];
 		  }
 
 	protected:
-		const Image::Rgb* m_imageRgb;
+		const Image::Pixel* m_imagePixel;
 		const int m_channel;
 	};
 
@@ -231,7 +231,7 @@ m_settings(settings),
 	// For each channel of m_fftImage and m_fftImageSquared, fill the real data,
 	// execute the real-to-complex plan, and copy the results into the channel
 	// buffer.
-	for (int channel = 0; channel < RGB_CHANNELS_NUM; ++channel)
+	for (int channel = 0; channel < CHANNELS_NUM; ++channel)
 	{
 		{
 			m_fftComplexImage[channel] = FftwInPlaceBufferAlloc();
@@ -268,7 +268,7 @@ m_settings(settings),
 
 LfnIc::EnergyCalculatorFft::~EnergyCalculatorFft()
 {
-	for (int channel = 0; channel < RGB_CHANNELS_NUM; ++channel)
+	for (int channel = 0; channel < CHANNELS_NUM; ++channel)
 	{
 		FFTW_PREFIX(free)(m_fftComplexImage[channel].generic);
 		FFTW_PREFIX(free)(m_fftComplexImageSquared[channel].generic);
@@ -320,7 +320,7 @@ LfnIc::EnergyCalculatorFft& LfnIc::EnergyCalculatorFft::BatchOpen(const BatchPar
 
 	// Calculate second term into m_batchEnergy2ndAnd3rdTerm
 	{
-		for (int channel = 0; channel < RGB_CHANNELS_NUM; ++channel)
+		for (int channel = 0; channel < CHANNELS_NUM; ++channel)
 		{
 			// Calculate fft(-2 * <Ma?> * Ia) into m_fftPlanBuffer.
 			{
@@ -386,7 +386,7 @@ LfnIc::EnergyCalculatorFft& LfnIc::EnergyCalculatorFft::BatchOpen(const BatchPar
 	// here. Otherwise, Calculate will look up the third term for b from m_wsst.
 	if (m_batchParams.aMasked)
 	{
-		for (int channel = 0; channel < RGB_CHANNELS_NUM; ++channel)
+		for (int channel = 0; channel < CHANNELS_NUM; ++channel)
 		{
 			// Calculate fft(<Ma>) into m_fftPlanBuffer.
 			{

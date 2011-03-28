@@ -33,6 +33,22 @@
 
 namespace LfnIc
 {
+	//
+	// Pixel type info helpers. Use Image::PixelInfo directly rather than these.
+	//
+	template<typename ImagePixelChannelType, int ImagePixelNumChannels>
+	struct ImagePixelInfoBase
+	{
+		static const bool IS_24_BIT_RGB = false;
+	};
+
+	template<>
+	struct ImagePixelInfoBase<unsigned char, 3>
+	{
+		static const bool IS_24_BIT_RGB = true;
+	};
+
+
 	// Image interface. Used for both reading the input image and
 	// writing the output image.
 	class Image
@@ -78,22 +94,7 @@ namespace LfnIc
 			ChannelType channel[NUM_CHANNELS];
 		};
 
-		//
-		// Pixel type info. Use PixelInfo directly rather than PixelInfoBase.
-		//
-		template<typename ImagePixelChannelType, int ImagePixelNumChannels>
-		struct PixelInfoBase
-		{
-			static const bool IS_24_BIT_RGB = false;
-		};
-
-		template<>
-		struct PixelInfoBase<unsigned char, 3>
-		{
-			static const bool IS_24_BIT_RGB = true;
-		};
-
-		struct PixelInfo : public PixelInfoBase<Pixel::ChannelType, Pixel::NUM_CHANNELS>
+		struct PixelInfo : public ImagePixelInfoBase<Pixel::ChannelType, Pixel::NUM_CHANNELS>
 		{
 		};
 

@@ -28,6 +28,7 @@
 #include "EnergyCalculator.h"
 #include "EnergyCalculatorFftUtils.h"
 #include "EnergyWsst.h"
+#include "LfnIcImage.h"
 #include "fftw3.h"
 
 #define ENERGY_FFT_SINGLE_PRECISION 1
@@ -102,7 +103,7 @@ namespace LfnIc
 		// Internal definitions
 		//
 
-		static const int RGB_CHANNELS_NUM = Image::Pixel::NUM_CHANNELS;
+		static const int CHANNELS_NUM = LfnIc::Image::Pixel::NUM_CHANNELS;
 
 		union FftwInPlaceBuffer
 		{
@@ -181,8 +182,8 @@ namespace LfnIc
 
 		// These two buffers are initialized at construction to store the
 		// complex output of the fft of the image, and the image squared.
-		FftwInPlaceBuffer m_fftComplexImage[RGB_CHANNELS_NUM];
-		FftwInPlaceBuffer m_fftComplexImageSquared[RGB_CHANNELS_NUM];
+		FftwInPlaceBuffer m_fftComplexImage[CHANNELS_NUM];
+		FftwInPlaceBuffer m_fftComplexImageSquared[CHANNELS_NUM];
 
 		// Terms calculated by EnergyCalculatorFft::BatchOpen()
 		// m_batchEnergy2ndAnd3rdTerm is a row-major buffer of the image
