@@ -159,9 +159,11 @@ namespace LfnIc
 	class PolicyMaskA : public PolicyMask<POLICY_NO_MASK>
 	{
 	public:
+		typedef typename PolicyMask<POLICY_NO_MASK> Super;
+
 		inline void OnARow(int aSrcIndex)
 		{
-			m_lodRow = m_lodBuffer ? (m_lodBuffer + aSrcIndex) : NULL;
+			Super::m_lodRow = Super::m_lodBuffer ? (Super::m_lodBuffer + aSrcIndex) : NULL;
 		}
 	};
 
