@@ -36,6 +36,9 @@ namespace LfnIc
 	class Mask;
 	struct Settings;
 
+    ///
+    /// A list of possible results of the completion.
+    ///
 	enum CompletionResult
 	{
 
@@ -47,17 +50,17 @@ namespace LfnIc
 		CompletionFailedForUnknownReasons,
 	};
 
-	//
-	// Performs image completion on a given input image and mask, and returns
-	// the output image.
-	//
-	// If a valid patches istream is provided, then instead of solving the
-	// patches by running the Priority-BP algorithm, they will read from the
-	// stream.
-	//
-	// If a valid patches ostream is provided, then the patches will be written
-	// to that stream.
-	//
+	///
+	/// Performs image completion on a given input image and mask, and returns
+	/// the output image.
+	///
+	/// If a valid patches istream is provided, then instead of solving the
+	/// patches by running the Priority-BP algorithm, they will read from the
+	/// stream.
+	///
+	/// If a valid patches ostream is provided, then the patches will be written
+	/// to that stream.
+	///
 	extern EXPORT CompletionResult Complete(
 		const Settings& settings,
 		const Image& inputImage,

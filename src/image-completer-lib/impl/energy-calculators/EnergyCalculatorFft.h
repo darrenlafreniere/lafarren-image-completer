@@ -43,12 +43,12 @@ namespace LfnIc
 	class MaskLod;
 	struct Settings;
 
-	// Calculates the energy between two regions of the input image using the
-	// Fast Fourier Transform and a Windowed Sum Squared Table:
-	// http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.7.2795
-	//
-	// Internally, the RGB color channel data is stored in a separate buffer
-	// per channel.
+	/// Calculates the energy between two regions of the input image using the
+	/// Fast Fourier Transform and a Windowed Sum Squared Table:
+	/// http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.7.2795
+	///
+	/// Internally, the RGB color channel data is stored in a separate buffer
+	/// per channel.
 	class EnergyCalculatorFft : public EnergyCalculator
 	{
 	public:
@@ -56,11 +56,11 @@ namespace LfnIc
 		// Definitions
 		//
 
-		// FftComplex component index constants:
+		/// FftComplex component index constants:
 		static const int REAL = 0;
 		static const int IMAG = 1;
 
-		// Types
+		/// Types
 #if ENERGY_FFT_SINGLE_PRECISION
 		typedef float FftReal;
 		typedef fftwf_complex FftComplex;
@@ -71,9 +71,9 @@ namespace LfnIc
 		typedef fftw_plan FftPlan;
 #endif
 
-		//
-		// Methods
-		//
+		///
+		/// Methods
+		///
 		EnergyCalculatorFft(
 			const Settings& settings,
 			const ImageConst& inputImage,

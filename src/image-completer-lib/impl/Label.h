@@ -33,11 +33,11 @@ namespace LfnIc
 	class MaskLod;
 	struct Settings;
 
-	//
-	// The Markov Random Field's labels correspond to fixed size patches
-	// within the source image. The label stores the left-top point of the
-	// patch, and the width and height is described in the Settings class.
-	//
+	///
+	/// The Markov Random Field's labels correspond to fixed size patches
+	/// within the source image. The label stores the left-top point of the
+	/// patch, and the width and height is described in the Settings class.
+	///
 	struct Label
 	{
 		inline Label() {}
@@ -48,10 +48,10 @@ namespace LfnIc
 		short top;
 	};
 
-	//
-	// Contains the entire label set within the source image, sorted from
-	// top to bottom, left to right.
-	//
+	///
+	/// Contains the entire label set within the source image, sorted from
+	/// top to bottom, left to right.
+	///
 	class LabelSet : public Scalable
 	{
 	public:
@@ -61,12 +61,12 @@ namespace LfnIc
 		const Label& operator[](int i) const;
 		int size() const;
 
-		// Scalable interface
+		/// Scalable interface
 		virtual void ScaleUp();
 		virtual void ScaleDown();
 		virtual int GetScaleDepth() const;
 
-		// See GetLowToCurrentResolutionMapping().
+		/// See GetLowToCurrentResolutionMapping().
 		class LowToCurrentResolutionMapping
 		{
 		public:
@@ -84,15 +84,15 @@ namespace LfnIc
 			friend class LabelSet;
 			int m_size;
 
-			// At most one low resolution label can map to 9 high resolution
-			// labels. See the edge case in:
-			// LabelSet::Resolution::Resolution(const Resolution&)
+			/// At most one low resolution label can map to 9 high resolution
+			/// labels. See the edge case in:
+			/// LabelSet::Resolution::Resolution(const Resolution&)
 			Label m_labels[9];
 		};
 
-		// Given a low resolution label, this method populates the passed in
-		// LowToCurrentResolutionMapping object with the high resolution labels
-		// that correspond to it.
+		/// Given a low resolution label, this method populates the passed in
+		/// LowToCurrentResolutionMapping object with the high resolution labels
+		/// that correspond to it.
 		void GetLowToCurrentResolutionMapping(const Label& lowResolutionLabel, LowToCurrentResolutionMapping& out) const;
 
 	private:

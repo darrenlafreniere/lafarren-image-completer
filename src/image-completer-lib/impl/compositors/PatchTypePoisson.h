@@ -35,6 +35,9 @@ namespace LfnIc
 		class Cloner;
 	}
 
+    ///
+    /// This is a Poisson patch (what is this?).
+    ///
 	class PatchTypePoisson : public PatchTypeNormal
 	{
 	public:

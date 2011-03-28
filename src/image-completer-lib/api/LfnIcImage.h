@@ -33,15 +33,18 @@
 
 namespace LfnIc
 {
-	//
-	// Pixel type info helpers. Use Image::PixelInfo directly rather than these.
-	//
+	///
+	/// Pixel type info helpers. Use Image::PixelInfo directly rather than these.
+	///
 	template<typename ImagePixelChannelType, int ImagePixelNumChannels>
 	struct ImagePixelInfoBase
 	{
 		static const bool IS_24_BIT_RGB = false;
 	};
 
+    ///
+    /// Specialization for RGB unsigned char pixels
+    ///
 	template<>
 	struct ImagePixelInfoBase<unsigned char, 3>
 	{
@@ -49,39 +52,41 @@ namespace LfnIc
 	};
 
 
-	// Image interface. Used for both reading the input image and
-	// writing the output image.
+    ///
+	/// Image interface. Used for both reading the input image and
+	/// writing the output image.
+    ///
 	class Image
 	{
 	public:
 		struct Pixel;
 
-		// Non-const method to initialize the image to the specified width
-		// and height. Any existing rgb data is not necessarily reserved.
-		// Returns true if there were no errors.
+		/// Non-const method to initialize the image to the specified width
+		/// and height. Any existing rgb data is not necessarily reserved.
+		/// Returns true if there were no errors.
 		virtual bool Init(int width, int height) = 0;
 
-		// Returns true if the image is of valid dimensions with a valid
-		// rgb buffer.
+		/// Returns true if the image is of valid dimensions with a valid
+		/// rgb buffer.
 		virtual bool IsValid() const = 0;
 
-		// Returns the image's file path, if any.
+		/// Returns the image's file path, if any.
 		virtual const std::string& GetFilePath() const = 0;
 
-		// Non-const and const access to the image's Rgb buffer. The
-		// result points to the upperleft-most pixel and the buffer is
-		// stored in row-major order, where the start of each row is
-		// separated by GetStride() bytes.
+		/// Non-const and const access to the image's Rgb buffer. The
+		/// result points to the upperleft-most pixel and the buffer is
+		/// stored in row-major order, where the start of each row is
+		/// separated by GetStride() bytes.
 		virtual Pixel* GetData() = 0;
 		virtual const Pixel* GetData() const = 0;
 
-		// Returns the image's width.
+		/// Returns the image's width.
 		virtual int GetWidth() const = 0;
 
-		// Returns the image's height.
+		/// Returns the image's height.
 		virtual int GetHeight() const = 0;
 
-		// Structure of a single image pixel.
+		/// Structure of a single image pixel.
 		struct Pixel
 		{
 #ifdef USE_FLOAT_PIXELS

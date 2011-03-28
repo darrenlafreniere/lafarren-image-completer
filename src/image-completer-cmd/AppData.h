@@ -28,15 +28,22 @@
 
 class CommandLineOptions;
 
-//
-// Prepares and stores the data needed to run LfnIc::Complete().
-//
+/// \brief Prepares and stores the data needed to run LfnIc::Complete().
+///
+/// Prepares and stores the data needed to run LfnIc::Complete().
+///
 class AppData
 {
 public:
+    ///
+    /// Why isn't the file path stored directly in LfnIc::Image?
+    ///
 	class Image : public LfnIc::Image
 	{
 	public:
+        ///
+        /// Set the filename for the image to be read from.
+        ///
 		inline void SetFilePath(const std::string& filePath) { m_filePath = filePath; }
 
 	protected:

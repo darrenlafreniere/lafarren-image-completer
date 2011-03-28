@@ -27,8 +27,8 @@
 
 namespace LfnIc
 {
-	// A mask that stores its data in multiple levels of detail, and is
-	// therefore able to perform efficient tests over an entire region.
+	/// A mask that stores its data in multiple levels of detail, and is
+	/// therefore able to perform efficient tests over an entire region.
 	class MaskLod : public Mask
 	{
 	public:
@@ -40,24 +40,24 @@ namespace LfnIc
 			LodBuffer buffer;
 		};
 
-		// Returns the level of detail range that this mask supports. 0
-		// is always the highest level of detail, where each region is 1x1
-		// pixel and thus contains no indeterminates. Lower levels of detail
-		// are identified by successive > 0 values. A region's max size at
-		// any given lod is (2^lod)x(2^lod).
+		/// Returns the level of detail range that this mask supports. 0
+		/// is always the highest level of detail, where each region is 1x1
+		/// pixel and thus contains no indeterminates. Lower levels of detail
+		/// are identified by successive > 0 values. A region's max size at
+		/// any given lod is (2^lod)x(2^lod).
 		inline int GetHighestLod() const { return 0; }
 		virtual int GetLowestLod() const = 0;
 
-		// Returns a const reference to the specified lod's data. Does not
-		// verify that lod is >= GetHighestLod() and <= GetLowestLod().
+		/// Returns a const reference to the specified lod's data. Does not
+		/// verify that lod is >= GetHighestLod() and <= GetLowestLod().
 		virtual const LodData& GetLodData(int lod) const = 0;
 
-		// Convenience function for getting a pointer to an lod data's buffer.
+		/// Convenience function for getting a pointer to an lod data's buffer.
 		virtual const Value* GetLodBuffer(int lod) const = 0;
 
-		// The region is specified by an inclusive upper left x,y, and by an
-		// exclusive width and height. This method properly handles regions
-		// outside of the mask boundaries, and treats that area as KNOWN.
+		/// The region is specified by an inclusive upper left x,y, and by an
+		/// exclusive width and height. This method properly handles regions
+		/// outside of the mask boundaries, and treats that area as KNOWN.
 		virtual bool RegionXywhHasAny(int x, int y, int w, int h, Value value) const = 0;
 		virtual bool RegionXywhHasAll(int x, int y, int w, int h, Value value) const = 0;
 

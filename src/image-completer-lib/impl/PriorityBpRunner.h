@@ -1,19 +1,19 @@
 //
 // Copyright 2010, Darren Lafreniere
 // <http://www.lafarren.com/image-completer/>
-// 
+//
 // This file is part of lafarren.com's Image Completer.
-// 
+//
 // Image Completer is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Image Completer is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with Image Completer, named License.txt. If not, see
 // <http://www.gnu.org/licenses/>.
@@ -30,10 +30,10 @@ namespace LfnIc
 	class NodeSet;
 	struct Settings;
 
-	//
-	// Encapsulates the state and execution of the Priority-BP (believe
-	// propagation) algorithm over the Markov Random Field.
-	//
+	///
+	/// Encapsulates the state and execution of the Priority-BP (believe
+	/// propagation) algorithm over the Markov Random Field.
+	///
 	class PriorityBpRunner
 	{
 	public:
@@ -43,15 +43,15 @@ namespace LfnIc
 
 		PriorityBpRunner(const Settings& settings, NodeSet& nodeSet);
 
-		// Executes the Priority-BP to completion, and populates the outPatches
-		// object based on the solution. The patches are sorted by a
-		// recommended order in which they should be applied to the output
-		// image.
+		/// Executes the Priority-BP to completion, and populates the outPatches
+		/// object based on the solution. The patches are sorted by a
+		/// recommended order in which they should be applied to the output
+		/// image.
 		void RunAndGetPatches(std::vector<Patch>& outPatches);
 
-		// Runs Priority-BP to completion, without populating any patches.
-		// This can be used during lower resolution solves in order to prune
-		// the label set from each node.
+		/// Runs Priority-BP to completion, without populating any patches.
+		/// This can be used during lower resolution solves in order to prune
+		/// the label set from each node.
 		void Run();
 
 	private:

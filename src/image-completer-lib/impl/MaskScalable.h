@@ -31,11 +31,11 @@ namespace LfnIc
 	// Forward declaration. Defined in Mask.cpp.
 	class MaskInternal;
 
-	//
-	// Implements both the Mask and Scalable interfaces and provides an in
-	// place scalable mask. Initializes the mask from the highest resolution
-	// mask (the input mask passed to LfnIc::Complete()).
-	//
+	///
+	/// Implements both the Mask and Scalable interfaces and provides an in
+	/// place scalable mask. Initializes the mask from the highest resolution
+	/// mask (the input mask passed to LfnIc::Complete()).
+	///
 	class MaskScalable : public MaskLod, public Scalable
 	{
 	public:
