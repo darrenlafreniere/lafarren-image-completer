@@ -37,7 +37,7 @@ class AppITKImage : public AppData::Image
 public:
 	// AppITKImage interface
 	AppITKImage();
-	typedef itk::CovariantVector<LfnIc::Image::Pixel::PixelType, LfnIc::Image::Pixel::NUM_CHANNELS> ITKPixelType;
+	typedef itk::CovariantVector<LfnIc::Image::Pixel::ChannelType, LfnIc::Image::Pixel::NUM_CHANNELS> ITKPixelType;
 	typedef itk::Image<ITKPixelType, 2> AppImageITKType;
 
 	// LfnIc::Image interface

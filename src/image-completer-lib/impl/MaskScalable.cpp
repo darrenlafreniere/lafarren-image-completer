@@ -233,7 +233,7 @@ void LfnIc::MaskInternal::CreateLowerLodsFromHighest()
 					// Determine value by sampling the previous lod's 2x2
 					// values at this point (or, 3x2, 2x3, or 3x3, depending on
 					// if we're including the previous lod's odd edge(s)).
-					Value value;
+					Value value = KNOWN;
 					{
 						const int lodPrevX = lodX * 2;
 						const bool includeLodPrevOddEdgeX = (lodPrevX + 2 == lodPrevOddEdgeX);

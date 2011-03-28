@@ -168,7 +168,25 @@ namespace LfnIc
 			image.GetHeight() <= LfnIc::Settings::IMAGE_HEIGHT_MAX;
 	}
 
-	bool Complete(
+	bool HasAnyKnownPixels(int inputImageWidth, int inputImageHeight, const Mask& mask)
+	{
+		bool foundKnownPixel = false;
+		for (int y = 0; y < inputImageHeight; ++y)
+		{
+			for (int x = 0; x < inputImageWidth; ++x)
+			{
+				if (mask.GetValue(x, y) == Mask::KNOWN)
+				{
+					foundKnownPixel = true;
+					break;
+				}
+			}
+		}
+
+		return foundKnownPixel;
+	}
+
+	CompletionResult Complete(
 		const Settings& settings,
 		const Image& inputImage,
 		const Mask& mask,
@@ -176,9 +194,17 @@ namespace LfnIc
 		std::istream* patchesIstream,
 		std::ostream* patchesOstream)
 	{
-		bool succeeded = false;
+		CompletionResult result = CompletionFailedForUnknownReasons;
 
-		if (ValidateImage(inputImage))
+		if (!ValidateImage(inputImage))
+		{
+			result = CompletionFailedInputIsInvalid;
+		}
+		else if (!HasAnyKnownPixels(inputImage.GetWidth(), inputImage.GetHeight(), mask))
+		{
+			result = CompletionFailedInputHasNoKnownData;
+		}
+		else
 		{
 			// In Windows, this project is compiled into its own dll, with its
 			// own global memory space, and statically links against wxWidgets.
@@ -188,7 +214,6 @@ namespace LfnIc
 			// it's safe to have multiple wxInitializer instances; they're
 			// internally ref counted by wxWidgets.
 			wxInitializer initializer;
-
 			{
 				SettingsScalable settingsScalable(settings);
 				MaskScalable maskScalable(inputImage.GetWidth(), inputImage.GetHeight(), mask);
@@ -247,15 +272,22 @@ namespace LfnIc
 						std::auto_ptr<Compositor> compositor(CompositorFactory::Create(settingsScalable.compositorPatchType, settingsScalable.compositorPatchBlender));
 						if (compositor.get())
 						{
-							compositor->Compose(compositorInput, outputImage);
+							const bool compositionSucceeded = compositor->Compose(compositorInput, outputImage);
+
+							if (compositionSucceeded && outputImage.IsValid())
+							{
+								result = CompletionSucceeded;
+							}
+							else
+							{
+								result = CompletionFailedOutputIsInvalid;
+							}
 						}
 					}
 				}
 			}
-
-			succeeded = outputImage.IsValid();
 		}
 
-		return succeeded;
+		return result;
 	}
 }

@@ -30,7 +30,8 @@
 #include "itkNthElementImageAdaptor.h"
 #include "itkMinimumMaximumImageCalculator.h"
 
-float LfnIc::Image::ComponentWeights[Pixel::NUM_CHANNELS];
+// TODO: move channel weighting into AppData::Image?
+#define USE_CHANNEL_WEIGHTING 1
 
 AppITKImage::AppITKImage()
 {
@@ -49,7 +50,7 @@ bool AppITKImage::LoadAndValidate(const std::string& imagePath)
 		m_image = AppImageITKType::New();
 	}
 
-	//m_image->Graft(reader->GetOutput());
+	// Deep copy
 
 	m_image->SetRegions(reader->GetOutput()->GetLargestPossibleRegion());
 	m_image->Allocate();
@@ -64,47 +65,55 @@ bool AppITKImage::LoadAndValidate(const std::string& imagePath)
 		++outputIterator;
 	}
 
+#if USE_CHANNEL_WEIGHTING
 	// Setup channel weights
-
-	// Un-weighted
-	/*
-	for(unsigned int i = 0; i < static_cast<unsigned int>(LfnIc::Image::Pixel::NUM_CHANNELS); i++)
 	{
-	LfnIc::Image::ComponentWeights[i] = 1.0;
+		float channelWeights[LfnIc::Image::Pixel::NUM_CHANNELS];
+
+#if 0
+		// Manual weights
+		wxASSERT(LfnIc::Image::Pixel::NUM_CHANNELS == 4);
+		channelWeights[0] = .1;
+		channelWeights[1] = .1;
+		channelWeights[2] = .1;
+		channelWeights[3] = 200.0;
+#else
+		// Uniform weighting - set the weight of each channel so it has the perceived range of 255
+		// If a channel already has the range 255, the weight is set to 1. If a channel has a range smaller
+		// than 255, its weight will be > 1. If a channel has a weight larger than 255, its weight will be set to < 1.
+		// A weight should never be negative. There is no magic to scaling to 255, it is just that usually there will be some
+		// RGB type channels so 255 should make several of the weights close to 1.
+		std::cout << "Weights: ";
+		for (int c = 0; c < LfnIc::Image::Pixel::NUM_CHANNELS; c++)
+		{
+			typedef itk::NthElementImageAdaptor<AppImageITKType, float> ImageAdaptorType;
+			ImageAdaptorType::Pointer adaptor = ImageAdaptorType::New();
+			adaptor->SelectNthElement(c);
+			adaptor->SetImage(m_image);
+
+			typedef itk::MinimumMaximumImageCalculator<ImageAdaptorType> ImageCalculatorFilterType;
+			ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New();
+			imageCalculatorFilter->SetImage(adaptor);
+			imageCalculatorFilter->Compute();
+
+			channelWeights[c] = 255. / (imageCalculatorFilter->GetMaximum() - imageCalculatorFilter->GetMinimum());
+			std::cout << channelWeights[c] << " ";
+		}
+		std::cout << std::endl;
+#endif
+
+		// Now that the weights have been calculated, apply them directly to the image data.
+		LfnIc::Image::Pixel* pixelPtr = AppITKImage::GetData();
+		for (int i = 0, n = GetWidth() * GetHeight(); i < n; ++i, ++pixelPtr)
+		{
+			LfnIc::Image::Pixel& pixel = *pixelPtr;
+			for (int c = 0; c < LfnIc::Image::Pixel::NUM_CHANNELS; ++c)
+			{
+				pixel.channel[c] *= channelWeights[c];
+			}
+		}
 	}
-	*/
-
-	// Manual weights
-	/*
-	LfnIc::Image::ComponentWeights[0] = .1;
-	LfnIc::Image::ComponentWeights[1] = .1;
-	LfnIc::Image::ComponentWeights[2] = .1;
-	LfnIc::Image::ComponentWeights[3] = 200.0;
-	*/
-
-	// Uniform weighting - set the weight of each channel so it has the perceived range of 255
-	// If a channel already has the range 255, the weight is set to 1. If a channel has a range smaller
-	// than 255, its weight will be > 1. If a channel has a weight larger than 255, its weight will be set to < 1.
-	// A weight should never be negative. There is no magic to scaling to 255, it is just that usually there will be some
-	// RGB type components so 255 should make several of the weights close to 1.
-
-	std::cout << "Weights: ";
-	for(unsigned int i = 0; i < static_cast<unsigned int>(LfnIc::Image::Pixel::NUM_CHANNELS); i++)
-	{
-		typedef itk::NthElementImageAdaptor<AppImageITKType, float> ImageAdaptorType;
-		ImageAdaptorType::Pointer adaptor = ImageAdaptorType::New();
-		adaptor->SelectNthElement(i);
-		adaptor->SetImage(m_image);
-
-		typedef itk::MinimumMaximumImageCalculator <ImageAdaptorType> ImageCalculatorFilterType;
-		ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New();
-		imageCalculatorFilter->SetImage(adaptor);
-		imageCalculatorFilter->Compute();
-
-		LfnIc::Image::ComponentWeights[i] = 255. / (imageCalculatorFilter->GetMaximum() - imageCalculatorFilter->GetMinimum());
-		std::cout << LfnIc::Image::ComponentWeights[i] << " ";
-	}
-	std::cout << std::endl;
+#endif // USE_CHANNEL_WEIGHTING
 
 	return true;
 }
@@ -116,7 +125,7 @@ void AppITKImage::Save()
 	WriterType::Pointer writer = WriterType::New();
 	writer->SetInput(m_image);
 
-	if(typeid(unsigned char) == typeid(Image::Pixel::PixelType) && Image::Pixel::NUM_CHANNELS == 3)
+	if (LfnIc::Image::PixelInfo::IS_24_BIT_RGB)
 	{
 		writer->SetFileName(m_filePath);
 	}
@@ -133,7 +142,7 @@ void AppITKImage::Save()
 
 bool AppITKImage::IsValid() const
 {
-	return m_image != NULL;
+	return m_image;
 }
 
 const std::string& AppITKImage::GetFilePath() const

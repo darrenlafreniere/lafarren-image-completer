@@ -43,6 +43,9 @@ IF(UNIX)
 ENDIF(UNIX)
 
 set(USE_ITK OFF CACHE BOOL "Use ITK?")
+IF(USE_ITK)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_ITK")
+ENDIF(USE_ITK)
 
 set(USE_FLOAT_PIXELS OFF CACHE BOOL "Use float pixels?")
 IF(USE_FLOAT_PIXELS)
@@ -86,6 +89,7 @@ ${ImageCompleterDir}/compositors/CompositorUtils.cpp
 ${ImageCompleterDir}/compositors/ImageFloat.cpp
 ${ImageCompleterDir}/compositors/OutputBlenderDebugSoftMaskIntensity.cpp
 ${ImageCompleterDir}/compositors/OutputBlenderSoftMask.cpp
+${ImageCompleterDir}/compositors/OutputBlenderNone.cpp
 ${ImageCompleterDir}/compositors/PatchBlenderNone.cpp
 ${ImageCompleterDir}/compositors/PatchBlenderPriority.cpp
 ${ImageCompleterDir}/compositors/PatchTypeDebugPatchOrder.cpp
@@ -112,8 +116,6 @@ ${tech}/tech/Time.cpp
 #####################################
 set(AppSources
     ${cmdsrc}/Main.cpp
-    ${cmdsrc}/AppWxImage.cpp
-    ${cmdsrc}/AppWxMask.cpp
     ${cmdsrc}/CommandLineOptions.cpp
     ${cmdsrc}/Pch.cpp
     ${cmdsrc}/SettingsText.cpp
@@ -122,7 +124,7 @@ set(AppSources
 set(LibrariesToLink ${wxWidgets_LIBRARIES} Tech ImageCompleterLib)
 
 IF(USE_ITK)
-  MESSAGE("Building ITK example")
+message("using ITK")
   find_package(ITK REQUIRED)
   include(${ITK_USE_FILE})
 
@@ -131,6 +133,12 @@ IF(USE_ITK)
     ${cmdsrc}/AppITKMask.cpp
     )
   set(LibrariesToLink ${LibrariesToLink} ${ITK_LIBRARIES})
+else(USE_ITK)
+message("using wx")
+  set(AppSources ${AppSources}
+    ${cmdsrc}/AppWxImage.cpp
+    ${cmdsrc}/AppWxMask.cpp
+    )
 ENDIF(USE_ITK)
 
 add_executable(ImageCompleter ${AppSources})

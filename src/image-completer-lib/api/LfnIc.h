@@ -1,19 +1,19 @@
 //
 // Copyright 2010, Darren Lafreniere
 // <http://www.lafarren.com/image-completer/>
-// 
+//
 // This file is part of lafarren.com's Image Completer.
-// 
+//
 // Image Completer is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Image Completer is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with Image Completer, named License.txt. If not, see
 // <http://www.gnu.org/licenses/>.
@@ -36,6 +36,17 @@ namespace LfnIc
 	class Mask;
 	struct Settings;
 
+	enum CompletionResult
+	{
+
+		CompletionSucceeded,
+
+		CompletionFailedInputIsInvalid,
+		CompletionFailedOutputIsInvalid,
+		CompletionFailedInputHasNoKnownData,
+		CompletionFailedForUnknownReasons,
+	};
+
 	//
 	// Performs image completion on a given input image and mask, and returns
 	// the output image.
@@ -47,13 +58,14 @@ namespace LfnIc
 	// If a valid patches ostream is provided, then the patches will be written
 	// to that stream.
 	//
-	extern EXPORT bool Complete(
+	extern EXPORT CompletionResult Complete(
 		const Settings& settings,
 		const Image& inputImage,
 		const Mask& mask,
 		Image& outputImage,
 		std::istream* patchesIstream = NULL,
 		std::ostream* patchesOstream = NULL);
+
 }
 
 #endif

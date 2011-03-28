@@ -103,6 +103,7 @@
     <ClCompile Include="compositors\CompositorUtils.cpp" />
     <ClCompile Include="compositors\ImageFloat.cpp" />
     <ClCompile Include="compositors\OutputBlenderDebugSoftMaskIntensity.cpp" />
+    <ClCompile Include="compositors\OutputBlenderNone.cpp" />
     <ClCompile Include="compositors\OutputBlenderSoftMask.cpp" />
     <ClCompile Include="compositors\PatchBlenderNone.cpp" />
     <ClCompile Include="compositors\PatchBlenderPriority.cpp" />
@@ -146,6 +147,7 @@
     <ClInclude Include="compositors\CompositorUtils.h" />
     <ClInclude Include="compositors\ImageFloat.h" />
     <ClInclude Include="compositors\OutputBlenderDebugSoftMaskIntensity.h" />
+    <ClInclude Include="compositors\OutputBlenderNone.h" />
     <ClInclude Include="compositors\OutputBlenderSoftMask.h" />
     <ClInclude Include="compositors\PatchBlenderNone.h" />
     <ClInclude Include="compositors\PatchBlenderPriority.h" />

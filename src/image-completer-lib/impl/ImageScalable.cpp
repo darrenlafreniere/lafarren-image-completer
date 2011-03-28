@@ -202,7 +202,6 @@ LfnIc::ImageScaledDown::ImageScaledDown(const ImageConst& imageToScaleDown, cons
 				for (int component = 0; component < Image::Pixel::NUM_CHANNELS; ++component)
 				{
 					channel[component] /= numPixelsToAverage;
-					wxASSERT(channel[component] >= 0.0f && channel[component] <= 255.0f);
 				}
 			}
 

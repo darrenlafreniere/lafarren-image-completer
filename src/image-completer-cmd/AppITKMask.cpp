@@ -28,6 +28,7 @@
 #include "tech/DbgMem.h"
 
 #include "itkImageFileReader.h"
+#include "itkImageRegionConstIterator.h"
 
 AppITKMask::AppITKMask() : m_offsetX(0), m_offsetY(0)
 {

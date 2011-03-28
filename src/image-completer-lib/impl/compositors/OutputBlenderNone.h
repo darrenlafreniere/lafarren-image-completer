@@ -19,39 +19,18 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-//
-// Header to be precompiled
-//
+#ifndef OUTPUT_BLENDER_NONE_H
+#define OUTPUT_BLENDER_NONE_H
 
-#ifndef PCH_H
-#define PCH_H
+#include "CompositorRoot.h"
 
-// If not explicitly defining USE_ITK, default to USE_WX.
-#ifndef USE_ITK
-	#define USE_WX
-#endif
+namespace LfnIc
+{
+    class OutputBlenderNone : public CompositorRoot::OutputBlender
+    {
+    public:
+        virtual void Blend(const Compositor::Input& input, const ImageFloat& patchesBlended, ImageFloat& outputImageFloat) const;
+    };
+}
 
-// Compile time switches:
-#define TECH_PROFILE 1
-#define TECH_PROFILE_MACROS 1
-
-#ifdef _DEBUG
-	#include <crtdbg.h>
-	#define DEBUG_NEW new(_NORMAL_BLOCK ,__FILE__, __LINE__)
-#else
-	#define DEBUG_NEW new
-#endif
-
-#include <algorithm>
-#include <fstream>
-#include <iostream>
-#include <map>
-#include <math.h>
-#include <memory>
-#include <set>
-#include <vector>
-
-// wxWidgets headers
-#include "wx/wx.h"
-
-#endif
+#endif // OUTPUT_BLENDER_NONE_H

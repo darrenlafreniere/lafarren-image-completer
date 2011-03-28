@@ -29,6 +29,7 @@
 #include "SettingsText.h"
 
 #ifdef USE_ITK
+#pragma message("Main using ITK.")
 #include "AppITKImage.h"
 #include "AppITKMask.h"
 typedef AppITKImage AppImageType;
@@ -36,6 +37,7 @@ typedef AppITKMask AppMaskType;
 #endif
 
 #ifdef USE_WX
+#pragma message("Main using WX.")
 #include "AppWxImage.h"
 #include "AppWxMask.h"
 typedef AppWxImage AppImageType;
@@ -46,7 +48,7 @@ typedef AppWxMask AppMaskType;
 
 int main(int argc, char** argv)
 {
-	bool succeeded = false;
+	LfnIc::CompletionResult completionResult = LfnIc::CompletionFailedForUnknownReasons;
 	printf("\nlafarren.com\nImage Completion Using Efficient Belief Propagation\n");
 
 	wxInitializer initializer;
@@ -83,12 +85,11 @@ int main(int argc, char** argv)
 				if (options.ShouldShowSettings())
 				{
 					SettingsText::Print(appData.GetSettings());
-					succeeded = true;
 				}
 
 				if (options.ShouldRunImageCompletion())
 				{
-					succeeded = LfnIc::Complete(
+					completionResult = LfnIc::Complete(
 						appData.GetSettings(),
 						appData.GetInputImage(),
 						appData.GetMask(),
@@ -96,7 +97,7 @@ int main(int argc, char** argv)
 						appData.GetPatchesIstream(),
 						appData.GetPatchesOstream());
 
-					if (succeeded)
+					if (completionResult == LfnIc::CompletionSucceeded)
 					{
 						outputImage.Save();
 						wxMessageOutput::Get()->Printf("Completed image and wrote %s.\n", outputImage.GetFilePath().c_str());
@@ -110,5 +111,5 @@ int main(int argc, char** argv)
 		}
 	}
 
-	return succeeded ? 0 : 1;
+	return completionResult;
 }
