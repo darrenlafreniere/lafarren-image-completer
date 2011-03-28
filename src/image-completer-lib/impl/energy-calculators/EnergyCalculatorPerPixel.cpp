@@ -43,17 +43,6 @@ namespace LfnIc
 	// NOTE: value is arbitrary. Do some tests to find the sweet spot.
 	const int MIN_CALCULATIONS_FOR_ASYNC_BATCH = 30;
 
-	// MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY is how many pixels a uint32 energy
-	// variable can safely capture without overflowing, assuming the worst case of
-	// a pure black patch vs pure white patch, where each channel difference is
-	// 255. This is a 32-bit application, but the Energy typedef is 64-bit because
-	// of how large the patches can be. Performing the energy calculations in
-	// 64-bit has a big performance penalty, so calculate in 32-bit batches,
-	// dumping the batch result into the 64-bit energy result before reaching
-	// overflow.
-	const int MAX_ENERGY_PER_PIXEL = (255 * 255) + (255 * 255) + (255 * 255);
-	const int MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY = UINT_MAX / MAX_ENERGY_PER_PIXEL;
-
 	//
 	// PolicyNoMask - handles straight pixel SSD calculations without any masking.
 	// This policy, along with the non-specialized CalculateEnergy function, provide
@@ -63,21 +52,38 @@ namespace LfnIc
 	{
 	public:
 		static const bool HAS_MASK = false;
+		typedef uint32 ResultType;
+
 		inline void OnPreLoop(const Mask* mask) {}
 		inline void OnARow(int aSrcIndex) {}
 		inline void OnBRow(int bSrcIndex) {}
 
-		// See MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY for why this uses uint32.
-		FORCE_INLINE uint32 CalculateSquaredDifference(const Image::Pixel* aSrcRow, const Image::Pixel* bSrcRow, int x)
+		inline int GetMaxPixelsPerBunch() const
+		{
+			// MaxPixelsForUint32Energy is how many pixels a uint32 energy variable
+			// can safely capture without overflowing, assuming the worst case of
+			// a pure black patch vs pure white patch, where each channel difference is
+			// 255. This is a 32-bit application, but the Energy typedef is 64-bit because
+			// of how large the patches can be. Performing the energy calculations in
+			// 64-bit has a big performance penalty, so calculate in 32-bit bunches,
+			// dumping the bunch result into the 64-bit energy result before reaching
+			// overflow.
+			static const int MAX_CHANNEL_VALUE = std::numeric_limits<Image::Pixel::ChannelType>::max();
+			static const int MAX_ENERGY_PER_PIXEL = (MAX_CHANNEL_VALUE * MAX_CHANNEL_VALUE) * Image::Pixel::NUM_CHANNELS;
+			static const int MAX_PIXELS_PER_RESULT = std::numeric_limits<ResultType>::max() / MAX_ENERGY_PER_PIXEL;
+			return MAX_PIXELS_PER_RESULT;
+		}
+
+		FORCE_INLINE ResultType CalculateSquaredDifference(const Image::Pixel* aSrcRow, const Image::Pixel* bSrcRow, int x)
 		{
 			const Image::Pixel& a = aSrcRow[x];
 			const Image::Pixel& b = bSrcRow[x];
 
 			// d[x] = channel delta
 			// e = dr^2 + dg^2 + db^2
-			const uint32 dr = a.channel[0] - b.channel[0];
-			const uint32 dg = a.channel[1] - b.channel[1];
-			const uint32 db = a.channel[2] - b.channel[2];
+			const ResultType dr = a.channel[0] - b.channel[0];
+			const ResultType dg = a.channel[1] - b.channel[1];
+			const ResultType db = a.channel[2] - b.channel[2];
 			return (dr * dr) + (dg * dg) + (db * db);
 		}
 	};
@@ -86,21 +92,34 @@ namespace LfnIc
 	{
 	public:
 		static const bool HAS_MASK = false;
+		typedef float ResultType;
+
 		inline void OnPreLoop(const Mask* mask) {}
 		inline void OnARow(int aSrcIndex) {}
 		inline void OnBRow(int bSrcIndex) {}
 
-		FORCE_INLINE uint32 CalculateSquaredDifference(const Image::Pixel* aSrcRow, const Image::Pixel* bSrcRow, int x)
+		inline int GetMaxPixelsPerBunch() const
+		{
+			// It's difficult to get a hard limit for how much a floating
+			// point result type can hold without overflowing, since the
+			// input pixel range is unknown. This 32x32 bunch limit is
+			// arbitrary.
+			// TODO: base this on std::numeric_limits<ResultType>::digits.
+			return 32 * 32;
+		}
+
+		FORCE_INLINE ResultType CalculateSquaredDifference(const Image::Pixel* aSrcRow, const Image::Pixel* bSrcRow, int x)
 		{
 			const Image::Pixel& a = aSrcRow[x];
 			const Image::Pixel& b = bSrcRow[x];
 
-			float squaredDifference = 0;
+			ResultType squaredDifference = ResultType(0);
 
 			for (int i = 0; i < Image::Pixel::NUM_CHANNELS; ++i)
 			{
 				squaredDifference += (a.channel[i] - b.channel[i]) * (a.channel[i] - b.channel[i]);
 			}
+
 			return squaredDifference;
 		}
 	};
@@ -112,20 +131,20 @@ namespace LfnIc
 	class PolicyMask : public POLICY_NO_MASK
 	{
 	public:
-		typedef POLICY_NO_MASK Super;
 		static const bool HAS_MASK = true;
+		typedef POLICY_NO_MASK Super;
+		typedef typename Super::ResultType ResultType;
 
 		inline void OnPreLoop(const MaskLod* mask)
 		{
 			m_lodBuffer = mask ? mask->GetLodBuffer(mask->GetHighestLod()) : NULL;
 		}
 
-		// See MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY for why this uses uint32.
-		inline uint32 CalculateSquaredDifference(const Image::Pixel* aSrcRow, const Image::Pixel* bSrcRow, int x)
+		inline ResultType CalculateSquaredDifference(const Image::Pixel* aSrcRow, const Image::Pixel* bSrcRow, int x)
 		{
 			return (!m_lodRow || m_lodRow[x] == Mask::KNOWN)
 				? Super::CalculateSquaredDifference(aSrcRow, bSrcRow, x)
-				: 0;
+				: ResultType(0);
 		}
 
 	protected:
@@ -176,11 +195,9 @@ namespace LfnIc
 			POLICY policy;
 			policy.OnPreLoop(mask);
 
-			// See MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY for why energy calculation is
-			// divided into potentially multiple batches using uint32.
-			uint32 energyU32Bit = 0;
-			int numPixelsInBatch = 0;
-			const bool canFitInU32Bit = (width * height) <= MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY;
+			POLICY::ResultType energyBunch = 0;
+			int numPixelsInBunch = 0;
+			const bool canFitInSingleBunch = (width * height) <= policy.GetMaxPixelsPerBunch();
 
 			const Image::Pixel* inputImageRgb = inputImage.GetData();
 			int aRowIndex = LfnTech::GetRowMajorIndex(imageWidth, aLeft, aTop);
@@ -192,11 +209,11 @@ namespace LfnIc
 				policy.OnARow(aRowIndex);
 				policy.OnBRow(bRowIndex);
 
-				if (canFitInU32Bit)
+				if (canFitInSingleBunch)
 				{
 					for (int x = 0; x < width; ++x)
 					{
-						energyU32Bit += policy.CalculateSquaredDifference(aRow, bRow, x++);
+						energyBunch += policy.CalculateSquaredDifference(aRow, bRow, x++);
 					}
 				}
 				else
@@ -205,31 +222,31 @@ namespace LfnIc
 					do
 					{
 						const int remainingPixelsInRow = width - x;
-						const bool shouldDumpBatchAfterStrip = (remainingPixelsInRow > MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY);
-						const int stripWidth = shouldDumpBatchAfterStrip ? MAX_PIXELS_FOR_UNSIGNED_32_BIT_ENERGY : remainingPixelsInRow;
+						const bool shouldDumpBunchAfterStrip = (remainingPixelsInRow > policy.GetMaxPixelsPerBunch());
+						const int stripWidth = shouldDumpBunchAfterStrip ? policy.GetMaxPixelsPerBunch() : remainingPixelsInRow;
 
 						while (x < stripWidth)
 						{
-							energyU32Bit += policy.CalculateSquaredDifference(aRow, bRow, x++);
+							energyBunch += policy.CalculateSquaredDifference(aRow, bRow, x++);
 						}
 
-						if (shouldDumpBatchAfterStrip)
+						if (shouldDumpBunchAfterStrip)
 						{
-							energy64Bit += energyU32Bit;
-							energyU32Bit = 0;
-							numPixelsInBatch = 0;
+							energy64Bit += energyBunch;
+							energyBunch = 0;
+							numPixelsInBunch = 0;
 						}
 						else
 						{
-							numPixelsInBatch += stripWidth;
+							numPixelsInBunch += stripWidth;
 						}
 					}
 					while (x < width);
 				}
 			}
 
-			// Add what's left in the batch.
-			energy64Bit += energyU32Bit;
+			// Add what's left in the bunch.
+			energy64Bit += energyBunch;
 		}
 
 		wxASSERT(energy64Bit >= ENERGY_MIN && energy64Bit <= ENERGY_MAX);
