@@ -38,7 +38,7 @@ public:
 	// AppITKImage interface
 	AppITKImage();
 
-	typedef itk::VectorImage<LfnIc::Image::Pixel::PixelType, 2> AppImageITKType;
+	typedef itk::VectorImage<LfnIc::Image::Pixel::ChannelType, 2> AppImageITKType;
 
 	// LfnIc::Image interface
 	bool LoadAndValidate(const std::string& imagePath);
