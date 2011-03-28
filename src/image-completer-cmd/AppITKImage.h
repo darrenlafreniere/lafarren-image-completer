@@ -51,10 +51,11 @@ public:
 	virtual int GetWidth() const;
 	virtual int GetHeight() const;
 
+    float m_channelWeights[LfnIc::Image::Pixel::NUM_CHANNELS];
 private:
 	// Internal data
 	AppImageITKType::Pointer m_image;
-    float m_channelWeights[LfnIc::Image::Pixel::NUM_CHANNELS];
+
 };
 
 #endif // USE_ITK

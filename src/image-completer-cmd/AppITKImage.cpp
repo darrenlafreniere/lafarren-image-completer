@@ -76,11 +76,11 @@ bool AppITKImage::LoadAndValidate(const std::string& imagePath)
 	std::cout << "Weights: ";
 	for (int c = 0; c < LfnIc::Image::Pixel::NUM_CHANNELS; c++)
 	{
-	    typedef itk::Image<LfnIc::Image::Pixel::PixelType, 2> ScalarImageType;
+	    typedef itk::Image<LfnIc::Image::Pixel::ChannelType, 2> ScalarImageType;
 
 	    typedef itk::VectorIndexSelectionCastImageFilter<AppImageITKType, ScalarImageType> IndexSelectionType;
 	    IndexSelectionType::Pointer indexSelectionFilter = IndexSelectionType::New();
-	    indexSelectionFilter->SetIndex(i);
+	    indexSelectionFilter->SetIndex(c);
 	    indexSelectionFilter->SetInput(m_image);
 	    indexSelectionFilter->Update();
 
@@ -89,8 +89,8 @@ bool AppITKImage::LoadAndValidate(const std::string& imagePath)
 	    imageCalculatorFilter->SetImage(indexSelectionFilter->GetOutput());
 	    imageCalculatorFilter->Compute();
 
-	    m_channelWeights[i] = 255. / (imageCalculatorFilter->GetMaximum() - imageCalculatorFilter->GetMinimum());
-	    std::cout << m_channelWeights[i] << " ";
+	    m_channelWeights[c] = 255. / (imageCalculatorFilter->GetMaximum() - imageCalculatorFilter->GetMinimum());
+	    std::cout << m_channelWeights[c] << " ";
 	}
 	std::cout << std::endl;
 
@@ -101,7 +101,7 @@ bool AppITKImage::LoadAndValidate(const std::string& imagePath)
 		LfnIc::Image::Pixel& pixel = *pixelPtr;
 		for (int c = 0; c < LfnIc::Image::Pixel::NUM_CHANNELS; ++c)
 		{
-			pixel.channel[c] *= channelWeights[c];
+			pixel.channel[c] *= m_channelWeights[c];
 		}
 	}
 #endif // USE_CHANNEL_WEIGHTING
@@ -111,7 +111,15 @@ bool AppITKImage::LoadAndValidate(const std::string& imagePath)
 
 void AppITKImage::Save()
 {
+  std::cout << "Save()" << std::endl;
 #if USE_CHANNEL_WEIGHTING
+std::cout << "Output weights: ";
+    for (int c = 0; c < LfnIc::Image::Pixel::NUM_CHANNELS; c++)
+    {
+        std::cout << m_channelWeights[c] << " ";
+    }
+    std::cout << std::endl;
+
     LfnIc::Image::Pixel* pixelPtr = AppITKImage::GetData();
     for (int i = 0, n = GetWidth() * GetHeight(); i < n; ++i, ++pixelPtr)
     {
