@@ -27,8 +27,9 @@
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 #include "itkImageRegionIterator.h"
-#include "itkNthElementImageAdaptor.h"
+//#include "itkNthElementImageAdaptor.h"
 #include "itkMinimumMaximumImageCalculator.h"
+#include "itkVectorIndexSelectionCastImageFilter.h"
 
 AppITKImage::AppITKImage()
 {
@@ -50,6 +51,7 @@ bool AppITKImage::LoadAndValidate(const std::string& imagePath)
 	// Deep copy
 
 	m_image->SetRegions(reader->GetOutput()->GetLargestPossibleRegion());
+    m_image->SetNumberOfComponentsPerPixel(LfnIc::Image::Pixel::NUM_CHANNELS);
 	m_image->Allocate();
 
 	itk::ImageRegionConstIterator<AppImageITKType> inputIterator(reader->GetOutput(), reader->GetOutput()->GetLargestPossibleRegion());
@@ -89,18 +91,28 @@ bool AppITKImage::LoadAndValidate(const std::string& imagePath)
 	std::cout << "Weights: ";
 	for(unsigned int i = 0; i < static_cast<unsigned int>(LfnIc::Image::Pixel::NUM_CHANNELS); i++)
 	{
+    /*
 		typedef itk::NthElementImageAdaptor<AppImageITKType, float> ImageAdaptorType;
 		ImageAdaptorType::Pointer adaptor = ImageAdaptorType::New();
 		adaptor->SelectNthElement(i);
 		adaptor->SetImage(m_image);
+    */
 
-		typedef itk::MinimumMaximumImageCalculator <ImageAdaptorType> ImageCalculatorFilterType;
-		ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New();
-		imageCalculatorFilter->SetImage(adaptor);
-		imageCalculatorFilter->Compute();
+    typedef itk::Image<LfnIc::Image::Pixel::PixelType, 2> ScalarImageType;
 
-		m_componentWeights[i] = 255. / (imageCalculatorFilter->GetMaximum() - imageCalculatorFilter->GetMinimum());
-		std::cout << m_componentWeights[i] << " ";
+    typedef itk::VectorIndexSelectionCastImageFilter<AppImageITKType, ScalarImageType> IndexSelectionType;
+    IndexSelectionType::Pointer indexSelectionFilter = IndexSelectionType::New();
+    indexSelectionFilter->SetIndex(i);
+    indexSelectionFilter->SetInput(m_image);
+    indexSelectionFilter->Update();
+
+    typedef itk::MinimumMaximumImageCalculator <ScalarImageType> ImageCalculatorFilterType;
+    ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New();
+    imageCalculatorFilter->SetImage(indexSelectionFilter->GetOutput());
+    imageCalculatorFilter->Compute();
+
+    m_componentWeights[i] = 255. / (imageCalculatorFilter->GetMaximum() - imageCalculatorFilter->GetMinimum());
+    std::cout << m_componentWeights[i] << " ";
 	}
 	std::cout << std::endl;
 
@@ -167,8 +179,9 @@ bool AppITKImage::Init(int width, int height)
 	}
 
 	m_image->SetRegions(region);
+    m_image->SetNumberOfComponentsPerPixel(LfnIc::Image::Pixel::NUM_CHANNELS);
 	m_image->Allocate();
-	m_image->FillBuffer(itk::NumericTraits<ITKPixelType>::Zero);
+//	m_image->FillBuffer(itk::NumericTraits<ITKPixelType>::Zero);
 
 	return true;
 }

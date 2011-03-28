@@ -27,7 +27,7 @@
 #include "AppData.h"
 
 #include "itkImage.h"
-#include "itkCovariantVector.h"
+#include "itkVectorImage.h"
 
 //
 // Implements LfnIc::Image, using a itk::Image to load, store, and save the data.
@@ -37,8 +37,7 @@ class AppITKImage : public AppData::Image
 public:
 	// AppITKImage interface
 	AppITKImage();
-	typedef itk::CovariantVector<LfnIc::Image::Pixel::PixelType, LfnIc::Image::Pixel::NUM_CHANNELS> ITKPixelType;
-	typedef itk::Image<ITKPixelType, 2> AppImageITKType;
+	typedef itk::VectorImage<LfnIc::Image::Pixel::PixelType, 2> AppImageITKType;
 
 	// LfnIc::Image interface
 	bool LoadAndValidate(const std::string& imagePath);
