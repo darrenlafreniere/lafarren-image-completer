@@ -36,12 +36,16 @@ namespace LfnIc
 	class Mask;
 	struct Settings;
 
-    enum CompletionResult
-    { CompletionSucceeded,
-    CompletionFailedInputIsInvalid,
-    CompletionFailedOutputIsInvalid,
-    CompletionFailedInputHasNoKnownData,
-    };
+	enum CompletionResult
+	{
+
+		CompletionSucceeded,
+
+		CompletionFailedInputIsInvalid,
+		CompletionFailedOutputIsInvalid,
+		CompletionFailedInputHasNoKnownData,
+		CompletionFailedForUnknownReasons,
+	};
 
 	//
 	// Performs image completion on a given input image and mask, and returns

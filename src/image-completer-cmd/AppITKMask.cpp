@@ -58,21 +58,6 @@ bool AppITKMask::LoadAndValidate(const std::string& imagePath, int offsetX, int 
 	return true;
 }
 
-bool AppITKMask::HasKnownPixel() const
-{
-  itk::ImageRegionConstIterator<MaskImageType> maskIterator(m_mask, m_mask->GetLargestPossibleRegion());
-
-  while(!maskIterator.IsAtEnd())
-  {
-      if(ByteToMaskValue(maskIterator.Get()) == KNOWN)
-      {
-          return true;
-      }
-      ++maskIterator;
-  }
-  return false;
-}
-
 LfnIc::Mask::Value AppITKMask::GetValue(int x, int y) const
 {
 	const int xMaskSpace = x - m_offsetX;

@@ -32,10 +32,10 @@ namespace LfnIc
 	// smooth the transition over the known-unknown boundaries.
 	void CreateSoftMask(const Compositor::Input& input, std::vector<float>& out);
 
-    inline float MaskValueToAlpha(Mask::Value maskValue)
-    {
-        return (maskValue == Mask::UNKNOWN) ? 0.0f : 1.0f;
-    }
+	inline float MaskValueToAlpha(Mask::Value maskValue)
+	{
+		return (maskValue == Mask::UNKNOWN) ? 0.0f : 1.0f;
+	}
 }
 
 #endif

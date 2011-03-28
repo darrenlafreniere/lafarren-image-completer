@@ -46,6 +46,12 @@ public:
 private:
 	// Internal data
 	wxImage m_wxImage;
+
+#ifdef USE_FLOAT_PIXELS
+	// AppWxImage supports USE_FLOAT_PIXELS for testing purposes, to ensure
+	// that the "general" policies in EnergyCalculatorPerPixel work properly.
+	std::vector<LfnIc::Image::Pixel> m_pixels;
+#endif
 };
 
 #endif // USE_WX

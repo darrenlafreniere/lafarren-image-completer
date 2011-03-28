@@ -45,6 +45,24 @@ bool AppWxImage::LoadAndValidate(const std::string& imagePath)
 	else
 	{
 		result = true;
+
+#ifdef USE_FLOAT_PIXELS
+		// Copy into float pixels.
+		{
+			wxASSERT(LfnIc::Image::Pixel::NUM_CHANNELS == 3);
+			const wxImage::RGBValue* rgbPtr = reinterpret_cast<const wxImage::RGBValue*>(m_wxImage.GetData());
+			const int numPixels = GetWidth() * GetHeight();
+			m_pixels.resize(numPixels);
+			for (int i = 0; i < numPixels; ++i, ++rgbPtr)
+			{
+				LfnIc::Image::Pixel& pixel = m_pixels[i];
+				const wxImage::RGBValue& rgb = *rgbPtr;
+				pixel.channel[0] = rgb.red;
+				pixel.channel[1] = rgb.green;
+				pixel.channel[2] = rgb.blue;
+			}
+		}
+#endif
 	}
 
 	return result;
@@ -52,6 +70,20 @@ bool AppWxImage::LoadAndValidate(const std::string& imagePath)
 
 void AppWxImage::Save()
 {
+#ifdef USE_FLOAT_PIXELS
+	// Copy float pixels into m_wxImage before saving.
+	{
+		wxImage::RGBValue* rgbPtr = reinterpret_cast<wxImage::RGBValue*>(m_wxImage.GetData());
+		for (int i = 0, n = GetWidth() * GetHeight(); i < n; ++i, ++rgbPtr)
+		{
+			wxImage::RGBValue& rgb = *rgbPtr;
+			const LfnIc::Image::Pixel& pixel = m_pixels[i];
+			rgb.red   = pixel.channel[0];
+			rgb.green = pixel.channel[1];
+			rgb.blue  = pixel.channel[2];
+		}
+	}
+#endif
 	m_wxImage.SaveFile(m_filePath);
 }
 
@@ -67,17 +99,28 @@ const std::string& AppWxImage::GetFilePath() const
 
 bool AppWxImage::Init(int width, int height)
 {
+#ifdef USE_FLOAT_PIXELS
+	m_pixels.resize(width * height);
+#endif
 	return m_wxImage.Create(width, height, false);
 }
 
 LfnIc::Image::Pixel* AppWxImage::GetData()
 {
+#ifdef USE_FLOAT_PIXELS
+	return &m_pixels[0];
+#else
 	return reinterpret_cast<LfnIc::Image::Pixel*>(m_wxImage.GetData());
+#endif
 }
 
 const LfnIc::Image::Pixel* AppWxImage::GetData() const
 {
+#ifdef USE_FLOAT_PIXELS
+	return &m_pixels[0];
+#else
 	return reinterpret_cast<const LfnIc::Image::Pixel*>(m_wxImage.GetData());
+#endif
 }
 
 int AppWxImage::GetWidth() const

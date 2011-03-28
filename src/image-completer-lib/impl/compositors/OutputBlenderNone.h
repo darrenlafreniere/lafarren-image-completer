@@ -26,8 +26,6 @@
 
 namespace LfnIc
 {
-    class ImageFloat;
-
     class OutputBlenderNone : public CompositorRoot::OutputBlender
     {
     public:

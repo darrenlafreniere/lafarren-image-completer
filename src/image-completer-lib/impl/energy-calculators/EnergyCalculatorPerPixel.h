@@ -137,11 +137,11 @@ namespace LfnIc
 		virtual void ProcessCalculations();
 		virtual Energy GetResult(BatchQueued::Handle handle) const;
 
-        template<typename POLICY>
-		Energy CalculateNoMask(int bLeft, int bTop, std::vector<float>& componentWeights) const;
+		template<typename POLICY>
+		Energy CalculateNoMask(int bLeft, int bTop) const;
 
-        template<typename POLICY>
-		Energy CalculateMaskA(int bLeft, int bTop, std::vector<float>& componentWeights) const;
+		template<typename POLICY>
+		Energy CalculateMaskA(int bLeft, int bTop) const;
 
 		//
 		// Data

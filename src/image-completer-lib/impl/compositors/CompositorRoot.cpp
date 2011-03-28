@@ -50,8 +50,6 @@ LfnIc::CompositorRoot::CompositorRoot(
 
 bool LfnIc::CompositorRoot::Compose(const Input& input, Image& outputImage) const
 {
-	bool result = false;
-
 	const ImageConst& inputImage = input.inputImage;
 	const Settings& settings = input.settings;
 
@@ -88,5 +86,5 @@ bool LfnIc::CompositorRoot::Compose(const Input& input, Image& outputImage) cons
 	}
 
 	outputImageFloat.CopyTo(outputImage);
-	return result;
+	return true;
 }
