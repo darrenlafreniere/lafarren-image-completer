@@ -159,7 +159,7 @@ namespace LfnIc
 	class PolicyMaskA : public PolicyMask<POLICY_NO_MASK>
 	{
 	public:
-		typedef typename PolicyMask<POLICY_NO_MASK> Super;
+		typedef PolicyMask<POLICY_NO_MASK> Super;
 
 		inline void OnARow(int aSrcIndex)
 		{
