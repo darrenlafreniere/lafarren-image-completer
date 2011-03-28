@@ -30,7 +30,7 @@
 
 #include "EnergyCalculatorFftUtils.h"
 #include "ImageConst.h"
-#include "Mask.h"
+#include "MaskLod.h"
 
 #include "tech/DbgMem.h"
 
@@ -115,7 +115,7 @@ void LfnIc::EnergyWsst::Construct(const ImageConst& inputImage, const MaskLod* m
 {
 	const int imageWidth = inputImage.GetWidth();
 	const int imageHeight = inputImage.GetHeight();
-	const Image::Rgb* imageRgb = inputImage.GetRgb();
+	const Image::Pixel* imagePixel = inputImage.GetData();
 	const Mask::Value* maskBuffer = mask ? mask->GetLodBuffer(mask->GetHighestLod()) : NULL;
 
 	m_table = new Energy[m_tableWidth * m_tableHeight];
@@ -150,19 +150,23 @@ void LfnIc::EnergyWsst::Construct(const ImageConst& inputImage, const MaskLod* m
 		}
 
 		// x and y are in image space
-		FORCE_INLINE Energy Get(const Image::Rgb* imageRgb, const Mask::Value* maskBuffer, int x, int y) const
+		FORCE_INLINE Energy Get(const Image::Pixel* imagePixel, const Mask::Value* maskBuffer, int x, int y) const
 		{
+			Energy e(0);
+
 			if (x >= 0 && y >= 0 && x < m_imageWidth && y < m_imageHeight)
 			{
 				const int imageIdx = LfnTech::GetRowMajorIndex(m_imageWidth, x, y);
 				if (!maskBuffer || maskBuffer[imageIdx] == Mask::KNOWN)
 				{
-					const Image::Rgb& rgb = imageRgb[imageIdx];
-					return Energy((rgb.red * rgb.red) + (rgb.green * rgb.green) + (rgb.blue * rgb.blue));
+					const Image::Pixel& pixel = imagePixel[imageIdx];
+					for (int c = 0; c < Image::Pixel::NUM_CHANNELS; ++c)
+					{
+						e += Energy(pixel.channel[c] * pixel.channel[c]);
+					}
 				}
 			}
 
-			static Energy e(0);
 			return e;
 		}
 
@@ -205,7 +209,7 @@ void LfnIc::EnergyWsst::Construct(const ImageConst& inputImage, const MaskLod* m
 							const int tableY = imageY + m_blockHeight;
 
 							Energy& e = data2d.Get(sstTable, tableX, tableY);
-							e = data2d.Get(imageRgb, maskBuffer, imageX, imageY);
+							e = data2d.Get(imagePixel, maskBuffer, imageX, imageY);
 
 							if (i < blockRight)
 							{

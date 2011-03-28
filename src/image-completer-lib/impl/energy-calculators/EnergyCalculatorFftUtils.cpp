@@ -27,7 +27,7 @@
 #include "tech/MathUtils.h"
 
 #include "ImageConst.h"
-#include "Mask.h"
+#include "MaskLod.h"
 
 #include "tech/DbgMem.h"
 
@@ -39,7 +39,7 @@ LfnIc::Energy LfnIc::EnergyCalculatorFftUtils::BruteForceCalculate1stTerm(const 
 	const int imageWidth = image.GetWidth();
 	const int imageHeight = image.GetHeight();
 	const Mask::Value* maskBuffer = aMask ? aMask->GetLodBuffer(aMask->GetHighestLod()) : NULL;
-	const Image::Rgb* imageRgb = image.GetRgb();
+	const Image::Pixel* imagePixel = image.GetData();
 
 	for (int y = 0; y < height; ++y)
 	{
@@ -50,8 +50,12 @@ LfnIc::Energy LfnIc::EnergyCalculatorFftUtils::BruteForceCalculate1stTerm(const 
 				const int idx = LfnTech::GetRowMajorIndex(imageWidth, aLeft + x, aTop + y);
 				if (!aMask || maskBuffer[idx] == Mask::KNOWN)
 				{
-					const Image::Pixel& rgb = imageRgb[idx];
-					e += Energy((rgb.red * rgb.red) + (rgb.green * rgb.green) + (rgb.blue * rgb.blue));
+					const Image::Pixel& pixel = imagePixel[idx];
+
+					for (int c = 0; c < Image::Pixel::NUM_CHANNELS; ++c)
+					{
+						e += Energy(pixel.channel[c] * pixel.channel[c]);
+					}
 				}
 			}
 		}
@@ -67,7 +71,7 @@ LfnIc::Energy LfnIc::EnergyCalculatorFftUtils::BruteForceCalculate2ndTerm(const 
 	const int imageWidth = image.GetWidth();
 	const int imageHeight = image.GetHeight();
 	const Mask::Value* maskBuffer = aMask ? aMask->GetLodBuffer(aMask->GetHighestLod()) : NULL;
-	const Image::Rgb* imageRgb = image.GetRgb();
+	const Image::Pixel* imagePixel = image.GetData();
 
 	for (int j = 0; j < height; ++j)
 	{
@@ -84,13 +88,14 @@ LfnIc::Energy LfnIc::EnergyCalculatorFftUtils::BruteForceCalculate2ndTerm(const 
 					const int aIdx = LfnTech::GetRowMajorIndex(imageWidth, ax, ay);
 					if (!aMask || maskBuffer[aIdx] == Mask::KNOWN)
 					{
-						const Image::Rgb& aRgb = imageRgb[aIdx];
-						const Image::Rgb& bRgb = imageRgb[LfnTech::GetRowMajorIndex(imageWidth, bx, by)];
+						const Image::Pixel& aPixel = imagePixel[aIdx];
+						const Image::Pixel& bPixel = imagePixel[LfnTech::GetRowMajorIndex(imageWidth, bx, by)];
 						const int scalar = 2;
-						const int rmult = scalar * aRgb.red * bRgb.red;
-						const int gmult = scalar * aRgb.green * bRgb.green;
-						const int bmult = scalar * aRgb.blue * bRgb.blue;
-						e += rmult + gmult + bmult;
+
+						for (int c = 0; c < Image::Pixel::NUM_CHANNELS; ++c)
+						{
+							e += scalar * aPixel.channel[c] * bPixel.channel[c];
+						}
 					}
 				}
 			}
