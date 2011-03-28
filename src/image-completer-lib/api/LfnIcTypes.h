@@ -31,15 +31,15 @@ namespace LfnIc
 	// Markov Random Field energy
 	typedef int64 Energy;
 	const Energy ENERGY_MIN = Energy(0);
-	const Energy ENERGY_MAX = Energy(std::numeric_limits<long long>::max());
+	const Energy ENERGY_MAX = Energy(std::numeric_limits<Energy>::max());
 
 	// Markov Random Field belief
 	typedef Energy Belief;
-	const Belief BELIEF_MIN = Belief(std::numeric_limits<int>::min());
+	const Belief BELIEF_MIN = Belief(std::numeric_limits<Belief>::min());
 	const Belief BELIEF_MAX = Belief(0);
 
 	typedef float Priority;
-	const Priority PRIORITY_MIN = Priority(std::numeric_limits<float>::min());
+	const Priority PRIORITY_MIN = Priority(std::numeric_limits<Priority>::min());
 	const Priority PRIORITY_MAX = Priority(1);
 
 	// Determines how patches are extracted from the input image, or otherwise
