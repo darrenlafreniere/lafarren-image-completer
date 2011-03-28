@@ -21,6 +21,8 @@
 
 #include "Pch.h"
 
+#include "wx/filename.h"
+
 #ifdef USE_ITK
 #include "AppITKImage.h"
 
@@ -142,10 +144,15 @@ std::cout << "Output weights: ";
 	}
 	else
 	{
-		// If the image is not 3 channel and unsigned char, append ".mhd" to the end of the filename so it can be written
+		// If the image is not 3 channel and unsigned char, change file extension to ".mhd" so it can be written
+		/*
 		std::stringstream ss;
 		ss << m_filePath << ".mhd";
 		writer->SetFileName(ss.str());
+		*/
+        wxFileName filename(m_filePath);
+        filename.SetExt("mhd");
+        writer->SetFileName(filename.GetFullName().ToAscii());
 	}
 
 	writer->Update();
