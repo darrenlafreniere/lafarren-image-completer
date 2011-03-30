@@ -235,6 +235,7 @@ namespace LfnIc
 					// Construct priority-bp related data, passing in the required dependencies.
 					EnergyCalculatorContainer energyCalculatorContainer(settingsScalable, imageScalable, maskScalable);
 					LabelSet labelSet(settingsScalable, imageScalable, maskScalable);
+                    std::cout << "There are " << labelSet.size() << " labels." << std::endl;
 					NodeSet nodeSet(settingsScalable, imageScalable, maskScalable, labelSet, energyCalculatorContainer);
 					PriorityBpRunner priorityBpRunner(settingsScalable, nodeSet);
 

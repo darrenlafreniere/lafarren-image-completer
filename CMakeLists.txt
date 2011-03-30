@@ -117,7 +117,6 @@ ${tech}/tech/Time.cpp
 )
 set_target_properties(Tech PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS}")
 
-
 #####################################
 set(AppSources
     ${cmdsrc}/Main.cpp
@@ -125,7 +124,6 @@ set(AppSources
     ${cmdsrc}/Pch.cpp
     ${cmdsrc}/SettingsText.cpp
 )
-
 
 set(LibrariesToLink ${wxWidgets_LIBRARIES} Tech ImageCompleterLib)
 
@@ -158,32 +156,41 @@ set_target_properties(ImageCompleter PROPERTIES COMPILE_DEFINITIONS "${MAIN_BUIL
 #####################################
 
 # 1 channel float images
+find_package(ITK REQUIRED)
+include(${ITK_USE_FILE})
 
-set(definitions1f "EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET;UNIX;USE_ITK;USE_FLOAT_PIXELS;PIXEL_DIMENSION=1")
+set(definitions1f "USE_ITK;USE_FLOAT_PIXELS;PIXEL_DIMENSION=1")
+message("ImageCompleter1f definitions: ${CORE_DEFINITIONS};${definitions1f}")
 
 add_library(ImageCompleterLib1f ${ImageCompleterSources})
 set_target_properties(ImageCompleterLib1f PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${definitions1f}")
 
 add_executable(ImageCompleter1f ${AppSources} ${cmdsrc}/AppITKImage.cpp ${cmdsrc}/AppITKMask.cpp)
-target_link_libraries(ImageCompleter1f ${LibrariesToLink})
-set_target_properties(ImageCompleter1f PROPERTIES COMPILE_DEFINITIONS "${definitions1f}")
+target_link_libraries(ImageCompleter1f ${LibrariesToLink} ${ImageCompleterLib1f} ${ITK_LIBRARIES})
+set_target_properties(ImageCompleter1f PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${definitions1f}")
 
 
 ############################
 # 3 channel unsigned char images
 #Careful, if weights are used the pixel type must be float! (because multiplying a weight of say 2 to a pixel value of 150 will produce 300 which is > 255)
-
-set(definitions3uc "EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET;UNIX;USE_ITK;PIXEL_DIMENSION=3")
-
-add_library(definitions3uc ${ImageCompleterSources})
-set_target_properties(definitions3uc PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${definitions3uc}")
-
-add_executable(ImageCompleter3uc ${AppSources} ${cmdsrc}/AppITKImage.cpp ${cmdsrc}/AppITKMask.cpp)
-target_link_libraries(ImageCompleter3uc ${LibrariesToLink})
-set_target_properties(ImageCompleter3uc PROPERTIES COMPILE_DEFINITIONS "${definitions3uc}")
+#
+# set(definitions3uc "EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET;UNIX;USE_ITK;PIXEL_DIMENSION=3")
+#
+# add_library(ImageCompleterLib3uc ${ImageCompleterSources})
+# set_target_properties(ImageCompleterLib3uc PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${definitions3uc}")
+#
+# add_executable(ImageCompleter3uc ${AppSources} ${cmdsrc}/AppITKImage.cpp ${cmdsrc}/AppITKMask.cpp)
+# target_link_libraries(ImageCompleter3uc ${LibrariesToLink} ${ImageCompleterLib3uc})
+# set_target_properties(ImageCompleter3uc PROPERTIES COMPILE_DEFINITIONS "${definitions3uc}")
 
 ##############################
 # wx build
-# add_executable(ImageCompleter3uc ${AppSources}     ${cmdsrc}/AppWxImage.cpp ${cmdsrc}/AppWxMask.cpp)
-# target_link_libraries(ImageCompleter3uc ${LibrariesToLink})
-# SET(CMAKE_CXX_FLAGS "-DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET -DUNIX -DPIXEL_DIMENSION=3")
+
+set(definitions3uc "PIXEL_DIMENSION=3")
+message("ImageCompleter3uc definitions: ${CORE_DEFINITIONS};${definitions3uc}")
+add_library(ImageCompleterLib3uc ${ImageCompleterSources})
+set_target_properties(ImageCompleterLib3uc PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${definitions3uc}")
+
+add_executable(ImageCompleter3uc ${AppSources} ${cmdsrc}/AppWxImage.cpp ${cmdsrc}/AppWxMask.cpp)
+target_link_libraries(ImageCompleter3uc ${LibrariesToLink} ${ImageCompleterLib3uc})
+set_target_properties(ImageCompleter3uc PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${definitions3uc}")
