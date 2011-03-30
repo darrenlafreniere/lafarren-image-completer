@@ -153,6 +153,7 @@ std::cout << "Output weights: ";
         wxFileName filename(m_filePath);
         filename.SetExt("mhd");
         writer->SetFileName(filename.GetFullName().ToAscii());
+        std::cout << "Writing " << filename.GetFullName().ToAscii() << std::endl;
 	}
 
 	writer->Update();

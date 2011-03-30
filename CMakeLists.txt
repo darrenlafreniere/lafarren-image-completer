@@ -12,7 +12,7 @@ FIND_PACKAGE(BLAS REQUIRED)
 
 include_directories(${UMFPACK_INCLUDES})
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET")
+list(APPEND CORE_DEFINITIONS "EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET")
 # must link to umfpack
 
 ################################
@@ -29,31 +29,33 @@ include_directories(src/image-completer-cmd src/image-completer-lib src/image-co
 #If you want to enable the patches to be composited using Poisson blending, set this flag to ON (requires TAUCS to be installed).
 set(USE_POISSON OFF CACHE BOOL "Use Poisson blending?")
 if(USE_POISSON)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_POISSON")
+  #set(MAIN_BUILD_FLAGS "${MAIN_BUILD_FLAGS} -DUSE_POISSON")
+  set(MAIN_BUILD_DEFINITIONS "${MAIN_BUILD_DEFINITIONS} USE_POISSON;")
+  set(LibrariesToLink ${LibrariesToLink} umfpack)
 endif(USE_POISSON)
 
 #If you want to enable the per-pixel energy calculator to use multiple hardware threads, set this flag to ON.
 set(USE_THREADS OFF CACHE BOOL "Use threads?" FORCE)
 if(USE_THREADS)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_THREADS")
+  list(APPEND MAIN_BUILD_DEFINITIONS "USE_THREADS")
 endif(USE_THREADS)
 
 IF(UNIX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUNIX")
+  list(APPEND CORE_DEFINITIONS "UNIX")
 ENDIF(UNIX)
 
 set(USE_ITK OFF CACHE BOOL "Use ITK?")
 IF(USE_ITK)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_ITK")
+  list(APPEND MAIN_BUILD_DEFINITIONS "USE_ITK")
 ENDIF(USE_ITK)
 
 set(USE_FLOAT_PIXELS OFF CACHE BOOL "Use float pixels?")
 IF(USE_FLOAT_PIXELS)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_FLOAT_PIXELS")
+  list(APPEND MAIN_BUILD_DEFINITIONS "USE_FLOAT_PIXELS")
 ENDIF(USE_FLOAT_PIXELS)
 
 set(PIXEL_DIMENSION 3 CACHE STRING "Dimensionality of pixels?") #cmake doesn't have an "INT" variable type, so treat it as a string
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPIXEL_DIMENSION=${PIXEL_DIMENSION}")
+list(APPEND MAIN_BUILD_DEFINITIONS "PIXEL_DIMENSION=${PIXEL_DIMENSION}")
 
 ###############
 #if Eigen is setup correctly, we would want to enable Poisson blending
@@ -102,6 +104,7 @@ ${ImageCompleterDir}/energy-calculators/EnergyCalculatorPerPixel.cpp
 )
 
 add_library(ImageCompleterLib ${ImageCompleterSources})
+set_target_properties(ImageCompleterLib PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${MAIN_BUILD_DEFINITIONS}")
 
 add_library(Tech
 ${tech}/Pch.cpp
@@ -112,6 +115,8 @@ ${tech}/tech/Profile.cpp
 ${tech}/tech/StrUtils.cpp
 ${tech}/tech/Time.cpp
 )
+set_target_properties(Tech PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS}")
+
 
 #####################################
 set(AppSources
@@ -121,30 +126,64 @@ set(AppSources
     ${cmdsrc}/SettingsText.cpp
 )
 
+
 set(LibrariesToLink ${wxWidgets_LIBRARIES} Tech ImageCompleterLib)
 
 IF(USE_ITK)
-message("using ITK")
+  message("using ITK")
   find_package(ITK REQUIRED)
   include(${ITK_USE_FILE})
 
-  set(AppSources ${AppSources}
+  set(MainAppSources ${AppSources}
     ${cmdsrc}/AppITKImage.cpp
     ${cmdsrc}/AppITKMask.cpp
     )
   set(LibrariesToLink ${LibrariesToLink} ${ITK_LIBRARIES})
 else(USE_ITK)
-message("using wx")
-  set(AppSources ${AppSources}
+  message("using wx")
+  set(MainAppSources ${AppSources}
     ${cmdsrc}/AppWxImage.cpp
     ${cmdsrc}/AppWxMask.cpp
     )
 ENDIF(USE_ITK)
 
-add_executable(ImageCompleter ${AppSources})
-
-IF(USE_POISSON)
-  set(LibrariesToLink ${LibrariesToLink} umfpack)
-ENDIF(USE_POISSON)
-
+add_executable(ImageCompleter ${MainAppSources})
 target_link_libraries(ImageCompleter ${LibrariesToLink})
+message("Main build definitions: ${MAIN_BUILD_DEFINITIONS}")
+message("Core definitions: ${CORE_DEFINITIONS}")
+set_target_properties(ImageCompleter PROPERTIES COMPILE_DEFINITIONS "${MAIN_BUILD_DEFINITIONS};${CORE_DEFINITIONS}")
+
+#####################################
+# # Special builds
+#####################################
+
+# 1 channel float images
+
+set(definitions1f "EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET;UNIX;USE_ITK;USE_FLOAT_PIXELS;PIXEL_DIMENSION=1")
+
+add_library(ImageCompleterLib1f ${ImageCompleterSources})
+set_target_properties(ImageCompleterLib1f PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${definitions1f}")
+
+add_executable(ImageCompleter1f ${AppSources} ${cmdsrc}/AppITKImage.cpp ${cmdsrc}/AppITKMask.cpp)
+target_link_libraries(ImageCompleter1f ${LibrariesToLink})
+set_target_properties(ImageCompleter1f PROPERTIES COMPILE_DEFINITIONS "${definitions1f}")
+
+
+############################
+# 3 channel unsigned char images
+#Careful, if weights are used the pixel type must be float! (because multiplying a weight of say 2 to a pixel value of 150 will produce 300 which is > 255)
+
+set(definitions3uc "EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET;UNIX;USE_ITK;PIXEL_DIMENSION=3")
+
+add_library(definitions3uc ${ImageCompleterSources})
+set_target_properties(definitions3uc PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${definitions3uc}")
+
+add_executable(ImageCompleter3uc ${AppSources} ${cmdsrc}/AppITKImage.cpp ${cmdsrc}/AppITKMask.cpp)
+target_link_libraries(ImageCompleter3uc ${LibrariesToLink})
+set_target_properties(ImageCompleter3uc PROPERTIES COMPILE_DEFINITIONS "${definitions3uc}")
+
+##############################
+# wx build
+# add_executable(ImageCompleter3uc ${AppSources}     ${cmdsrc}/AppWxImage.cpp ${cmdsrc}/AppWxMask.cpp)
+# target_link_libraries(ImageCompleter3uc ${LibrariesToLink})
+# SET(CMAKE_CXX_FLAGS "-DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET -DUNIX -DPIXEL_DIMENSION=3")
