@@ -24,6 +24,8 @@
 
 #include "LfnIcTypes.h"
 
+#include <wx/cmdline.h>
+
 class wxCmdLineParser;
 
 // Reading/writing a patches file is a development-only thing when doing
@@ -46,10 +48,7 @@ public:
     {
     public:
       Option(){} // to allow these to be stored as members of CommandLineOptions
-      Option(wxString shortFlag, wxString longFlag, wxString description, bool hasDefault, size_t id, wxString strValue = "") : m_shortFlag(shortFlag), m_longFlag(longFlag), m_id(id), m_OptionType(COMPLETER_OPTION_TYPE)
-      {
-        m_description = wxString::Format("\n%s%s\n", Indent(), description.c_str());
-      }
+      Option(wxString shortFlag, wxString longFlag, wxString description, bool hasDefault, int id, wxCmdLineParamType wxArgumentType, wxCmdLineEntryFlags wxMandatory, wxString strValue);
       wxString m_shortFlag;
       wxString m_longFlag;
       wxString m_description;
@@ -59,6 +58,9 @@ public:
       wxString m_strValue; // A string of the value
 
       bool wasFound;
+
+      wxCmdLineParamType m_wxArgumentType;
+      wxCmdLineEntryFlags m_wxMandatory;
 
       inline static const char* Indent() { return "   "; }
 
@@ -82,10 +84,8 @@ public:
         {}
 
         // Why wasn't this inherited?
-        TypedOption(wxString shortFlag, wxString longFlag, wxString description, bool hasDefault, size_t id, wxString strValue = "")// :m_shortFlag(shortFlag), m_longFlag(longFlag), m_id(id)
-        {
-          m_description = wxString::Format("\n%s%s\n", Indent(), description.c_str());
-        }
+        TypedOption(wxString shortFlag, wxString longFlag, wxString description, bool hasDefault, int id, wxCmdLineParamType wxArgumentType, wxCmdLineEntryFlags wxMandatory = wxCMD_LINE_PARAM_OPTIONAL, wxString strValue = "") : Option(shortFlag, longFlag, description, hasDefault, id, wxArgumentType, wxMandatory, strValue) {}
+
         void Find(const wxCmdLineParser& parser);
     };
 

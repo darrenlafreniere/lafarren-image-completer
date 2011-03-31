@@ -33,6 +33,13 @@
 // Options
 //
 
+CommandLineOptions::Option::Option(wxString shortFlag, wxString longFlag, wxString description, bool hasDefault, int id, wxCmdLineParamType wxArgumentType, wxCmdLineEntryFlags wxMandatory = wxCMD_LINE_PARAM_OPTIONAL, wxString strValue = "") : m_shortFlag(shortFlag), m_longFlag(longFlag), m_id(id), m_OptionType(COMPLETER_OPTION_TYPE), m_wxMandatory(wxMandatory), m_wxArgumentType(wxArgumentType)
+{
+  m_description = wxString::Format("\n%s%s\n", Indent(), description.c_str());
+}
+
+
+
 CommandLineOptions::Option* CommandLineOptions::FindOptionById(size_t id) const
 {
   for(unsigned int i = 0; i < m_Options.size(); i++)
@@ -169,72 +176,73 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 	, m_shouldRunImageCompletion(false)
 	, m_isValid(false)
 {
-  // Completer options
-  m_optImageInput = TypedOption<std::string>("ii", "image-input", "The input image file path.", false, -1);
-  m_Options.push_back(&m_optImageInput);
+    // Completer options
+    m_optImageInput = TypedOption<std::string>("ii", "image-input", "The input image file path.", false, -1, wxCMD_LINE_VAL_STRING, wxCMD_LINE_OPTION_MANDATORY);
+    m_Options.push_back(&m_optImageInput);
 
-  m_optImageMask = TypedOption<std::string>("im", "image-mask", "The mask image file path.", false, -1);
-  m_Options.push_back(&m_optImageMask);
+    m_optImageMask = TypedOption<std::string>("im", "image-mask", "The mask image file path.", false, -1, wxCMD_LINE_VAL_STRING);
+    m_Options.push_back(&m_optImageMask);
 
-  m_optImageOutput = TypedOption<std::string>("im", "image-output", "The mask image file path.", false, -1);
-  m_Options.push_back(&m_optImageOutput);
+    m_optImageOutput = TypedOption<std::string>("io", "image-output", "The mask image file path.", false, -1, wxCMD_LINE_VAL_STRING);
+    m_Options.push_back(&m_optImageOutput);
 
-  m_optSettingsShow = TypedOption<bool>("ss", "settings-show", "Show the settings and exit.", true, -1);
-  m_Options.push_back(&m_optSettingsShow);
+    m_optSettingsShow = TypedOption<bool>("ss", "settings-show", "Show the settings and exit.", true, -1, wxCMD_LINE_VAL_NONE);
+    m_Options.push_back(&m_optSettingsShow);
 
-  m_optDebugLowResolutionPasses = TypedOption<bool>("sd", "settings-debug-low-res-passes", "Output separate images for each low resolution pass.", true, -1);
-  m_Options.push_back(&m_optDebugLowResolutionPasses);
+    m_optDebugLowResolutionPasses = TypedOption<bool>("sd", "settings-debug-low-res-passes", "Output separate images for each low resolution pass.", true, -1, wxCMD_LINE_VAL_NONE);
+    m_Options.push_back(&m_optDebugLowResolutionPasses);
 
-  m_optLowResolutionPassesMax = TypedOption<int>("sp", "settings-low-res-passes", std::string("Max low resolution passes to perform.\n") + CommandLineOptions::Option::Indent() + std::string("(") + SettingsText::GetLowResolutionPassesAutoDescription() + std::string(", or any integer value greater than 0)"), true, offsetof(LfnIc::Settings, lowResolutionPassesMax));
-  m_Options.push_back(&m_optLowResolutionPassesMax);
+    m_optLowResolutionPassesMax = TypedOption<int>("sp", "settings-low-res-passes", std::string("Max low resolution passes to perform.\n") + CommandLineOptions::Option::Indent() + std::string("(") + SettingsText::GetLowResolutionPassesAutoDescription() + std::string(", or any integer value greater than 0)"), true, offsetof(LfnIc::Settings, lowResolutionPassesMax), wxCMD_LINE_VAL_STRING);
+    m_Options.push_back(&m_optLowResolutionPassesMax);
 
-  m_optNumIterations = TypedOption<long>("si", "settings-num-iterations", "Number of Priority-BP iterations per pass.", true, offsetof(LfnIc::Settings, lowResolutionPassesMax));
-  m_Options.push_back(&m_optNumIterations);
+    m_optNumIterations = TypedOption<long>("si", "settings-num-iterations", "Number of Priority-BP iterations per pass.", true, offsetof(LfnIc::Settings, lowResolutionPassesMax), wxCMD_LINE_VAL_NUMBER);
+    m_Options.push_back(&m_optNumIterations);
 
-  m_optLatticeWidth = TypedOption<long>("sw", "settings-lattice-width", "Width of each gap in the lattice.", false, offsetof(LfnIc::Settings, latticeGapX)); // Should these be X/Y or Width/Height?
-  m_Options.push_back(&m_optLatticeWidth);
+    m_optLatticeWidth = TypedOption<long>("sw", "settings-lattice-width", "Width of each gap in the lattice.", false, offsetof(LfnIc::Settings, latticeGapX), wxCMD_LINE_VAL_NUMBER); // Should these be X/Y or Width/Height?
+    m_Options.push_back(&m_optLatticeWidth);
 
-  m_optLatticeHeight = TypedOption<long>("sh", "settings-lattice-height", "Height of each gap in the lattice.", false, offsetof(LfnIc::Settings, latticeGapY));
-  m_Options.push_back(&m_optLatticeHeight);
+    m_optLatticeHeight = TypedOption<long>("sh", "settings-lattice-height", "Height of each gap in the lattice.", false, offsetof(LfnIc::Settings, latticeGapY), wxCMD_LINE_VAL_NUMBER);
+    m_Options.push_back(&m_optLatticeHeight);
 
-  m_optPatchesMin = TypedOption<long>("smn", "settings-patches-min", "Min patches after pruning.", false, offsetof(LfnIc::Settings, postPruneLabelsMin)); // These should be called Labels instead of Patches to match SettingsText.cpp
-  m_Options.push_back(&m_optPatchesMin);
+    m_optPatchesMin = TypedOption<long>("smn", "settings-patches-min", "Min patches after pruning.", false, offsetof(LfnIc::Settings, postPruneLabelsMin), wxCMD_LINE_VAL_NUMBER); // These should be called Labels instead of Patches to match SettingsText.cpp
+    m_Options.push_back(&m_optPatchesMin);
 
-  m_optPatchesMax = TypedOption<long>("smx", "settings-patches-max", "Max patches after pruning.", false, offsetof(LfnIc::Settings, postPruneLabelsMax));
-  m_Options.push_back(&m_optPatchesMax);
+    m_optPatchesMax = TypedOption<long>("smx", "settings-patches-max", "Max patches after pruning.", false, offsetof(LfnIc::Settings, postPruneLabelsMax), wxCMD_LINE_VAL_NUMBER);
+    m_Options.push_back(&m_optPatchesMax);
 
-  #if ENABLE_PATCHES_INPUT_OUTPUT
-  m_optPatchesInput = TypedOption<std::string>("pi", "patches-input", "The input patches file path.", false, -1);
-  m_Options.push_back(&m_optPatchesInput);
+    #if ENABLE_PATCHES_INPUT_OUTPUT
+    m_optPatchesInput = TypedOption<std::string>("pi", "patches-input", "The input patches file path.", false, -1, wxCMD_LINE_VAL_STRING);
+    m_Options.push_back(&m_optPatchesInput);
 
-  m_optPatchesOutput = TypedOption<std::string>("po", "patches-output", "The output patches file path.", false, -1);
-  m_Options.push_back(&m_optPatchesOutput);
-  #endif // ENABLE_PATCHES_INPUT_OUTPUT
-
-
-  // Compositor options
-  m_optCompositorPatchType = TypedOption<LfnIc::CompositorPatchType>("sct", "settings-compositor-patch-type", "Compositor patch source type.", false, -1);
-  m_optCompositorPatchType.m_OptionType = CommandLineOptions::Option::COMPOSITOR_OPTION_TYPE;
-  m_Options.push_back(&m_optCompositorPatchType);
-
-  m_optCompositorPatchBlender = TypedOption<LfnIc::CompositorPatchBlender>("scb", "settings-compositor-patch-blender", "Compositor patch blender style.", false, -1);
-  m_optCompositorPatchBlender.m_OptionType = CommandLineOptions::Option::COMPOSITOR_OPTION_TYPE;
-  m_Options.push_back(&m_optCompositorPatchBlender);
+    m_optPatchesOutput = TypedOption<std::string>("po", "patches-output", "The output patches file path.", false, -1, wxCMD_LINE_VAL_STRING);
+    m_Options.push_back(&m_optPatchesOutput);
+    #endif // ENABLE_PATCHES_INPUT_OUTPUT
 
 
-  wxCmdLineEntryDesc CMD_LINE_DESC[m_Options.size()];
+    // Compositor options
+    m_optCompositorPatchType = TypedOption<LfnIc::CompositorPatchType>("sct", "settings-compositor-patch-type", "Compositor patch source type.", false, -1, wxCMD_LINE_VAL_STRING);
+    m_optCompositorPatchType.m_OptionType = CommandLineOptions::Option::COMPOSITOR_OPTION_TYPE;
+    m_Options.push_back(&m_optCompositorPatchType);
 
-  for(unsigned int i = 0; i < m_Options.size(); i++)
-  {
-    Option* option = m_Options[i];
-    wxCmdLineEntryDesc entry = { wxCMD_LINE_OPTION, option->m_shortFlag, option->m_longFlag, option->m_description, wxCMD_LINE_VAL_STRING, wxCMD_LINE_OPTION_MANDATORY };
-    CMD_LINE_DESC[i] = entry;
-  }
+    m_optCompositorPatchBlender = TypedOption<LfnIc::CompositorPatchBlender>("scb", "settings-compositor-patch-blender", "Compositor patch blender style.", false, -1, wxCMD_LINE_VAL_STRING);
+    m_optCompositorPatchBlender.m_OptionType = CommandLineOptions::Option::COMPOSITOR_OPTION_TYPE;
+    m_Options.push_back(&m_optCompositorPatchBlender);
 
-	wxCmdLineParser parser(argc, argv);
+
+
+    // http://arnout.engelen.eu/~wxwindows/xmldocs/applications/docbook/output/html/x13114.html
+    wxCmdLineParser parser(argc, argv);
+    for(unsigned int i = 0; i < m_Options.size(); i++)
+    {
+      Option* option = m_Options[i];
+      parser.AddOption(option->m_shortFlag, option->m_longFlag, option->m_description, option->m_wxArgumentType, option->m_wxMandatory);
+    }
+
+
+
 	parser.SetLogo("\nlafarren.com\nImage Completion Using Efficient Belief Propagation\n");
 	parser.SetSwitchChars("-");
-	parser.SetDesc(CMD_LINE_DESC);
+
 	if (parser.Parse() == 0)
 	{
 		m_optImageInput.Find(parser);
