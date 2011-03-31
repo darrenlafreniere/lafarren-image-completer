@@ -49,57 +49,46 @@ void SettingsText::Print(const LfnIc::Settings& settings, CommandLineOptions com
 #define VAL_S(s) VAL_X("s", s)
 #define VAL_I(i) VAL_X("d", i)
 
-	commandLineOptions.Low_Resolution_Passes_Max.m_strValue = VAL_S(lowResolutionPassesMaxString.c_str());
-	commandLineOptions.Num_Iterations.m_strValue = VAL_I(settings.numIterations);
-	commandLineOptions.Lattice_Width.m_strValue = VAL_I(settings.latticeGapX);
-	commandLineOptions.Lattice_Height.m_strValue = VAL_I(settings.latticeGapY);
-	commandLineOptions.Patches_Min.m_strValue = VAL_I(settings.postPruneLabelsMin);
-	commandLineOptions.Patches_Max.m_strValue = VAL_I(settings.postPruneLabelsMax);
+	commandLineOptions.m_optLowResolutionPassesMax.m_strValue = VAL_S(lowResolutionPassesMaxString.c_str());
+	commandLineOptions.m_optNumIterations.m_strValue = VAL_I(settings.numIterations);
+	commandLineOptions.m_optLatticeWidth.m_strValue = VAL_I(settings.latticeGapX);
+	commandLineOptions.m_optLatticeHeight.m_strValue = VAL_I(settings.latticeGapY);
+	commandLineOptions.m_optPatchesMin.m_strValue = VAL_I(settings.postPruneLabelsMin);
+	commandLineOptions.m_optPatchesMax.m_strValue = VAL_I(settings.postPruneLabelsMax);
 
-	commandLineOptions.Compositor_Patch_Type.m_strValue = VAL_S(GetEnumDescription(settings.compositorPatchType).c_str());
-	commandLineOptions.Compositor_Patch_Blender.m_strValue = VAL_S(GetEnumDescription(settings.compositorPatchBlender).c_str());
-/*
+	commandLineOptions.m_optCompositorPatchType.m_strValue = VAL_S(GetEnumDescription(settings.compositorPatchType).c_str());
+	commandLineOptions.m_optCompositorPatchBlender.m_strValue = VAL_S(GetEnumDescription(settings.compositorPatchBlender).c_str());
+
 	// Determine the description column width.
 	int descWidth = 0;
-	{
-		const std::vector<Member>* memberVectors[] =
-		{
-			&completerMembers,
-			&compositorMembers,
-		};
-		const int memberVectorNum = sizeof(memberVectors) / sizeof(memberVectors[0]);
+    for (int optionIndex = 0; optionIndex < commandLineOptions.GetNumberOfOptions(); ++optionIndex)
+    {
+        const int len = commandLineOptions.GetOption(optionIndex)->m_description.length();
+        if (descWidth < len)
+        {
+            descWidth = len;
+        }
+    }
 
-		for (int memberVectorIdx = 0; memberVectorIdx < memberVectorNum; ++memberVectorIdx)
-		{
-			const std::vector<Member>& members = *memberVectors[memberVectorIdx];
-			for (int i = 0, n = members.size(); i < n; ++i)
-			{
-				const int len = members[i].desc.length();
-				if (descWidth < len)
-				{
-					descWidth = len;
-				}
-			}
-		}
-	}
-*/
 
-/*
 	// Display the members
-	{
-		msgOut.Printf("\nImage completer settings\n");
-		for (int i = 0, n = completerMembers.size(); i < n; ++i)
-		{
-			completerMembers[i].Print(msgOut, descWidth);
-		}
+	std::vector<CommandLineOptions::Option*> completerOptions =
+        commandLineOptions.GetOptionsByType(CommandLineOptions::Option::COMPLETER_OPTION_TYPE);
 
-		msgOut.Printf("Compositor settings\n");
-		for (int i = 0, n = compositorMembers.size(); i < n; ++i)
-		{
-			compositorMembers[i].Print(msgOut, descWidth);
-		}
-	}
-*/
+    msgOut.Printf("\nImage completer settings\n");
+    for (int i = 0, n = completerOptions.size(); i < n; ++i)
+    {
+        completerOptions[i]->Print(msgOut, descWidth);
+    }
+
+    std::vector<CommandLineOptions::Option*> compositorOptions =
+        commandLineOptions.GetOptionsByType(CommandLineOptions::Option::COMPOSITOR_OPTION_TYPE);
+    msgOut.Printf("Compositor settings\n");
+    for (int i = 0, n = compositorOptions.size(); i < n; ++i)
+    {
+        compositorOptions[i]->Print(msgOut, descWidth);
+    }
+
 }
 
 std::string SettingsText::GetLowResolutionPassesAutoDescription()
@@ -153,6 +142,6 @@ void SettingsText::PrintInvalidMembers::OnInvalidMemberDetected(const LfnIc::Set
 		m_hasPrintedHeader = true;
 	}
 
-	const std::string member(SettingsText::GetMemberDescription(memberOffset));
-	m_msgOut.Printf("\t- %s %s\n", member.c_str(), message);
+	CommandLineOptions::Option* option = m_commandLineOptions->FindOptionById(memberOffset);
+	m_msgOut.Printf("\t- %s %s\n", option->m_description.c_str(), message);
 }

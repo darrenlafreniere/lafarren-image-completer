@@ -34,29 +34,6 @@ class wxCmdLineParser;
 // patches data to send to the compositor.
 #define ENABLE_PATCHES_INPUT_OUTPUT 1
 
-struct Option
-{
-  Option(){} // to allow these to be stored as members of CommandLineOptions
-  Option(wxString shortFlag, wxString longFlag, wxString description, bool hasDefault, size_t id, wxString strValue = "") : m_shortFlag(shortFlag), m_longFlag(longFlag), m_id(id)
-  {
-    m_description = wxString::Format("\n%s%s\n", Indent(), description.c_str());
-  }
-  wxString m_shortFlag;
-  wxString m_longFlag;
-  wxString m_description;
-
-  size_t m_id;
-
-  wxString m_strValue; // A string of the value
-
-  inline static const char* Indent() { return "   "; }
-
-  void Print(wxMessageOutput& msgOut, int descWidth) const
-  {
-    const std::string descSpacing(' ', descWidth - m_description.length());
-    msgOut.Printf("\t%s:%s %s\n", m_description.c_str(), descSpacing.c_str(), m_strValue.c_str());
-  }
-};
 
 // Pulls the command line options from the parser, validates them, and
 // presents a strongly typed interface to their values.
@@ -65,112 +42,134 @@ class CommandLineOptions
 public:
 	CommandLineOptions(int argc, char** argv);
 
+    struct Option
+    {
+    public:
+      Option(){} // to allow these to be stored as members of CommandLineOptions
+      Option(wxString shortFlag, wxString longFlag, wxString description, bool hasDefault, size_t id, wxString strValue = "") : m_shortFlag(shortFlag), m_longFlag(longFlag), m_id(id), m_OptionType(COMPLETER_OPTION_TYPE)
+      {
+        m_description = wxString::Format("\n%s%s\n", Indent(), description.c_str());
+      }
+      wxString m_shortFlag;
+      wxString m_longFlag;
+      wxString m_description;
+
+      size_t m_id;
+
+      wxString m_strValue; // A string of the value
+
+      bool wasFound;
+
+      inline static const char* Indent() { return "   "; }
+
+      void Print(wxMessageOutput& msgOut, int descWidth) const
+      {
+        const std::string descSpacing(' ', descWidth - m_description.length());
+        msgOut.Printf("\t%s:%s %s\n", m_description.c_str(), descSpacing.c_str(), m_strValue.c_str());
+      }
+
+      enum OptionTypeEnum {COMPLETER_OPTION_TYPE, COMPOSITOR_OPTION_TYPE};
+
+      OptionTypeEnum m_OptionType;
+    };
+
+    template<typename T>
+    struct TypedOption : public Option
+    {
+        T value;
+
+        TypedOption()// : wasFound(false)
+        {}
+
+        // Why wasn't this inherited?
+        TypedOption(wxString shortFlag, wxString longFlag, wxString description, bool hasDefault, size_t id, wxString strValue = "")// :m_shortFlag(shortFlag), m_longFlag(longFlag), m_id(id)
+        {
+          m_description = wxString::Format("\n%s%s\n", Indent(), description.c_str());
+        }
+        void Find(const wxCmdLineParser& parser);
+    };
+
 	inline bool IsValid() const { return m_isValid; }
 
-	inline bool HasInputImagePath() const { return !m_inputImagePath.value.empty(); }
-	inline bool HasMaskImagePath() const { return !m_maskImagePath.value.empty(); }
-	inline bool HasOutputImagePath() const { return !m_outputImagePath.value.empty(); }
+	inline bool HasInputImagePath() const { return !m_optImageInput.value.empty(); }
+	inline bool HasMaskImagePath() const { return !m_optImageMask.value.empty(); }
+	inline bool HasOutputImagePath() const { return !m_optImageOutput.value.empty(); }
 
-	inline const std::string& GetInputImagePath() const { return m_inputImagePath.value; }
-	inline const std::string& GetMaskImagePath() const { return m_maskImagePath.value; }
-	inline const std::string& GetOutputImagePath() const { return m_outputImagePath.value; }
+	inline const std::string& GetInputImagePath() const { return m_optImageInput.value; }
+	inline const std::string& GetMaskImagePath() const { return m_optImageMask.value; }
+	inline const std::string& GetOutputImagePath() const { return m_optImageOutput.value; }
 
 #if ENABLE_PATCHES_INPUT_OUTPUT
-	inline bool HasInputPatchesPath() const { return !m_inputPatchesPath.value.empty(); }
-	inline bool HasOutputPatchesPath() const { return !m_outputPatchesPath.value.empty(); }
+	inline bool HasInputPatchesPath() const { return !m_optPatchesInput.value.empty(); }
+	inline bool HasOutputPatchesPath() const { return !m_optPatchesOutput.value.empty(); }
 
-	inline const std::string& GetInputPatchesPath() const { return m_inputPatchesPath.value; }
-	inline const std::string& GetOutputPatchesPath() const { return m_outputPatchesPath.value; }
+	inline const std::string& GetInputPatchesPath() const { return m_optPatchesInput.value; }
+	inline const std::string& GetOutputPatchesPath() const { return m_optPatchesOutput.value; }
 #endif // ENABLE_PATCHES_INPUT_OUTPUT
 
 	inline bool ShouldShowSettings() const { return m_shouldShowSettings; }
 	inline bool ShouldRunImageCompletion() const { return m_shouldRunImageCompletion; }
 
-	inline bool DebugLowResolutionPasses() const { return m_debugLowResolutionPasses; }
+	inline bool DebugLowResolutionPasses() const { return m_optDebugLowResolutionPasses.value; }
 
-	inline bool HasLowResolutionPassesMax() const { return m_lowResolutionPassesMax.wasFound; }
-	inline int GetLowResolutionPassesMax() const { return m_lowResolutionPassesMax.value; }
+	inline bool HasLowResolutionPassesMax() const { return m_optLowResolutionPassesMax.wasFound; }
+	inline int GetLowResolutionPassesMax() const { return m_optLowResolutionPassesMax.value; }
 
-	inline bool HasNumIterations() const { return m_numIterations.wasFound; }
-	inline int GetNumIterations() const { return m_numIterations.value; }
+	inline bool HasNumIterations() const { return m_optNumIterations.wasFound; }
+	inline int GetNumIterations() const { return m_optNumIterations.value; }
 
-	inline bool HasLatticeGapX() const { return m_latticeGapX.wasFound; }
-	inline int GetLatticeGapX() const { return m_latticeGapX.value; }
+	inline bool HasLatticeGapX() const { return m_optLatticeWidth.wasFound; }
+	inline int GetLatticeGapX() const { return m_optLatticeWidth.value; }
 
-	inline bool HasLatticeGapY() const { return m_latticeGapY.wasFound; }
-	inline int GetLatticeGapY() const { return m_latticeGapY.value; }
+	inline bool HasLatticeGapY() const { return m_optLatticeHeight.wasFound; }
+	inline int GetLatticeGapY() const { return m_optLatticeHeight.value; }
 
-	inline bool HasPostPruneLabelsMin() const { return m_postPruneLabelsMin.wasFound; }
-	inline int GetPostPruneLabelsMin() const { return m_postPruneLabelsMin.value; }
+	inline bool HasPostPruneLabelsMin() const { return m_optPatchesMin.wasFound; }
+	inline int GetPostPruneLabelsMin() const { return m_optPatchesMin.value; }
 
-	inline bool HasPostPruneLabelsMax() const { return m_postPruneLabelsMax.wasFound; }
-	inline int GetPostPruneLabelsMax() const { return m_postPruneLabelsMax.value; }
+	inline bool HasPostPruneLabelsMax() const { return m_optPatchesMax.wasFound; }
+	inline int GetPostPruneLabelsMax() const { return m_optPatchesMax.value; }
 
-	inline bool HasCompositorPatchType() const { return m_compositorPatchType.wasFound; }
-	inline LfnIc::CompositorPatchType GetCompositorPatchType() const { return m_compositorPatchType.value; }
+	inline bool HasCompositorPatchType() const { return m_optCompositorPatchType.wasFound; }
+	inline LfnIc::CompositorPatchType GetCompositorPatchType() const { return m_optCompositorPatchType.value; }
 
-	inline bool HasCompositorPatchBlender() const { return m_compositorPatchBlender.wasFound; }
-	inline LfnIc::CompositorPatchBlender GetCompositorPatchBlender() const { return m_compositorPatchBlender.value; }
+	inline bool HasCompositorPatchBlender() const { return m_optCompositorPatchBlender.wasFound; }
+	inline LfnIc::CompositorPatchBlender GetCompositorPatchBlender() const { return m_optCompositorPatchBlender.value; }
 
-    Option& FindOptionById(size_t id);
-    Option& FindOptionByShortFlag(wxString shortFlag);
+    Option* FindOptionById(size_t id) const;
+    Option* FindOptionByShortFlag(wxString shortFlag) const;
+    Option* GetOption(unsigned int i) const;
 
-    Option Image_Input;
-    Option Image_Mask;
-    Option Image_Output;
-    Option Settings_Show;
-    Option Debug_Low_Resolution_Passes;
-    Option Low_Resolution_Passes_Max;
-    Option Num_Iterations;
-    Option Lattice_Width; // Should these be X/Y or Width/Height?
-    Option Lattice_Height;
-    Option Patches_Min; // These should be called Labels instead of Patches to match SettingsText.cpp
-    Option Patches_Max;
-    Option Compositor_Patch_Type;
-    Option Compositor_Patch_Blender;
-    Option Patches_Input;
-    Option Patches_Output;
+    std::vector<Option*> GetOptionsByType(Option::OptionTypeEnum) const;
+
+    TypedOption<std::string> m_optImageInput;
+    TypedOption<std::string> m_optImageMask;
+    TypedOption<std::string> m_optImageOutput;
+    TypedOption<bool> m_optSettingsShow;
+    TypedOption<bool> m_optDebugLowResolutionPasses;
+    TypedOption<int> m_optLowResolutionPassesMax;
+    TypedOption<long> m_optNumIterations;
+    TypedOption<long> m_optLatticeWidth; // Should these be X/Y or Width/Height?
+    TypedOption<long> m_optLatticeHeight;
+    TypedOption<long> m_optPatchesMin; // These should be called Labels instead of Patches to match SettingsText.cpp
+    TypedOption<long> m_optPatchesMax;
+    TypedOption<LfnIc::CompositorPatchType> m_optCompositorPatchType;
+    TypedOption<LfnIc::CompositorPatchBlender> m_optCompositorPatchBlender;
+
+    #if ENABLE_PATCHES_INPUT_OUTPUT
+    TypedOption<std::string> m_optPatchesInput;
+    TypedOption<std::string> m_optPatchesOutput;
+    #endif // ENABLE_PATCHES_INPUT_OUTPUT
+
+    inline int GetNumberOfOptions() { return m_Options.size();}
 
 private:
-	template<typename T>
-	struct ValueFinder
-	{
-		bool wasFound;
-		T value;
-
-		ValueFinder() : wasFound(false) {}
-		void Find(const wxCmdLineParser& parser, const wxString& name);
-	};
-
-	// Solely for ValueFinder<> specialization.
-	typedef int LowResolutionPassesMax;
-
-	ValueFinder<std::string> m_inputImagePath;
-	ValueFinder<std::string> m_maskImagePath;
-	ValueFinder<std::string> m_outputImagePath;
-#if ENABLE_PATCHES_INPUT_OUTPUT
-	ValueFinder<std::string> m_inputPatchesPath;
-	ValueFinder<std::string> m_outputPatchesPath;
-#endif // ENABLE_PATCHES_INPUT_OUTPUT
-
-	// Some of these are longs instead of ints because of
-	// wxCmdLineParser::Found(const wxString&, long*)
-	ValueFinder<LowResolutionPassesMax> m_lowResolutionPassesMax;
-	ValueFinder<long> m_numIterations;
-	ValueFinder<long> m_latticeGapX;
-	ValueFinder<long> m_latticeGapY;
-	ValueFinder<long> m_postPruneLabelsMin;
-	ValueFinder<long> m_postPruneLabelsMax;
-	ValueFinder<LfnIc::CompositorPatchType> m_compositorPatchType;
-	ValueFinder<LfnIc::CompositorPatchBlender> m_compositorPatchBlender;
 
 	bool m_shouldShowSettings;
 	bool m_shouldRunImageCompletion;
-	bool m_debugLowResolutionPasses;
 	bool m_isValid;
 
-  std::vector<Option> m_Options;
-
+    std::vector<Option*> m_Options;
 };
 
 #endif // COMMAND_LINE_OPTIONS_H

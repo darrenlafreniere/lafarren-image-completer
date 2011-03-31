@@ -55,17 +55,18 @@ public:
 		return joined;
 	}
 
-	// An instance of this class can be passed to LfnIc::Settings::IsValid.
+	// An instance of this class can be passed to LfnIc::Settings::IsValid. // should this be AreSettingsValid?
 	// It'll display info for an invalid settings member(s).
 	class PrintInvalidMembers : public LfnIc::SettingsInvalidMemberHandler
 	{
 	public:
 		PrintInvalidMembers();
 		virtual void OnInvalidMemberDetected(const LfnIc::Settings& settings, int memberOffset, const char* message);
-
+        const CommandLineOptions* m_commandLineOptions;
 	private:
 		wxMessageOutput& m_msgOut;
 		bool m_hasPrintedHeader;
+
 	};
 };
 
