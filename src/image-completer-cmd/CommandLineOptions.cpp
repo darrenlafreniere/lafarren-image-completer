@@ -22,62 +22,43 @@
 #include "Pch.h"
 #include "CommandLineOptions.h"
 
+#include <vector>
+
 #include <wx/cmdline.h>
 #include "SettingsText.h"
 
 #include "tech/DbgMem.h"
 
 //
-// Constants
+// Options
 //
-static const wxString CMD_IMAGE_INPUT                               = "ii";
-static const wxString CMD_IMAGE_MASK                                = "im";
-static const wxString CMD_IMAGE_OUTPUT                              = "io";
 
-static const wxString CMD_SETTINGS_SHOW                             = "ss";
-static const wxString CMD_SETTINGS_LOW_RESOLUTION_PASSES_MAX        = "sp";
-static const wxString CMD_SETTINGS_DEBUG_LOW_RESOLUTION_PASSES      = "sd";
-static const wxString CMD_SETTINGS_NUM_ITERATIONS                   = "si";
-static const wxString CMD_SETTINGS_LATTICE_GAP_WIDTH                = "sw";
-static const wxString CMD_SETTINGS_LATTICE_GAP_HEIGHT               = "sh";
-static const wxString CMD_SETTINGS_POST_PRUNE_PATCHES_MIN           = "smn";
-static const wxString CMD_SETTINGS_POST_PRUNE_PATCHES_MAX           = "smx";
-static const wxString CMD_SETTINGS_COMPOSITOR_PATCH_TYPE            = "sct";
-static const wxString CMD_SETTINGS_COMPOSITOR_PATCH_BLENDER         = "scb";
-
-#if ENABLE_PATCHES_INPUT_OUTPUT
-static const wxString CMD_PATCHES_INPUT                             = "pi";
-static const wxString CMD_PATCHES_OUTPUT                            = "po";
-#endif // ENABLE_PATCHES_INPUT_OUTPUT
-
-// Lets our wxCmdLineEntryDesc descriptions reference the char* buffer of an
-// inline constructed wxString, without worrying about the scope of that
-// wxString. Also provides some pre and post formatting for consistency.
-class Desc
+Option& CommandLineOptions::FindOptionById(size_t id)
 {
-public:
-	Desc(const wxString& desc)
-	{
-		wxASSERT(m_staticStringsSize < MAX);
-		m_index = m_staticStringsSize++;
-		m_staticStrings[m_index] = wxString::Format("\n%s%s\n", Indent(), desc.c_str());
-	}
+  for(unsigned int i = 0; i < m_Options.size(); i++)
+  {
+    if(m_Options[i].m_id == id)
+    {
+      return m_Options[i];
+    }
+  }
+  std::cerr << "Option not found!" << std::endl;
+}
 
-	operator const char*() const
-	{
-		return m_staticStrings[m_index].c_str();
-	}
+Option& CommandLineOptions::FindOptionByShortFlag(wxString shortFlag)
+{
+  for(unsigned int i = 0; i < m_Options.size(); i++)
+  {
+    if(m_Options[i].m_shortFlag == shortFlag)
+    {
+      return m_Options[i];
+    }
+  }
+  std::cerr << "Option not found!" << std::endl;
+}
 
-	inline static const char* Indent() { return "   "; }
+  
 
-private:
-	static const int MAX = 256;
-	static wxString m_staticStrings[MAX];
-	static int m_staticStringsSize;
-	int m_index;
-};
-wxString Desc::m_staticStrings[MAX];
-int Desc::m_staticStringsSize;
 
 //
 // CommandLineOptions::ValueFinder and partial specializations.
@@ -170,31 +151,64 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 	, m_debugLowResolutionPasses(false)
 	, m_isValid(false)
 {
-	const wxCmdLineEntryDesc CMD_LINE_DESC[] =
-	{
-		{ wxCMD_LINE_OPTION, CMD_IMAGE_INPUT, "image-input", Desc("The input image file path."), wxCMD_LINE_VAL_STRING, wxCMD_LINE_OPTION_MANDATORY },
-		{ wxCMD_LINE_OPTION, CMD_IMAGE_MASK, "image-mask", Desc("The mask image file path."), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
-		{ wxCMD_LINE_OPTION, CMD_IMAGE_OUTPUT, "image-output", Desc("The output image file path."), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
 
-		{ wxCMD_LINE_SWITCH, CMD_SETTINGS_SHOW, "settings-show", Desc("Show the settings and exit.") },
+  Image_Input = Option("ii", "image-input", "The input image file path.", false, -1);
+  m_Options.push_back(Image_Input);
+  
+  Image_Mask = Option("im", "image-mask", "The mask image file path.", false, -1);
+  m_Options.push_back(Image_Mask);
+  
+  Image_Output = Option("im", "image-output", "The mask image file path.", false, -1);
+  m_Options.push_back(Image_Output);
 
-		{ wxCMD_LINE_SWITCH, CMD_SETTINGS_DEBUG_LOW_RESOLUTION_PASSES, "settings-debug-low-res-passes", Desc("Output separate images for each low resolution pass.") },
-		{ wxCMD_LINE_OPTION, CMD_SETTINGS_LOW_RESOLUTION_PASSES_MAX, "settings-low-res-passes", Desc(wxString("Max low resolution passes to perform.\n") + Desc::Indent() + "(" + SettingsText::GetLowResolutionPassesAutoDescription().c_str() + ", or any integer value greater than 0)"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
-		{ wxCMD_LINE_OPTION, CMD_SETTINGS_NUM_ITERATIONS, "settings-num-iterations", Desc("Number of Priority-BP iterations per pass."), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL },
-		{ wxCMD_LINE_OPTION, CMD_SETTINGS_LATTICE_GAP_WIDTH, "settings-lattice-width", Desc("Width of each gap in the lattice."), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL },
-		{ wxCMD_LINE_OPTION, CMD_SETTINGS_LATTICE_GAP_HEIGHT, "settings-lattice-height", Desc("Height of each gap in the lattice."), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL },
-		{ wxCMD_LINE_OPTION, CMD_SETTINGS_POST_PRUNE_PATCHES_MIN, "settings-patches-min", Desc("Min patches after pruning."), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL },
-		{ wxCMD_LINE_OPTION, CMD_SETTINGS_POST_PRUNE_PATCHES_MAX, "settings-patches-max", Desc("Max patches after pruning."), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL },
-		{ wxCMD_LINE_OPTION, CMD_SETTINGS_COMPOSITOR_PATCH_TYPE, "settings-compositor-patch-type", Desc(wxString("Compositor patch source type.\n") + Desc::Indent() + "(" + SettingsText::JoinEnumDescriptions<LfnIc::CompositorPatchType>().c_str() + ")"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
-		{ wxCMD_LINE_OPTION, CMD_SETTINGS_COMPOSITOR_PATCH_BLENDER, "settings-compositor-patch-blender", Desc(wxString("Compositor patch blender style.\n") + Desc::Indent() + "(" + SettingsText::JoinEnumDescriptions<LfnIc::CompositorPatchBlender>().c_str() + ")"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
+  Settings_Show = Option("ss", "settings-show", "Show the settings and exit.", true, -1);
+  m_Options.push_back(Settings_Show);
 
-#if ENABLE_PATCHES_INPUT_OUTPUT
-		{ wxCMD_LINE_OPTION, CMD_PATCHES_INPUT, "patches-input", Desc("The input patches file path."), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
-		{ wxCMD_LINE_OPTION, CMD_PATCHES_OUTPUT, "patches-output", Desc("The output patches file path."), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
-#endif // ENABLE_PATCHES_INPUT_OUTPUT
+  Debug_Low_Resolution_Passes = Option("sd", "settings-debug-low-res-passes", "Output separate images for each low resolution pass.", true, -1);
+  m_Options.push_back(Debug_Low_Resolution_Passes);
 
-		{ wxCMD_LINE_NONE }
-	};
+  Low_Resolution_Passes_Max = Option("sp", "settings-low-res-passes", "Output separate images for each low resolution pass.", true, offsetof(LfnIc::Settings, lowResolutionPassesMax));
+  //{ wxCMD_LINE_OPTION, CMD_SETTINGS_LOW_RESOLUTION_PASSES_MAX, "settings-low-res-passes", Desc(wxString("Max low resolution passes to perform.\n") + Desc::Indent() + "(" + SettingsText::GetLowResolutionPassesAutoDescription().c_str() + ", or any integer value greater than 0)"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
+  m_Options.push_back(Low_Resolution_Passes_Max);
+
+  Num_Iterations = Option("si", "settings-num-iterations", "Number of Priority-BP iterations per pass.", true, offsetof(LfnIc::Settings, lowResolutionPassesMax));
+  m_Options.push_back(Num_Iterations);
+  
+  Lattice_Width = Option("sw", "settings-lattice-width", "Width of each gap in the lattice.", false, offsetof(LfnIc::Settings, latticeGapX)); // Should these be X/Y or Width/Height?
+  m_Options.push_back(Lattice_Width);
+
+  Lattice_Height = Option("sh", "settings-lattice-height", "Height of each gap in the lattice.", false, offsetof(LfnIc::Settings, latticeGapY));
+  m_Options.push_back(Lattice_Height);
+
+  Patches_Min = Option("smn", "settings-patches-min", "Min patches after pruning.", false, offsetof(LfnIc::Settings, postPruneLabelsMin)); // These should be called Labels instead of Patches to match SettingsText.cpp
+  m_Options.push_back(Patches_Min);
+  
+  Patches_Max = Option("smx", "settings-patches-max", "Max patches after pruning.", false, offsetof(LfnIc::Settings, postPruneLabelsMax));
+  m_Options.push_back(Patches_Max);
+
+  Compositor_Patch_Type = Option("sct", "settings-compositor-patch-type", "Compositor patch source type.", false, -1);
+  m_Options.push_back(Compositor_Patch_Type);
+  
+  Compositor_Patch_Blender = Option("scb", "settings-compositor-patch-blender", "Compositor patch blender style.", false, -1);
+  m_Options.push_back(Compositor_Patch_Blender);
+
+  #if ENABLE_PATCHES_INPUT_OUTPUT
+  Patches_Input = Option("pi", "patches-input", "The input patches file path.", false, -1);
+  m_Options.push_back(Patches_Input);
+  
+  Patches_Output = Option("po", "patches-output", "The output patches file path.", false, -1);
+  m_Options.push_back(Patches_Output);
+  #endif // ENABLE_PATCHES_INPUT_OUTPUT
+
+    
+  wxCmdLineEntryDesc CMD_LINE_DESC[m_Options.size()];
+
+  for(unsigned int i = 0; i < m_Options.size(); i++)
+  {
+    Option option = m_Options[i];
+    wxCmdLineEntryDesc entry = { wxCMD_LINE_OPTION, option.m_shortFlag, option.m_longFlag, option.m_description, wxCMD_LINE_VAL_STRING, wxCMD_LINE_OPTION_MANDATORY };
+    CMD_LINE_DESC[i] = entry;
+  }
 
 	wxCmdLineParser parser(argc, argv);
 	parser.SetLogo("\nlafarren.com\nImage Completion Using Efficient Belief Propagation\n");
@@ -202,16 +216,16 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 	parser.SetDesc(CMD_LINE_DESC);
 	if (parser.Parse() == 0)
 	{
-		m_inputImagePath.Find(parser, CMD_IMAGE_INPUT);
-		m_maskImagePath.Find(parser, CMD_IMAGE_MASK);
-		m_outputImagePath.Find(parser, CMD_IMAGE_OUTPUT);
+		m_inputImagePath.Find(parser, Image_Input.m_shortFlag);
+		m_maskImagePath.Find(parser, Image_Mask.m_shortFlag);
+		m_outputImagePath.Find(parser, Image_Output.m_shortFlag);
 
 #if ENABLE_PATCHES_INPUT_OUTPUT
-		m_inputPatchesPath.Find(parser, CMD_PATCHES_INPUT);
-		m_outputPatchesPath.Find(parser, CMD_PATCHES_OUTPUT);
+		m_inputPatchesPath.Find(parser, Patches_Input.m_shortFlag);
+		m_outputPatchesPath.Find(parser, Patches_Output.m_shortFlag);
 #endif // ENABLE_PATCHES_INPUT_OUTPUT
 
-		m_shouldShowSettings = parser.Found(CMD_SETTINGS_SHOW);
+		m_shouldShowSettings = parser.Found(Settings_Show.m_shortFlag);
 
 		// As of now, don't run image completion if the user wanted the
 		// settings displayed. Maybe change this later.
@@ -237,17 +251,17 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 				// Running image completion requires mask and output images.
 				if (!HasMaskImagePath() && !HasOutputImagePath())
 				{
-					errorMessage = wxString::Format("\nMissing mask and output image paths. Please specify:\n\n\t-%s path/to/maskimage.ext -%s path/to/outputimage.ext\n", CMD_IMAGE_MASK.c_str(), CMD_IMAGE_OUTPUT.c_str());
+					errorMessage = wxString::Format("\nMissing mask and output image paths. Please specify:\n\n\t-%s path/to/maskimage.ext -%s path/to/outputimage.ext\n", Image_Mask.m_shortFlag, Image_Output.m_shortFlag);
 					m_isValid = false;
 				}
 				else if (!HasMaskImagePath())
 				{
-					errorMessage = wxString::Format("\nMissing mask image path. Please specify:\n\n\t-%s path/to/maskimage.ext\n", CMD_IMAGE_MASK.c_str());
+					errorMessage = wxString::Format("\nMissing mask image path. Please specify:\n\n\t-%s path/to/maskimage.ext\n", Image_Mask.m_shortFlag);
 					m_isValid = false;
 				}
 				else if (!HasOutputImagePath())
 				{
-					errorMessage = wxString::Format("\nMissing output image path. Please specify:\n\n\t-%s path/to/outputimage.ext\n", CMD_IMAGE_OUTPUT.c_str());
+					errorMessage = wxString::Format("\nMissing output image path. Please specify:\n\n\t-%s path/to/outputimage.ext\n", Image_Output.m_shortFlag);
 					m_isValid = false;
 				}
 			}
@@ -261,15 +275,16 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 			{
 				// These options are optional. If anything is invalid,
 				// Priority::Settings::IsValid() will catch it later.
-				m_debugLowResolutionPasses = parser.Found(CMD_SETTINGS_DEBUG_LOW_RESOLUTION_PASSES);
-				m_lowResolutionPassesMax.Find(parser, CMD_SETTINGS_LOW_RESOLUTION_PASSES_MAX);
-				m_numIterations.Find(parser, CMD_SETTINGS_NUM_ITERATIONS);
-				m_latticeGapX.Find(parser, CMD_SETTINGS_LATTICE_GAP_WIDTH);
-				m_latticeGapY.Find(parser, CMD_SETTINGS_LATTICE_GAP_HEIGHT);
-				m_postPruneLabelsMin.Find(parser, CMD_SETTINGS_POST_PRUNE_PATCHES_MIN);
-				m_postPruneLabelsMax.Find(parser, CMD_SETTINGS_POST_PRUNE_PATCHES_MAX);
-				m_compositorPatchType.Find(parser, CMD_SETTINGS_COMPOSITOR_PATCH_TYPE);
-				m_compositorPatchBlender.Find(parser, CMD_SETTINGS_COMPOSITOR_PATCH_BLENDER);
+				m_debugLowResolutionPasses = parser.Found(Debug_Low_Resolution_Passes.m_shortFlag);
+				m_lowResolutionPassesMax.Find(parser, Low_Resolution_Passes_Max.m_shortFlag);
+				m_numIterations.Find(parser, Num_Iterations.m_shortFlag);
+				m_latticeGapX.Find(parser, Lattice_Width.m_shortFlag);
+				m_latticeGapY.Find(parser, Lattice_Height.m_shortFlag);
+				m_postPruneLabelsMin.Find(parser, Patches_Min.m_shortFlag);
+				m_postPruneLabelsMax.Find(parser, Patches_Max.m_shortFlag);
+				m_compositorPatchType.Find(parser, Compositor_Patch_Type.m_shortFlag);
+				m_compositorPatchBlender.Find(parser, Compositor_Patch_Blender.m_shortFlag);
+
 			}
 		}
 	}

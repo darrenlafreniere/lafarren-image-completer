@@ -1,19 +1,19 @@
 //
 // Copyright 2010, Darren Lafreniere
 // <http://www.lafarren.com/image-completer/>
-// 
+//
 // This file is part of lafarren.com's Image Completer.
-// 
+//
 // Image Completer is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Image Completer is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with Image Completer, named License.txt. If not, see
 // <http://www.gnu.org/licenses/>.
@@ -23,17 +23,13 @@
 #define SETTINGS_TEXT_H
 
 #include "LfnIcSettings.h"
+#include "CommandLineOptions.h"
 
 class SettingsText
 {
 public:
 	// Prints the user-tweakable settings to wxMessageOutput.
-	static void Print(const LfnIc::Settings& settings);
-
-	// Returns a user friendly string describing the specified settings
-	// member. settingsMemberOffset is the offset in byte of the settings
-	// member (e.g., offsetof(LfnIc::Settings, latticeGapX))
-	static std::string GetMemberDescription(int settingsMemberOffset);
+	static void Print(const LfnIc::Settings& settings, CommandLineOptions commandLineOptions);
 
 	// Returns the command line option used to indicate
 	// LfnIc::Settings::LOW_RESOLUTION_PASSES_AUTO.

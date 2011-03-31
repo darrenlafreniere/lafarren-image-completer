@@ -1,19 +1,19 @@
 //
 // Copyright 2010, Darren Lafreniere
 // <http://www.lafarren.com/image-completer/>
-// 
+//
 // This file is part of lafarren.com's Image Completer.
-// 
+//
 // Image Completer is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Image Completer is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with Image Completer, named License.txt. If not, see
 // <http://www.gnu.org/licenses/>.
@@ -33,6 +33,30 @@ class wxCmdLineParser;
 // expensive process of image completion, and read the previously written
 // patches data to send to the compositor.
 #define ENABLE_PATCHES_INPUT_OUTPUT 1
+
+struct Option
+{
+  Option(){} // to allow these to be stored as members of CommandLineOptions
+  Option(wxString shortFlag, wxString longFlag, wxString description, bool hasDefault, size_t id, wxString strValue = "") : m_shortFlag(shortFlag), m_longFlag(longFlag), m_id(id)
+  {
+    m_description = wxString::Format("\n%s%s\n", Indent(), description.c_str());
+  }
+  wxString m_shortFlag;
+  wxString m_longFlag;
+  wxString m_description;
+
+  size_t m_id;
+
+  wxString m_strValue; // A string of the value
+
+  inline static const char* Indent() { return "   "; }
+
+  void Print(wxMessageOutput& msgOut, int descWidth) const
+  {
+    const std::string descSpacing(' ', descWidth - m_description.length());
+    msgOut.Printf("\t%s:%s %s\n", m_description.c_str(), descSpacing.c_str(), m_strValue.c_str());
+  }
+};
 
 // Pulls the command line options from the parser, validates them, and
 // presents a strongly typed interface to their values.
@@ -88,6 +112,25 @@ public:
 	inline bool HasCompositorPatchBlender() const { return m_compositorPatchBlender.wasFound; }
 	inline LfnIc::CompositorPatchBlender GetCompositorPatchBlender() const { return m_compositorPatchBlender.value; }
 
+    Option& FindOptionById(size_t id);
+    Option& FindOptionByShortFlag(wxString shortFlag);
+
+    Option Image_Input;
+    Option Image_Mask;
+    Option Image_Output;
+    Option Settings_Show;
+    Option Debug_Low_Resolution_Passes;
+    Option Low_Resolution_Passes_Max;
+    Option Num_Iterations;
+    Option Lattice_Width; // Should these be X/Y or Width/Height?
+    Option Lattice_Height;
+    Option Patches_Min; // These should be called Labels instead of Patches to match SettingsText.cpp
+    Option Patches_Max;
+    Option Compositor_Patch_Type;
+    Option Compositor_Patch_Blender;
+    Option Patches_Input;
+    Option Patches_Output;
+
 private:
 	template<typename T>
 	struct ValueFinder
@@ -125,6 +168,9 @@ private:
 	bool m_shouldRunImageCompletion;
 	bool m_debugLowResolutionPasses;
 	bool m_isValid;
+
+  std::vector<Option> m_Options;
+
 };
 
 #endif // COMMAND_LINE_OPTIONS_H

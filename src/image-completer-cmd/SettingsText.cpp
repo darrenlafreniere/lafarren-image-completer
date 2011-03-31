@@ -26,27 +26,10 @@
 
 #include "tech/DbgMem.h"
 
-
-// Gather member descriptions and values before printing them, so we can
-// size the desc column to an ideal width.
-struct Member
-{
-	std::string desc;
-	std::string value;
-
-	Member(const std::string& desc, const std::string& value) : desc(desc), value(value) {}
-
-	void Print(wxMessageOutput& msgOut, int descWidth) const
-	{
-		const std::string descSpacing(' ', descWidth - desc.length());
-		msgOut.Printf("\t%s:%s %s\n", desc.c_str(), descSpacing.c_str(), value.c_str());
-	}
-};
-
 //
 // SettingsText
 //
-void SettingsText::Print(const LfnIc::Settings& settings)
+void SettingsText::Print(const LfnIc::Settings& settings, CommandLineOptions commandLineOptions)
 {
 	wxASSERT(LfnIc::AreSettingsValid(settings));
 	wxMessageOutput& msgOut = *wxMessageOutput::Get();
@@ -61,24 +44,21 @@ void SettingsText::Print(const LfnIc::Settings& settings)
 		lowResolutionPassesMaxString = LfnTech::Str::Format("%d", settings.lowResolutionPassesMax);
 	}
 
-#define DESC(member) GetMemberDescription(offsetof(LfnIc::Settings, member))
 #define VAL_W "17" /* TODO: auto-size this as well? */
 #define VAL_X(fmt, x) LfnTech::Str::Format("%" VAL_W fmt, x)
 #define VAL_S(s) VAL_X("s", s)
 #define VAL_I(i) VAL_X("d", i)
 
-	std::vector<Member> completerMembers;
-	completerMembers.push_back(Member(DESC(lowResolutionPassesMax), VAL_S(lowResolutionPassesMaxString.c_str())));
-	completerMembers.push_back(Member(DESC(numIterations), VAL_I(settings.numIterations)));
-	completerMembers.push_back(Member(DESC(latticeGapX), VAL_I(settings.latticeGapX)));
-	completerMembers.push_back(Member(DESC(latticeGapY), VAL_I(settings.latticeGapY)));
-	completerMembers.push_back(Member(DESC(postPruneLabelsMin), VAL_I(settings.postPruneLabelsMin)));
-	completerMembers.push_back(Member(DESC(postPruneLabelsMax), VAL_I(settings.postPruneLabelsMax)));
+	commandLineOptions.Low_Resolution_Passes_Max.m_strValue = VAL_S(lowResolutionPassesMaxString.c_str());
+	commandLineOptions.Num_Iterations.m_strValue = VAL_I(settings.numIterations);
+	commandLineOptions.Lattice_Width.m_strValue = VAL_I(settings.latticeGapX);
+	commandLineOptions.Lattice_Height.m_strValue = VAL_I(settings.latticeGapY);
+	commandLineOptions.Patches_Min.m_strValue = VAL_I(settings.postPruneLabelsMin);
+	commandLineOptions.Patches_Max.m_strValue = VAL_I(settings.postPruneLabelsMax);
 
-	std::vector<Member> compositorMembers;
-	compositorMembers.push_back(Member(DESC(compositorPatchType), VAL_S(GetEnumDescription(settings.compositorPatchType).c_str())));
-	compositorMembers.push_back(Member(DESC(compositorPatchBlender), VAL_S(GetEnumDescription(settings.compositorPatchBlender).c_str())));
-
+	commandLineOptions.Compositor_Patch_Type.m_strValue = VAL_S(GetEnumDescription(settings.compositorPatchType).c_str());
+	commandLineOptions.Compositor_Patch_Blender.m_strValue = VAL_S(GetEnumDescription(settings.compositorPatchBlender).c_str());
+/*
 	// Determine the description column width.
 	int descWidth = 0;
 	{
@@ -102,7 +82,9 @@ void SettingsText::Print(const LfnIc::Settings& settings)
 			}
 		}
 	}
+*/
 
+/*
 	// Display the members
 	{
 		msgOut.Printf("\nImage completer settings\n");
@@ -117,73 +99,7 @@ void SettingsText::Print(const LfnIc::Settings& settings)
 			compositorMembers[i].Print(msgOut, descWidth);
 		}
 	}
-}
-
-// Returns a user friendly string describing the specified settings
-// member. settingsMemberOffset is the offset in byte of the settings
-// member (e.g., offsetof(LfnIc::Settings, latticeGapX))
-std::string SettingsText::GetMemberDescription(int settingsMemberOffset)
-{
-	std::string desc;
-
-	if (settingsMemberOffset == offsetof(LfnIc::Settings, lowResolutionPassesMax))
-	{
-		desc = "low resolution passes";
-	}
-	else if (settingsMemberOffset == offsetof(LfnIc::Settings, numIterations))
-	{
-		desc = "number of iterations";
-	}
-	else if (settingsMemberOffset == offsetof(LfnIc::Settings, latticeGapX))
-	{
-		desc = "lattice gap width";
-	}
-	else if (settingsMemberOffset == offsetof(LfnIc::Settings, latticeGapY))
-	{
-		desc = "lattice gap height";
-	}
-	else if (settingsMemberOffset == offsetof(LfnIc::Settings, patchWidth))
-	{
-		desc = "patch width";
-	}
-	else if (settingsMemberOffset == offsetof(LfnIc::Settings, patchHeight))
-	{
-		desc = "patch height";
-	}
-	else if (settingsMemberOffset == offsetof(LfnIc::Settings, confidenceBeliefThreshold))
-	{
-		desc = "confidence belief threshold";
-	}
-	else if (settingsMemberOffset == offsetof(LfnIc::Settings, pruneBeliefThreshold))
-	{
-		desc = "prune belief threshold";
-	}
-	else if (settingsMemberOffset == offsetof(LfnIc::Settings, pruneEnergySimilarThreshold))
-	{
-		desc = "prune energy similarity threshold";
-	}
-	else if (settingsMemberOffset == offsetof(LfnIc::Settings, postPruneLabelsMin))
-	{
-		desc = "post-prune patches min";
-	}
-	else if (settingsMemberOffset == offsetof(LfnIc::Settings, postPruneLabelsMax))
-	{
-		desc = "post-prune patches max";
-	}
-	else if (settingsMemberOffset == offsetof(LfnIc::Settings, compositorPatchType))
-	{
-		desc = "patch type";
-	}
-	else if (settingsMemberOffset == offsetof(LfnIc::Settings, compositorPatchBlender))
-	{
-		desc = "patch blender";
-	}
-	else
-	{
-		desc = "unknown property";
-	}
-
-	return desc;
+*/
 }
 
 std::string SettingsText::GetLowResolutionPassesAutoDescription()
