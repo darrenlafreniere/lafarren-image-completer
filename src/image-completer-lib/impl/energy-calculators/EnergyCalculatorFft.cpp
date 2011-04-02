@@ -221,6 +221,15 @@ m_settings(settings),
 	m_isBatchOpen(false),
 	m_isBatchProcessed(false)
 {
+#ifdef USE_THREADS
+	const int fftwInitThreadsResult = FFTW_PREFIX(init_threads)();
+	wxASSERT(fftwInitThreadsResult == 0);
+
+	const int cpuCount = wxThread::GetCPUCount();
+	wxASSERT(cpuCount >= 1);
+	FFTW_PREFIX(plan_with_nthreads)(cpuCount);
+#endif
+
 	m_fftPlanBuffer = FftwInPlaceBufferAlloc();
 
 	// Dimensions must be in row-major order, so swap width and height
@@ -279,6 +288,10 @@ LfnIc::EnergyCalculatorFft::~EnergyCalculatorFft()
 	FFTW_PREFIX(free)(m_fftPlanBuffer.generic);
 
 	delete [] m_batchEnergy2ndAnd3rdTerm;
+
+#ifdef USE_THREADS
+	FFTW_PREFIX(cleanup_threads)();
+#endif
 }
 
 LfnIc::EnergyCalculator::BatchImmediate LfnIc::EnergyCalculatorFft::BatchOpenImmediate(const BatchParams& params)
