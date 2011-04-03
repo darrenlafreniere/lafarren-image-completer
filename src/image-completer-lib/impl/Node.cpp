@@ -402,9 +402,10 @@ void LfnIc::Node::PruneLabels()
 					// dissimilar enough from the labels that have been kept
 					// so far.
 					bool isSimilarToAlreadyKeptLabel = false;
-					{
-						const int keptNum = labelInfoSetKept.size();
 
+					const int keptNum = labelInfoSetKept.size();
+					if (keptNum > 0)
+					{
 						// Use an immediate batch - there shouldn't be too
 						// many calculations, and the upper bound is unknown.
 						// TODO: run some tests to verify this assumption.
