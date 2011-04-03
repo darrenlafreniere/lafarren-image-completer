@@ -39,3 +39,19 @@ energyCalculatorFft(settings, inputImage, mask
 #endif
 {
 }
+
+LfnIc::EnergyCalculator& LfnIc::EnergyCalculatorContainer::Get(const EnergyCalculator::BatchParams& batchParam, int numBatchCalculations)
+{
+#if ENABLE_ENERGY_CALCULATOR_FFT
+	if (numBatchCalculations < 50) // currently a guesstimate
+	{
+		return energyCalculatorPerPixel;
+	}
+	else
+	{
+		return energyCalculatorFft;
+	}
+#else
+	return energyCalculatorPerPixel;
+#endif
+}

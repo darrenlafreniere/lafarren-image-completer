@@ -40,24 +40,10 @@ namespace LfnIc
 	public:
 		EnergyCalculatorContainer(const Settings& settings, const ImageConst& inputImage, const MaskLod& mask);
 
-		// TODO: temp method, expand into an EnergyManager class.
 		// Returns a reference to an energy calculator that's suitable for
-		// the anticipated number of batch calculations.
-		inline EnergyCalculator& Get(int numBatchCalculations)
-		{
-#if ENABLE_ENERGY_CALCULATOR_FFT
-			if (numBatchCalculations < 50) // currently a guesstimate
-			{
-				return energyCalculatorPerPixel;
-			}
-			else
-			{
-				return energyCalculatorFft;
-			}
-#else
-			return energyCalculatorPerPixel;
-#endif
-		}
+		// the batch parameters and anticipated number of calculations in the
+		// batch.
+		EnergyCalculator& Get(const EnergyCalculator::BatchParams& batchParam, int numBatchCalculations);
 
 	private:
 		EnergyCalculatorPerPixel energyCalculatorPerPixel;

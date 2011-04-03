@@ -223,10 +223,8 @@ void LfnIc::Node::SendMessages(Node& neighbor) const
 	const int pLabelNum = m_labelInfoSet.size();
 	std::vector<Energy> pLabelEnergies(pLabelNum);
 	{
-		ScopedNodeEnergyBatchQueued energyBatch(
-			*this,
-			m_context->energyCalculatorContainer.Get(pLabelNum),
-			EnergyCalculator::BatchParams(pLabelNum, m_context->settings.patchWidth, m_context->settings.patchHeight, GetLeft(), GetTop(), true));
+		const EnergyCalculator::BatchParams energyBatchParams(pLabelNum, m_context->settings.patchWidth, m_context->settings.patchHeight, GetLeft(), GetTop(), true);
+		ScopedNodeEnergyBatchQueued energyBatch(*this, m_context->energyCalculatorContainer.Get(energyBatchParams, pLabelNum), energyBatchParams);
 
 		// Queue energy calculations
 		for (int pi = 0; pi < pLabelNum; ++pi)
@@ -269,7 +267,7 @@ void LfnIc::Node::SendMessages(Node& neighbor) const
 		const int pOverlapTop = pLabelInfo.label.top + pOverlapTopOffset;
 
 		const EnergyCalculator::BatchParams energyBatchParams(qLabelNum, overlapWidth, overlapHeight, pOverlapLeft, pOverlapTop, false);
-		EnergyCalculator::BatchQueued energyBatch(m_context->energyCalculatorContainer.Get(qLabelNum).BatchOpenQueued(energyBatchParams));
+		EnergyCalculator::BatchQueued energyBatch(m_context->energyCalculatorContainer.Get(energyBatchParams, qLabelNum).BatchOpenQueued(energyBatchParams));
 
 		// Queue energy calculations
 		for (int qi = 0; qi < qLabelNum; ++qi)
@@ -346,9 +344,8 @@ void LfnIc::Node::PruneLabels()
 	std::vector<PruneInfo> pruneInfos(labelNum);
 
 	{
-		ScopedNodeEnergyBatchQueued energyBatch(
-			*this, m_context->energyCalculatorContainer.Get(labelNum),
-			EnergyCalculator::BatchParams(labelNum, m_context->settings.patchWidth, m_context->settings.patchHeight, GetLeft(), GetTop(), true));
+		const EnergyCalculator::BatchParams energyBatchParams(labelNum, m_context->settings.patchWidth, m_context->settings.patchHeight, GetLeft(), GetTop(), true);
+		ScopedNodeEnergyBatchQueued energyBatch(*this, m_context->energyCalculatorContainer.Get(energyBatchParams, labelNum), energyBatchParams);
 
 		// Queue energy calculations
 		for (int i = 0; i < labelNum; ++i)
@@ -412,7 +409,7 @@ void LfnIc::Node::PruneLabels()
 						// many calculations, and the upper bound is unknown.
 						// TODO: run some tests to verify this assumption.
 						const EnergyCalculator::BatchParams energyBatchParams(keptNum, patchWidth, patchHeight, label.left, label.top, false);
-						EnergyCalculator::BatchImmediate energyBatch(m_context->energyCalculatorContainer.Get(keptNum).BatchOpenImmediate(energyBatchParams));
+						EnergyCalculator::BatchImmediate energyBatch(m_context->energyCalculatorContainer.Get(energyBatchParams, keptNum).BatchOpenImmediate(energyBatchParams));
 
 						for (int keptIdx = 0; !isSimilarToAlreadyKeptLabel && keptIdx < keptNum; ++keptIdx)
 						{
@@ -461,9 +458,8 @@ LfnIc::Priority LfnIc::Node::CalculatePriority() const
 	std::vector<Belief> beliefs(labelNum);
 	Belief beliefMax = BELIEF_MIN;
 
-	ScopedNodeEnergyBatchQueued energyBatch(
-		*this, m_context->energyCalculatorContainer.Get(labelNum),
-		EnergyCalculator::BatchParams(labelNum, m_context->settings.patchWidth, m_context->settings.patchHeight, GetLeft(), GetTop(), true));
+	const EnergyCalculator::BatchParams energyBatchParams(labelNum, m_context->settings.patchWidth, m_context->settings.patchHeight, GetLeft(), GetTop(), true);
+	ScopedNodeEnergyBatchQueued energyBatch(*this, m_context->energyCalculatorContainer.Get(energyBatchParams, labelNum), energyBatchParams);
 
 	// Queue energy calculations
 	for (int i = 0; i < labelNum; ++i)
@@ -523,9 +519,8 @@ LfnIc::Belief LfnIc::Node::CalculateBelief(const Label& label, const Energy mess
 	if (OverlapsKnownRegion())
 	{
 		// Single energy calculation; use an immediate batch.
-		ScopedNodeEnergyBatchImmediate energyBatch(
-			*this, m_context->energyCalculatorContainer.Get(1),
-			EnergyCalculator::BatchParams(1, m_context->settings.patchWidth, m_context->settings.patchHeight, GetLeft(), GetTop(), true));
+		const EnergyCalculator::BatchParams energyBatchParams(1, m_context->settings.patchWidth, m_context->settings.patchHeight, GetLeft(), GetTop(), true);
+		ScopedNodeEnergyBatchImmediate energyBatch(*this, m_context->energyCalculatorContainer.Get(energyBatchParams, 1), energyBatchParams);
 
 		e = energyBatch.Calculate(label.left, label.top);
 	}
