@@ -27,7 +27,7 @@
 
 namespace LfnTech
 {
-	// Returns a current time value in seconds.
+	// Returns a current time value in seconds. Resolution varies by OS.
 	double CurrentTime();
 }
 
