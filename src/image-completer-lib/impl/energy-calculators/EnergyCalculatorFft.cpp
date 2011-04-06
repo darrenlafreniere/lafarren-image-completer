@@ -223,7 +223,7 @@ m_settings(settings),
 {
 #ifdef USE_THREADS
 	const int fftwInitThreadsResult = FFTW_PREFIX(init_threads)();
-	wxASSERT(fftwInitThreadsResult == 0);
+	wxASSERT(fftwInitThreadsResult != 0);
 
 	const int cpuCount = wxThread::GetCPUCount();
 	wxASSERT(cpuCount >= 1);
