@@ -34,7 +34,7 @@
 #include "LfnIcImage.h"
 #include "PriorityBpRunner.h"
 #include "ScalableDebugging.h"
-#include "Settings.h"
+#include "SettingsScalable.h"
 
 #include "tech/DbgMem.h"
 

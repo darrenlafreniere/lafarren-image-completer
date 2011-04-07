@@ -76,6 +76,7 @@ ${ImageCompleterDir}/ImageConst.cpp
 ${ImageCompleterDir}/ImageScalable.cpp
 ${ImageCompleterDir}/Label.cpp
 ${ImageCompleterDir}/LfnIc.cpp
+${ImageCompleterDir}/LfnIcSettings.cpp
 ${ImageCompleterDir}/MaskScalable.cpp
 ${ImageCompleterDir}/MaskWritable.cpp
 ${ImageCompleterDir}/NeighborEdge.cpp
@@ -84,7 +85,7 @@ ${ImageCompleterDir}/NodeSet.cpp
 ${ImageCompleterDir}/Pch.cpp
 ${ImageCompleterDir}/PriorityBpRunner.cpp
 ${ImageCompleterDir}/ScalableDebugging.cpp
-${ImageCompleterDir}/Settings.cpp
+${ImageCompleterDir}/SettingsScalable.cpp
 
 ${ImageCompleterDir}/compositors/CompositorRoot.cpp
 ${ImageCompleterDir}/compositors/CompositorUtils.cpp
@@ -156,18 +157,18 @@ set_target_properties(ImageCompleter PROPERTIES COMPILE_DEFINITIONS "${MAIN_BUIL
 #####################################
 
 # 1 channel float images
-find_package(ITK REQUIRED)
-include(${ITK_USE_FILE})
-
-set(definitions1f "USE_ITK;USE_FLOAT_PIXELS;PIXEL_DIMENSION=1")
-message("ImageCompleter1f definitions: ${CORE_DEFINITIONS};${definitions1f}")
-
-add_library(ImageCompleterLib1f ${ImageCompleterSources})
-set_target_properties(ImageCompleterLib1f PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${definitions1f}")
-
-add_executable(ImageCompleter1f ${AppSources} ${cmdsrc}/AppITKImage.cpp ${cmdsrc}/AppITKMask.cpp)
-target_link_libraries(ImageCompleter1f ${LibrariesToLink} ${ImageCompleterLib1f} ${ITK_LIBRARIES})
-set_target_properties(ImageCompleter1f PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${definitions1f}")
+# find_package(ITK REQUIRED)
+# include(${ITK_USE_FILE})
+#
+# set(definitions1f "USE_ITK;USE_FLOAT_PIXELS;PIXEL_DIMENSION=1")
+# message("ImageCompleter1f definitions: ${CORE_DEFINITIONS};${definitions1f}")
+#
+# add_library(ImageCompleterLib1f ${ImageCompleterSources})
+# set_target_properties(ImageCompleterLib1f PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${definitions1f}")
+#
+# add_executable(ImageCompleter1f ${AppSources} ${cmdsrc}/AppITKImage.cpp ${cmdsrc}/AppITKMask.cpp)
+# target_link_libraries(ImageCompleter1f ${LibrariesToLink} ${ImageCompleterLib1f} ${ITK_LIBRARIES})
+# set_target_properties(ImageCompleter1f PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${definitions1f}")
 
 
 ############################
@@ -186,11 +187,11 @@ set_target_properties(ImageCompleter1f PROPERTIES COMPILE_DEFINITIONS "${CORE_DE
 ##############################
 # wx build
 
-set(definitions3uc "PIXEL_DIMENSION=3")
-message("ImageCompleter3uc definitions: ${CORE_DEFINITIONS};${definitions3uc}")
-add_library(ImageCompleterLib3uc ${ImageCompleterSources})
-set_target_properties(ImageCompleterLib3uc PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${definitions3uc}")
-
-add_executable(ImageCompleter3uc ${AppSources} ${cmdsrc}/AppWxImage.cpp ${cmdsrc}/AppWxMask.cpp)
-target_link_libraries(ImageCompleter3uc ${LibrariesToLink} ${ImageCompleterLib3uc})
-set_target_properties(ImageCompleter3uc PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${definitions3uc}")
+# set(definitions3uc "PIXEL_DIMENSION=3")
+# message("ImageCompleter3uc definitions: ${CORE_DEFINITIONS};${definitions3uc}")
+# add_library(ImageCompleterLib3uc ${ImageCompleterSources})
+# set_target_properties(ImageCompleterLib3uc PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${definitions3uc}")
+#
+# add_executable(ImageCompleter3uc ${AppSources} ${cmdsrc}/AppWxImage.cpp ${cmdsrc}/AppWxMask.cpp)
+# target_link_libraries(ImageCompleter3uc ${LibrariesToLink} ${ImageCompleterLib3uc})
+# set_target_properties(ImageCompleter3uc PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${definitions3uc}")

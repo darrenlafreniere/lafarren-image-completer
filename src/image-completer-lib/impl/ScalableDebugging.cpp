@@ -8,7 +8,7 @@
 #include "LfnIcImage.h"
 #include "MaskScalable.h"
 #include "PriorityBpRunner.h"
-#include "Settings.h"
+#include "SettingsScalable.h"
 
 #include "tech/DbgMem.h"
 
