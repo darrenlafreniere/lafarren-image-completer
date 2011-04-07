@@ -181,9 +181,12 @@ bool LfnIc::LabelSet::LabelBitArray::IsSet(int x, int y) const
 
 void LfnIc::LabelSet::LabelBitArray::GetIndexAndShift(int x, int y, int& outIndex, int& outShift) const
 {
+    // The data is stored as a bit array (like a bool array,
+    // but there are 8 data points stored in each byte instead of just 1).
+
 	const int rowMajorIndex = LfnTech::GetRowMajorIndex(m_width, x, y);
-	outIndex = rowMajorIndex / 8;
-	outShift = rowMajorIndex & 7;
+	outIndex = rowMajorIndex / 8; // Determines which byte the bit we are looking for is in.
+	outShift = rowMajorIndex & 7; // Keeps the lower 3 bits, as there are only 8 bits in a byte so the shift output will be from 0 to 7.
 	wxASSERT(outIndex < m_dataNumUints);
 }
 
