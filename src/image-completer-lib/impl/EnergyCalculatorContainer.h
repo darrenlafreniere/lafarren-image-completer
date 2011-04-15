@@ -27,6 +27,7 @@
 #include "energy-calculators/EnergyCalculatorFft.h"
 #endif
 #include "energy-calculators/EnergyCalculatorPerPixel.h"
+#include "Scalable.h"
 
 namespace LfnIc
 {
@@ -35,11 +36,15 @@ namespace LfnIc
 	class MaskLod;
 	struct Settings;
 
-	class EnergyCalculatorContainer
+	class EnergyCalculatorContainer : public Scalable
 	{
 	public:
 		EnergyCalculatorContainer(const Settings& settings, const ImageConst& inputImage, const MaskLod& mask);
 		~EnergyCalculatorContainer();
+
+		virtual void ScaleUp();
+		virtual void ScaleDown();
+		virtual int GetScaleDepth() const;
 
 		// Returns a reference to an energy calculator that's suitable for
 		// the batch parameters and the number of calculations in the
@@ -47,6 +52,10 @@ namespace LfnIc
 		EnergyCalculator& Get(const EnergyCalculator::BatchParams& batchParams, int numBatchCalculations);
 
 	private:
+		const Settings& m_settings;
+		const ImageConst& m_inputImage;
+		const MaskLod& m_mask;
+
 		EnergyCalculatorPerPixel m_energyCalculatorPerPixel;
 #if ENABLE_ENERGY_CALCULATOR_FFT
 		friend class EnergyCalculatorMeasurer;
@@ -55,11 +64,25 @@ namespace LfnIc
 
 		// EnergyCalculatorFft instances are non-scalable. Therefore, they're
 		// dynamically allocated and initialized for each resolution.
-		// TODO: this is not actually done yet!
-		EnergyCalculatorFft* m_energyCalculatorFft;
+		class Resolution
+		{
+		public:
+			Resolution(const EnergyCalculatorContainer& energyCalculatorContainer);
+			~Resolution();
+
+			EnergyCalculatorFft& GetEnergyCalculatorFft();
+		private:
+			const EnergyCalculatorContainer& m_energyCalculatorContainer;
+			EnergyCalculatorFft* m_energyCalculatorFft;
+		};
+
+		friend class Resolution;
+		inline Resolution& GetCurrentResolution() const { return *m_resolutions[m_depth]; }
+		std::vector<Resolution*> m_resolutions;
 
 		std::vector<EnergyCalculatorMeasurer*> m_measurers;
 #endif // ENABLE_ENERGY_CALCULATOR_FFT
+		int m_depth;
 	};
 };
 

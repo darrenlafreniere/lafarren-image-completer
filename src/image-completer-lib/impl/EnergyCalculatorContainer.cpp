@@ -262,23 +262,71 @@ namespace LfnIc
 // EnergyCalculatorContainer implementation
 //
 LfnIc::EnergyCalculatorContainer::EnergyCalculatorContainer(const Settings& settings, const ImageConst& inputImage, const MaskLod& mask)
-	: m_energyCalculatorPerPixel(inputImage, mask)
-#if ENABLE_ENERGY_CALCULATOR_FFT
-#if FFT_VALIDATION_ENABLED
-	, m_energyCalculatorFft(new EnergyCalculatorFft(settings, inputImage, mask, m_energyCalculatorPerPixel))
-#else
-	, m_energyCalculatorFft(new EnergyCalculatorFft(settings, inputImage, mask))
-#endif // FFT_VALIDATION_ENABLED
-#endif // ENABLE_ENERGY_CALCULATOR_FFT
+	: m_settings(settings)
+	, m_inputImage(inputImage)
+	, m_mask(mask)
+	, m_energyCalculatorPerPixel(inputImage, mask)
+	, m_depth(0)
 {
+#if ENABLE_ENERGY_CALCULATOR_FFT
+	// Create the original resolution label set.
+	m_resolutions.push_back(new Resolution(*this));
+#endif
 }
 
 LfnIc::EnergyCalculatorContainer::~EnergyCalculatorContainer()
 {
 #if ENABLE_ENERGY_CALCULATOR_FFT
 	ClearMeasurers();
-	delete m_energyCalculatorFft;
+
+	for (int i = 0, n = m_resolutions.size(); i < n; ++i)
+	{
+		delete m_resolutions[i];
+	}
 #endif
+}
+
+void LfnIc::EnergyCalculatorContainer::ScaleUp()
+{
+	wxASSERT(m_depth > 0);
+
+#if ENABLE_ENERGY_CALCULATOR_FFT
+	// We don't expect to scale back down to this resolution, so free up some
+	// memory. This is checked by the assert at the bottom of
+	// EnergyCalculatorContainer::ScaleDown().
+	delete m_resolutions[m_depth];
+	m_resolutions[m_depth] = NULL;
+#endif
+
+	--m_depth;
+}
+
+void LfnIc::EnergyCalculatorContainer::ScaleDown()
+{
+	wxASSERT(m_depth >= 0);
+
+#if ENABLE_ENERGY_CALCULATOR_FFT
+	// If there's no resolution for the next lower depth, create one.
+	if (static_cast<unsigned int>(m_depth) == m_resolutions.size() - 1)
+	{
+		m_resolutions.push_back(new Resolution(*this));
+	}
+#endif
+
+	++m_depth;
+#if ENABLE_ENERGY_CALCULATOR_FFT
+	wxASSERT(m_depth < int(m_resolutions.size()));
+
+	// EnergyCalculatorContainer::ScaleUp() doesn't expect us to scale back down, so it
+	// deletes the lower resolution without reducing the array size. Verify
+	// that we have a valid resolution here.
+	wxASSERT(m_resolutions[m_depth]);
+#endif
+}
+
+int LfnIc::EnergyCalculatorContainer::GetScaleDepth() const
+{
+	return m_depth;
 }
 
 LfnIc::EnergyCalculator& LfnIc::EnergyCalculatorContainer::Get(const EnergyCalculator::BatchParams& batchParams, int numBatchCalculations)
@@ -310,7 +358,7 @@ LfnIc::EnergyCalculator& LfnIc::EnergyCalculatorContainer::Get(const EnergyCalcu
 				break;
 			}
 		}
-		else if (measurer.GetFasterEnergyCalculator() == m_energyCalculatorFft)
+		else if (measurer.GetFasterEnergyCalculator() == &GetCurrentResolution().GetEnergyCalculatorFft())
 		{
 			// Fft is better with larger batches.
 			if (measurer.GetBatchSize() <= batchSize)
@@ -328,7 +376,7 @@ LfnIc::EnergyCalculator& LfnIc::EnergyCalculatorContainer::Get(const EnergyCalcu
 
 	if (!measurerToUse)
 	{
-		measurerToUse = new EnergyCalculatorMeasurer(batchSize, *this, m_energyCalculatorPerPixel, *m_energyCalculatorFft);
+		measurerToUse = new EnergyCalculatorMeasurer(batchSize, *this, m_energyCalculatorPerPixel, GetCurrentResolution().GetEnergyCalculatorFft());
 		m_measurers.push_back(measurerToUse);
 	}
 
@@ -359,6 +407,7 @@ void LfnIc::EnergyCalculatorContainer::OnFoundFasterEnergyCalculator(const Energ
 				wxASSERT(m_measurers[i]);
 				if (m_measurers[i]->GetBatchSize() <= batchSize)
 				{
+					delete m_measurers[i];
 					m_measurers.erase(m_measurers.begin() + i);
 				}
 			}
@@ -366,7 +415,7 @@ void LfnIc::EnergyCalculatorContainer::OnFoundFasterEnergyCalculator(const Energ
 	}
 	else
 	{
-		wxASSERT(&fasterEnergyCalculator == m_energyCalculatorFft);
+		wxASSERT(&fasterEnergyCalculator == &GetCurrentResolution().GetEnergyCalculatorFft());
 
 		// See comment in if (&fasterEnergyCalculator == &m_energyCalculatorPerPixel)
 		// block. Same case here, except all larger batch sizes will use fft and can
@@ -378,6 +427,7 @@ void LfnIc::EnergyCalculatorContainer::OnFoundFasterEnergyCalculator(const Energ
 				wxASSERT(m_measurers[i]);
 				if (batchSize <= m_measurers[i]->GetBatchSize())
 				{
+					delete m_measurers[i];
 					m_measurers.erase(m_measurers.begin() + i);
 				}
 			}
@@ -391,5 +441,39 @@ void LfnIc::EnergyCalculatorContainer::ClearMeasurers()
 	{
 		delete m_measurers[i];
 	}
+}
+
+LfnIc::EnergyCalculatorContainer::Resolution::Resolution(const EnergyCalculatorContainer& energyCalculatorContainer)
+	: m_energyCalculatorContainer(energyCalculatorContainer)
+	, m_energyCalculatorFft(NULL)
+{
+}
+
+LfnIc::EnergyCalculatorContainer::Resolution::~Resolution()
+{
+	delete m_energyCalculatorFft;
+}
+
+LfnIc::EnergyCalculatorFft& LfnIc::EnergyCalculatorContainer::Resolution::GetEnergyCalculatorFft()
+{
+	// Must lazily create the FFT calculator for a given resolution, since we
+	// don't know the scale down terminus until the calculator is asked for,
+	// and we don't want to allocate calculators at all higher resolutions
+	// until they're in use, since 1) the fft calculator is a memory hog, and
+	// 2) there may be issues with overlapping fftw init/cleanup if multiple
+	// fft calculators exist simultaneously.
+	if (!m_energyCalculatorFft)
+	{
+		m_energyCalculatorFft = new EnergyCalculatorFft(
+			m_energyCalculatorContainer.m_settings,
+			m_energyCalculatorContainer.m_inputImage,
+			m_energyCalculatorContainer.m_mask
+#if FFT_VALIDATION_ENABLED
+			, m_energyCalculatorPerPixel
+#endif
+			);
+	}
+
+	return *m_energyCalculatorFft;
 }
 #endif

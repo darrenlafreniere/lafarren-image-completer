@@ -88,7 +88,7 @@ namespace LfnIc
 		SettingsScalable& settingsScalable,
 		ImageScalable& imageScalable,
 		MaskScalable& maskScalable,
-		const EnergyCalculatorContainer& energyCalculatorContainer,
+		EnergyCalculatorContainer& energyCalculatorContainer,
 		LabelSet& labelSet,
 		NodeSet& nodeSet,
 		PriorityBpRunner& priorityBpRunner,
@@ -135,6 +135,7 @@ namespace LfnIc
 			scopedScaleDownAndUpInOrder.Add(maskScalable);
 			scopedScaleDownAndUpInOrder.Add(labelSet);
 			scopedScaleDownAndUpInOrder.Add(nodeSet);
+			scopedScaleDownAndUpInOrder.Add(energyCalculatorContainer);
 
 			// Recurse to the next lower resolution.
 			RecurivelyRunFromLowestToNextHighestResolution(
