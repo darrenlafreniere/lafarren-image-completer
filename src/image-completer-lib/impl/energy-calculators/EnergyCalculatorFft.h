@@ -84,14 +84,13 @@ namespace LfnIc
 			);
 		~EnergyCalculatorFft();
 
-		// EnergyCalculator interface
-		virtual BatchImmediate BatchOpenImmediate(const BatchParams& params);
-		virtual BatchQueued BatchOpenQueued(const BatchParams& params);
-
 	protected:
 		// Common batch opening method.
-		EnergyCalculatorFft& BatchOpen(const BatchParams& params);
+		void BatchOpen(const BatchParams& params);
 
+		// EnergyCalculator interface
+		virtual void BatchOpenImmediate(const BatchParams& params);
+		virtual void BatchOpenQueued(const BatchParams& params);
 		virtual void BatchClose();
 		virtual Energy Calculate(int bLeft, int bTop) const;
 		virtual BatchQueued::Handle QueueCalculation(int bLeft, int bTop);

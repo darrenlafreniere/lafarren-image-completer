@@ -38,10 +38,6 @@ namespace LfnIc
 		EnergyCalculatorPerPixel(const ImageConst& inputImage, const MaskLod& mask);
 		virtual ~EnergyCalculatorPerPixel();
 
-		// EnergyCalculator interface
-		virtual BatchImmediate BatchOpenImmediate(const BatchParams& params);
-		virtual BatchQueued BatchOpenQueued(const BatchParams& params);
-
 	private:
 		//
 		// Internal definitions
@@ -131,6 +127,9 @@ namespace LfnIc
 		// Internal methods
 		//
 
+		// EnergyCalculator interface
+		virtual void BatchOpenImmediate(const BatchParams& params);
+		virtual void BatchOpenQueued(const BatchParams& params);
 		virtual void BatchClose();
 		virtual Energy Calculate(int bLeft, int bTop) const;
 		virtual BatchQueued::Handle QueueCalculation(int bLeft, int bTop);

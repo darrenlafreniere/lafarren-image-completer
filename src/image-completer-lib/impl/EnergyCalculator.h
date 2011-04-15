@@ -37,12 +37,46 @@ namespace LfnIc
 	class EnergyCalculator
 	{
 	public:
+		// Batch opening parameters
+		struct BatchParams
+		{
+			inline BatchParams()
+			{
+			}
+
+			inline BatchParams(int maxCalculations, int width, int height, int aLeft, int aTop, bool aMasked) :
+			maxCalculations(maxCalculations),
+			width(width),
+			height(height),
+			aLeft(aLeft),
+			aTop(aTop),
+			aMasked(aMasked)
+			{
+			}
+
+			int maxCalculations;
+			int width;
+			int height;
+			int aLeft;
+			int aTop;
+			bool aMasked;
+		};
+
 		// See comment above class for info on when to use this batch type.
 		// Batch automatically closes when the BatchImmediate instance goes
 		// out of scope.
 		class BatchImmediate
 		{
 		public:
+			// Opens an energy calculation batch based on the given width and
+			// height, and left-top coordinate of the block against which the rest
+			// of the blocks are computed against (block A). If aMasked is true,
+			// then only the pixels intersecting with the known regions of block A
+			// are factored into each result.
+			//
+			// Only one batch may be open at a time. Asserts that no batch is open.
+			inline BatchImmediate(EnergyCalculator& energyCalculator, const BatchParams& params);
+
 			// Closes the batch.
 			inline ~BatchImmediate();
 
@@ -54,8 +88,6 @@ namespace LfnIc
 			inline Energy Calculate(int bLeft, int bTop) const;
 
 		private:
-			friend class EnergyCalculator;
-			inline BatchImmediate(EnergyCalculator& energyCalculator);
 			EnergyCalculator& m_energyCalculator;
 		};
 
@@ -65,6 +97,15 @@ namespace LfnIc
 		class BatchQueued
 		{
 		public:
+			// Opens an energy calculation batch based on the given width and
+			// height, and left-top coordinate of the block against which the rest
+			// of the blocks are computed against (block A). If aMasked is true,
+			// then only the pixels intersecting with the known regions of block A
+			// are factored into each result.
+			//
+			// Only one batch may be open at a time. Asserts that no batch is open.
+			inline BatchQueued(EnergyCalculator& energyCalculator, const BatchParams& params);
+
 			// Closes the batch.
 			inline ~BatchQueued();
 
@@ -118,66 +159,25 @@ namespace LfnIc
 			inline Energy GetResult(Handle handle) const;
 
 		private:
-			friend class EnergyCalculator;
-			inline BatchQueued(EnergyCalculator& energyCalculator);
 			EnergyCalculator& m_energyCalculator;
 		};
-
-		// Batch opening parameters
-		struct BatchParams
-		{
-			inline BatchParams()
-			{
-			}
-
-			inline BatchParams(int maxCalculations, int width, int height, int aLeft, int aTop, bool aMasked) :
-			maxCalculations(maxCalculations),
-			width(width),
-			height(height),
-			aLeft(aLeft),
-			aTop(aTop),
-			aMasked(aMasked)
-			{
-			}
-
-			int maxCalculations;
-			int width;
-			int height;
-			int aLeft;
-			int aTop;
-			bool aMasked;
-		};
-
-		//
-		// BatchOpenImmediate
-		// BatchOpenQueued
-		//
-		// Opens an energy calculation batch based on the given width and
-		// height, and left-top coordinate of the block against which the rest
-		// of the blocks are computed against (block A). If aMasked is true,
-		// then only the pixels intersecting with the known regions of block A
-		// are factored into each result.
-		//
-		// Only one batch may be open at a time. Asserts that no batch is open.
-		virtual BatchImmediate BatchOpenImmediate(const BatchParams& params) = 0;
-		virtual BatchQueued BatchOpenQueued(const BatchParams& params) = 0;
 
 	protected:
 		// Batch objects can call these internal methods.
 		friend class BatchImmediate;
 		friend class BatchQueued;
 
-		// BatchImmediate and BatchQueued friend this base. Subclasses must
-		// use these methods to create new batch instances. The temporary will
-		// be optimized away by RVO.
-		inline BatchImmediate GetBatchImmediate(EnergyCalculator& energyCalculator);
-		inline BatchQueued GetBatchQueued(EnergyCalculator& energyCalculator);
-
+		virtual void BatchOpenImmediate(const BatchParams& params) = 0;
+		virtual void BatchOpenQueued(const BatchParams& params) = 0;
 		virtual void BatchClose() = 0;
 		virtual Energy Calculate(int bLeft, int bTop) const = 0;
 		virtual BatchQueued::Handle QueueCalculation(int bLeft, int bTop) = 0;
 		virtual void ProcessCalculations() = 0;
 		virtual Energy GetResult(BatchQueued::Handle handle) const = 0;
+
+		// Let the internal EnergyCalculatorMeasurer class (in
+		// EnergyCalculatorContainer.cpp) delegate to these protected methods.
+		friend class EnergyCalculatorMeasurer;
 	};
 }
 

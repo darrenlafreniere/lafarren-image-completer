@@ -294,19 +294,7 @@ LfnIc::EnergyCalculatorFft::~EnergyCalculatorFft()
 #endif
 }
 
-LfnIc::EnergyCalculator::BatchImmediate LfnIc::EnergyCalculatorFft::BatchOpenImmediate(const BatchParams& params)
-{
-	BatchOpen(params);
-	return GetBatchImmediate(*this);
-}
-
-LfnIc::EnergyCalculator::BatchQueued LfnIc::EnergyCalculatorFft::BatchOpenQueued(const BatchParams& params)
-{
-	BatchOpen(params);
-	return GetBatchQueued(*this);
-}
-
-LfnIc::EnergyCalculatorFft& LfnIc::EnergyCalculatorFft::BatchOpen(const BatchParams& params)
+void LfnIc::EnergyCalculatorFft::BatchOpen(const BatchParams& params)
 {
 	wxASSERT(!m_isBatchOpen);
 	wxASSERT(!m_isBatchProcessed);
@@ -421,8 +409,16 @@ LfnIc::EnergyCalculatorFft& LfnIc::EnergyCalculatorFft::BatchOpen(const BatchPar
 			ApplyFftRealTo2ndAnd3rdTerm(energyOperator);
 		}
 	}
+}
 
-	return *this;
+void LfnIc::EnergyCalculatorFft::BatchOpenImmediate(const BatchParams& params)
+{
+	BatchOpen(params);
+}
+
+void LfnIc::EnergyCalculatorFft::BatchOpenQueued(const BatchParams& params)
+{
+	BatchOpen(params);
 }
 
 void LfnIc::EnergyCalculatorFft::BatchClose()
@@ -498,7 +494,7 @@ LfnIc::Energy LfnIc::EnergyCalculatorFft::GetResult(BatchQueued::Handle handle) 
 
 LfnIc::EnergyCalculatorFft::FftwInPlaceBuffer LfnIc::EnergyCalculatorFft::FftwInPlaceBufferAlloc() const
 {
-	wxASSERT(m_isBatchProcessed);
+	wxASSERT(!m_isBatchProcessed);
 	FftwInPlaceBuffer result = { FFTW_PREFIX(malloc)(m_fftInPlaceBufferNumBytes) };
 	return result;
 }

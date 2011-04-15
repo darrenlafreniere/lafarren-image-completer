@@ -22,15 +22,15 @@
 #ifndef ENERGY_CALCULATOR_CONTAINER_H
 #define ENERGY_CALCULATOR_CONTAINER_H
 
-#include "energy-calculators/EnergyCalculatorPerPixel.h"
-
 #include "energy-calculators/EnergyCalculatorFftConfig.h"
 #if ENABLE_ENERGY_CALCULATOR_FFT
 #include "energy-calculators/EnergyCalculatorFft.h"
 #endif
+#include "energy-calculators/EnergyCalculatorPerPixel.h"
 
 namespace LfnIc
 {
+	class EnergyCalculatorMeasurer;
 	class ImageConst;
 	class MaskLod;
 	struct Settings;
@@ -39,17 +39,27 @@ namespace LfnIc
 	{
 	public:
 		EnergyCalculatorContainer(const Settings& settings, const ImageConst& inputImage, const MaskLod& mask);
+		~EnergyCalculatorContainer();
 
 		// Returns a reference to an energy calculator that's suitable for
-		// the batch parameters and anticipated number of calculations in the
+		// the batch parameters and the number of calculations in the
 		// batch.
-		EnergyCalculator& Get(const EnergyCalculator::BatchParams& batchParam, int numBatchCalculations);
+		EnergyCalculator& Get(const EnergyCalculator::BatchParams& batchParams, int numBatchCalculations);
 
 	private:
-		EnergyCalculatorPerPixel energyCalculatorPerPixel;
+		EnergyCalculatorPerPixel m_energyCalculatorPerPixel;
 #if ENABLE_ENERGY_CALCULATOR_FFT
-		EnergyCalculatorFft energyCalculatorFft;
-#endif
+		friend class EnergyCalculatorMeasurer;
+		void OnFoundFasterEnergyCalculator(const EnergyCalculatorMeasurer& measurer);
+		void ClearMeasurers();
+
+		// EnergyCalculatorFft instances are non-scalable. Therefore, they're
+		// dynamically allocated and initialized for each resolution.
+		// TODO: this is not actually done yet!
+		EnergyCalculatorFft* m_energyCalculatorFft;
+
+		std::vector<EnergyCalculatorMeasurer*> m_measurers;
+#endif // ENABLE_ENERGY_CALCULATOR_FFT
 	};
 };
 

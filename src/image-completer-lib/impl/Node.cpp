@@ -267,7 +267,7 @@ void LfnIc::Node::SendMessages(Node& neighbor) const
 		const int pOverlapTop = pLabelInfo.label.top + pOverlapTopOffset;
 
 		const EnergyCalculator::BatchParams energyBatchParams(qLabelNum, overlapWidth, overlapHeight, pOverlapLeft, pOverlapTop, false);
-		EnergyCalculator::BatchQueued energyBatch(m_context->energyCalculatorContainer.Get(energyBatchParams, qLabelNum).BatchOpenQueued(energyBatchParams));
+		EnergyCalculator::BatchQueued energyBatch(m_context->energyCalculatorContainer.Get(energyBatchParams, qLabelNum), energyBatchParams);
 
 		// Queue energy calculations
 		for (int qi = 0; qi < qLabelNum; ++qi)
@@ -410,7 +410,7 @@ void LfnIc::Node::PruneLabels()
 						// many calculations, and the upper bound is unknown.
 						// TODO: run some tests to verify this assumption.
 						const EnergyCalculator::BatchParams energyBatchParams(keptNum, patchWidth, patchHeight, label.left, label.top, false);
-						EnergyCalculator::BatchImmediate energyBatch(m_context->energyCalculatorContainer.Get(energyBatchParams, keptNum).BatchOpenImmediate(energyBatchParams));
+						EnergyCalculator::BatchImmediate energyBatch(m_context->energyCalculatorContainer.Get(energyBatchParams, keptNum), energyBatchParams);
 
 						for (int keptIdx = 0; !isSimilarToAlreadyKeptLabel && keptIdx < keptNum; ++keptIdx)
 						{
