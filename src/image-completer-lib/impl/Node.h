@@ -1,19 +1,19 @@
 //
 // Copyright 2010, Darren Lafreniere
 // <http://www.lafarren.com/image-completer/>
-// 
+//
 // This file is part of lafarren.com's Image Completer.
-// 
+//
 // Image Completer is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Image Completer is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with Image Completer, named License.txt. If not, see
 // <http://www.gnu.org/licenses/>.
@@ -35,13 +35,13 @@ namespace LfnIc
 	class MaskLod;
 	struct Settings;
 
-	//
-	// A single Markov Random Field node.
-	//
+	///
+	/// A single Markov Random Field node.
+	///
 	class Node : public Scalable
 	{
 	public:
-		// Consolidates the external references needed by each node.
+		/// Consolidates the external references needed by each node.
 		struct Context
 		{
 			Context(const Settings& settings, const LabelSet& labelSet, EnergyCalculatorContainer& energyCalculatorContainer);
@@ -51,46 +51,46 @@ namespace LfnIc
 			EnergyCalculatorContainer& energyCalculatorContainer;
 		};
 
-		//
-		// Methods
-		//
+		///
+		/// Methods
+		///
 		Node(Context& context, const MaskLod& mask, int x, int y);
 		Node(const Node& other);
 
 		int GetX() const;
 		int GetY() const;
 
-		// Neighbor addition and access:
+		/// Neighbor addition and access:
 		bool AddNeighbor(Node& neighbor, NeighborEdge edge);
 		Node* GetNeighbor(NeighborEdge edge) const;
 		NeighborEdge GetNeighborEdge(const Node& neighbor) const;
 
-		// Sends all beliefe propagation messages from this node to its
-		// neighbor.
+		/// Sends all beliefe propagation messages from this node to its
+		/// neighbor.
 		void SendMessages(Node& neighbor) const;
 
-		// Applies label pruning to this node.
+		/// Applies label pruning to this node.
 		void PruneLabels();
 
 		Priority CalculatePriority() const;
 
-		// Fast belief calculation when the label energy is already known.
+		/// Fast belief calculation when the label energy is already known.
 		Belief CalculateBelief(Energy labelEnergy, const Energy messages[NumNeighborEdges]) const;
 
-		// Slow belief calculation when the label energy is unknown.
+		/// Slow belief calculation when the label energy is unknown.
 		Belief CalculateBelief(const Label& label, const Energy messages[NumNeighborEdges]) const;
 
-		// Gets the image space left and top coordinates for any label placed
-		// at this node.
+		/// Gets the image space left and top coordinates for any label placed
+		/// at this node.
 		int GetLeft() const;
 		int GetTop() const;
 
-		// Returns true if this node's rectangle overlaps any of the mask's
-		// known region. If false, the node will not waste any cycles
-		// calculating the energy of its labels against the image.
+		/// Returns true if this node's rectangle overlaps any of the mask's
+		/// known region. If false, the node will not waste any cycles
+		/// calculating the energy of its labels against the image.
 		bool OverlapsKnownRegion() const;
 
-		// Scalable interface
+		/// Scalable interface
 		virtual void ScaleUp();
 		virtual void ScaleDown();
 		virtual int GetScaleDepth() const;

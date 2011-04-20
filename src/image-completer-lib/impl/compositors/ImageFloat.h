@@ -28,7 +28,7 @@ namespace LfnIc
 {
 	class ImageConst;
 
-	// A set of float components, where each component is [0.0, 1.0].
+	/// A set of float components, where each component is [0.0, 1.0].
 	class PixelFloat
 	{
 	public:
@@ -44,8 +44,8 @@ namespace LfnIc
 		inline PixelFloat& operator*=(float x);
 	};
 
-	// An RGB tuple of floats, where each component is [0.0, 1.0].
-	// We need this class for some of the debug functions which write out colored (RGB) patches.
+	/// An RGB tuple of floats, where each component is [0.0, 1.0].
+	/// We need this class for some of the debug functions which write out colored (RGB) patches.
 	class PixelFloatRGB
 	{
 	public:
@@ -61,9 +61,9 @@ namespace LfnIc
 		inline PixelFloatRGB& operator*=(float x);
 	};
 
-	//
-	// A grid of RgbFloat pixels.
-	//
+	///
+	/// A grid of RgbFloat pixels.
+	///
 	class ImageFloat
 	{
 	public:

@@ -36,7 +36,6 @@
     <ClCompile Include="Pch.cpp" />
     <ClCompile Include="PriorityBpRunner.cpp" />
     <ClCompile Include="EnergyCalculatorContainer.cpp" />
-    <ClCompile Include="Settings.cpp" />
     <ClCompile Include="compositors\PoissonSolver.cpp">
       <Filter>compositors</Filter>
     </ClCompile>
@@ -76,6 +75,8 @@
     <ClCompile Include="compositors\OutputBlenderNone.cpp">
       <Filter>compositors</Filter>
     </ClCompile>
+    <ClCompile Include="SettingsScalable.cpp" />
+    <ClCompile Include="LfnIcSettings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="compositors\CompositorUtils.h">
@@ -109,7 +110,6 @@
     <ClInclude Include="ScopedNodeEnergyBatch.h" />
     <ClInclude Include="EnergyCalculatorContainer.h" />
     <ClInclude Include="Scalable.h" />
-    <ClInclude Include="Settings.h" />
     <ClInclude Include="compositors\PoissonSolver.h">
       <Filter>compositors</Filter>
     </ClInclude>
@@ -167,6 +167,7 @@
     <ClInclude Include="compositors\OutputBlenderNone.h">
       <Filter>compositors</Filter>
     </ClInclude>
+    <ClInclude Include="SettingsScalable.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="energy-calculators\EnergyCalculatorUtils.inl">

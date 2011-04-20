@@ -21,14 +21,17 @@
 
 #include "Pch.h"
 
+#include "wx/filename.h"
+
 #ifdef USE_ITK
 #include "AppITKImage.h"
 
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 #include "itkImageRegionIterator.h"
-#include "itkNthElementImageAdaptor.h"
+//#include "itkNthElementImageAdaptor.h"
 #include "itkMinimumMaximumImageCalculator.h"
+#include "itkVectorIndexSelectionCastImageFilter.h"
 
 // TODO: move channel weighting into AppData::Image?
 #define USE_CHANNEL_WEIGHTING 1
@@ -53,6 +56,7 @@ bool AppITKImage::LoadAndValidate(const std::string& imagePath)
 	// Deep copy
 
 	m_image->SetRegions(reader->GetOutput()->GetLargestPossibleRegion());
+	m_image->SetNumberOfComponentsPerPixel(LfnIc::Image::Pixel::NUM_CHANNELS);
 	m_image->Allocate();
 
 	itk::ImageRegionConstIterator<AppImageITKType> inputIterator(reader->GetOutput(), reader->GetOutput()->GetLargestPossibleRegion());
@@ -66,51 +70,40 @@ bool AppITKImage::LoadAndValidate(const std::string& imagePath)
 	}
 
 #if USE_CHANNEL_WEIGHTING
-	// Setup channel weights
+	// Setup channel weights - Uniform weighting - set the weight of each channel so it has the perceived range of 255
+	// If a channel already has the range 255, the weight is set to 1. If a channel has a range smaller
+	// than 255, its weight will be > 1. If a channel has a weight larger than 255, its weight will be set to < 1.
+	// A weight should never be negative. There is no magic to scaling to 255, it is just that usually there will be some
+	// RGB type channels so 255 should make several of the weights close to 1.
+	std::cout << "Weights: ";
+	for (int c = 0; c < LfnIc::Image::Pixel::NUM_CHANNELS; c++)
 	{
-		float channelWeights[LfnIc::Image::Pixel::NUM_CHANNELS];
+	    typedef itk::Image<LfnIc::Image::Pixel::ChannelType, 2> ScalarImageType;
 
-#if 0
-		// Manual weights
-		wxASSERT(LfnIc::Image::Pixel::NUM_CHANNELS == 4);
-		channelWeights[0] = .1;
-		channelWeights[1] = .1;
-		channelWeights[2] = .1;
-		channelWeights[3] = 200.0;
-#else
-		// Uniform weighting - set the weight of each channel so it has the perceived range of 255
-		// If a channel already has the range 255, the weight is set to 1. If a channel has a range smaller
-		// than 255, its weight will be > 1. If a channel has a weight larger than 255, its weight will be set to < 1.
-		// A weight should never be negative. There is no magic to scaling to 255, it is just that usually there will be some
-		// RGB type channels so 255 should make several of the weights close to 1.
-		std::cout << "Weights: ";
-		for (int c = 0; c < LfnIc::Image::Pixel::NUM_CHANNELS; c++)
+	    typedef itk::VectorIndexSelectionCastImageFilter<AppImageITKType, ScalarImageType> IndexSelectionType;
+	    IndexSelectionType::Pointer indexSelectionFilter = IndexSelectionType::New();
+	    indexSelectionFilter->SetIndex(c);
+	    indexSelectionFilter->SetInput(m_image);
+	    indexSelectionFilter->Update();
+
+	    typedef itk::MinimumMaximumImageCalculator <ScalarImageType> ImageCalculatorFilterType;
+	    ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New();
+	    imageCalculatorFilter->SetImage(indexSelectionFilter->GetOutput());
+	    imageCalculatorFilter->Compute();
+
+	    m_channelWeights[c] = 255. / (imageCalculatorFilter->GetMaximum() - imageCalculatorFilter->GetMinimum());
+	    std::cout << m_channelWeights[c] << " ";
+	}
+	std::cout << std::endl;
+
+	// Now that the weights have been calculated, apply them directly to the image data.
+	LfnIc::Image::Pixel* pixelPtr = AppITKImage::GetData();
+	for (int i = 0, n = GetWidth() * GetHeight(); i < n; ++i, ++pixelPtr)
+	{
+		LfnIc::Image::Pixel& pixel = *pixelPtr;
+		for (int c = 0; c < LfnIc::Image::Pixel::NUM_CHANNELS; ++c)
 		{
-			typedef itk::NthElementImageAdaptor<AppImageITKType, float> ImageAdaptorType;
-			ImageAdaptorType::Pointer adaptor = ImageAdaptorType::New();
-			adaptor->SelectNthElement(c);
-			adaptor->SetImage(m_image);
-
-			typedef itk::MinimumMaximumImageCalculator<ImageAdaptorType> ImageCalculatorFilterType;
-			ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New();
-			imageCalculatorFilter->SetImage(adaptor);
-			imageCalculatorFilter->Compute();
-
-			channelWeights[c] = 255. / (imageCalculatorFilter->GetMaximum() - imageCalculatorFilter->GetMinimum());
-			std::cout << channelWeights[c] << " ";
-		}
-		std::cout << std::endl;
-#endif
-
-		// Now that the weights have been calculated, apply them directly to the image data.
-		LfnIc::Image::Pixel* pixelPtr = AppITKImage::GetData();
-		for (int i = 0, n = GetWidth() * GetHeight(); i < n; ++i, ++pixelPtr)
-		{
-			LfnIc::Image::Pixel& pixel = *pixelPtr;
-			for (int c = 0; c < LfnIc::Image::Pixel::NUM_CHANNELS; ++c)
-			{
-				pixel.channel[c] *= channelWeights[c];
-			}
+			pixel.channel[c] *= m_channelWeights[c];
 		}
 	}
 #endif // USE_CHANNEL_WEIGHTING
@@ -120,6 +113,26 @@ bool AppITKImage::LoadAndValidate(const std::string& imagePath)
 
 void AppITKImage::Save()
 {
+  std::cout << "Save()" << std::endl;
+#if USE_CHANNEL_WEIGHTING
+std::cout << "Output weights: ";
+    for (int c = 0; c < LfnIc::Image::Pixel::NUM_CHANNELS; c++)
+    {
+        std::cout << m_channelWeights[c] << " ";
+    }
+    std::cout << std::endl;
+
+    LfnIc::Image::Pixel* pixelPtr = AppITKImage::GetData();
+    for (int i = 0, n = GetWidth() * GetHeight(); i < n; ++i, ++pixelPtr)
+    {
+        LfnIc::Image::Pixel& pixel = *pixelPtr;
+        for (int c = 0; c < LfnIc::Image::Pixel::NUM_CHANNELS; ++c)
+        {
+            pixel.channel[c] /= m_channelWeights[c];
+        }
+    }
+#endif
+
 	// If the image is RGB and unsigned char, write it to the specified output file (likely png)
 	typedef itk::ImageFileWriter<AppImageITKType> WriterType;
 	WriterType::Pointer writer = WriterType::New();
@@ -131,10 +144,16 @@ void AppITKImage::Save()
 	}
 	else
 	{
-		// If the image is not 3 channel and unsigned char, append ".mhd" to the end of the filename so it can be written
+		// If the image is not 3 channel and unsigned char, change file extension to ".mhd" so it can be written
+		/*
 		std::stringstream ss;
 		ss << m_filePath << ".mhd";
 		writer->SetFileName(ss.str());
+		*/
+        wxFileName filename(m_filePath);
+        filename.SetExt("mhd");
+        writer->SetFileName(filename.GetFullName().ToAscii());
+        std::cout << "Writing " << filename.GetFullName().ToAscii() << std::endl;
 	}
 
 	writer->Update();
@@ -167,8 +186,9 @@ bool AppITKImage::Init(int width, int height)
 	}
 
 	m_image->SetRegions(region);
+    m_image->SetNumberOfComponentsPerPixel(LfnIc::Image::Pixel::NUM_CHANNELS);
 	m_image->Allocate();
-	m_image->FillBuffer(itk::NumericTraits<ITKPixelType>::Zero);
+//	m_image->FillBuffer(itk::NumericTraits<ITKPixelType>::Zero);
 
 	return true;
 }

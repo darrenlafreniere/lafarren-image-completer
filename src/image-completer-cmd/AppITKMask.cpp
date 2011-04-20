@@ -37,11 +37,17 @@ AppITKMask::AppITKMask() : m_offsetX(0), m_offsetY(0)
 bool AppITKMask::LoadAndValidate(const std::string& imagePath, int offsetX, int offsetY)
 {
 	typedef itk::ImageFileReader<MaskImageType> ReaderType;
-
 	ReaderType::Pointer reader = ReaderType::New();
 	reader->SetFileName(imagePath);
 	reader->Update();
-
+/*
+    if(reader->GetOutput()->GetNumberOfComponentsPerPixel() != static_cast<unsigned char>(LfnIc::Image::Pixel::NUM_CHANNELS))
+    {
+        std::cerr << "Input image has " << reader->GetOutput()->GetNumberOfComponentsPerPixel() << " components but we are expecting "
+                  << LfnIc::Image::Pixel::NUM_CHANNELS << "!" << std::endl;
+        exit(-1);
+    }
+*/
 	m_mask = MaskImageType::New();
 	m_mask->Graft(reader->GetOutput());
 

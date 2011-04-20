@@ -27,18 +27,24 @@
 #include "AppData.h"
 
 #include "itkImage.h"
-#include "itkCovariantVector.h"
+#include "itkVectorImage.h"
 
-//
-// Implements LfnIc::Image, using a itk::Image to load, store, and save the data.
-//
+/// \brief An implementation of LfnIc::Image using itkVectorImage.
+///
+/// Implements LfnIc::Image, using a itk::Image to load, store, and save the data.
+///
 class AppITKImage : public AppData::Image
 {
 public:
-	// AppITKImage interface
+	///
+	/// AppITKImage interface (constructor).
+	///
 	AppITKImage();
-	typedef itk::CovariantVector<LfnIc::Image::Pixel::ChannelType, LfnIc::Image::Pixel::NUM_CHANNELS> ITKPixelType;
-	typedef itk::Image<ITKPixelType, 2> AppImageITKType;
+
+    ///
+    /// A description of MyClass2::Function1()
+    ///
+	typedef itk::VectorImage<LfnIc::Image::Pixel::ChannelType, 2> AppImageITKType;
 
 	// LfnIc::Image interface
 	bool LoadAndValidate(const std::string& imagePath);
@@ -51,9 +57,14 @@ public:
 	virtual int GetWidth() const;
 	virtual int GetHeight() const;
 
+    ///
+    /// A array of the channel weights.
+    ///
+    float m_channelWeights[LfnIc::Image::Pixel::NUM_CHANNELS];
 private:
 	// Internal data
 	AppImageITKType::Pointer m_image;
+
 };
 
 #endif // USE_ITK

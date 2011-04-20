@@ -26,26 +26,26 @@
 
 namespace LfnIc
 {
-	//
-	// Partially implements Image under the assumption that the image is
-	// const. Used internally to access read-only image data, including scaled
-	// down data, during completion.
-	//
+	///
+	/// Partially implements Image under the assumption that the image is
+	/// const. Used internally to access read-only image data, including scaled
+	/// down data, during completion.
+	///
 	class ImageConst : public Image
 	{
 	public:
-		// Partial implementation. The non-const methods will assert.
-		// See base class for more info.
+		/// Partial implementation. The non-const methods will assert.
+		/// See base class for more info.
 		virtual bool Init(int width, int height);
 		virtual bool IsValid() const;
 		virtual const std::string& GetFilePath() const;
 		virtual Pixel* GetData();
 
-		// Unimplemented. These are defined in the base, but GetRgb() const
-		// must be redefined here as well, because otherwise, calling GetRgb()
-		// on a const Image& confuses the compile, and it tries calling the
-		// non-const version of GetRgb() above, and generates an error.
-		// Redefined the other two methods here just for completeness.
+		/// Unimplemented. These are defined in the base, but GetRgb() const
+		/// must be redefined here as well, because otherwise, calling GetRgb()
+		/// on a const Image& confuses the compile, and it tries calling the
+		/// non-const version of GetRgb() above, and generates an error.
+		/// Redefined the other two methods here just for completeness.
 		virtual const Pixel* GetData() const = 0;
 		virtual int GetWidth() const = 0;
 		virtual int GetHeight() const = 0;

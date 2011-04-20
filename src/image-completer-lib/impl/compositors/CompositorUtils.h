@@ -27,11 +27,12 @@
 
 namespace LfnIc
 {
-	// Given the input mask, this method creates a soft mask of image
-	// WxH alpha values. The unknown regions are feathered outward to
-	// smooth the transition over the known-unknown boundaries.
+	/// Given the input mask, this method creates a soft mask of image
+	/// WxH alpha values. The unknown regions are feathered outward to
+	/// smooth the transition over the known-unknown boundaries.
 	void CreateSoftMask(const Compositor::Input& input, std::vector<float>& out);
 
+    /// Convert a mask value to an alpha value for blending.
 	inline float MaskValueToAlpha(Mask::Value maskValue)
 	{
 		return (maskValue == Mask::UNKNOWN) ? 0.0f : 1.0f;

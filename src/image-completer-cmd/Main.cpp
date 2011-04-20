@@ -99,6 +99,13 @@ int main(int argc, char** argv)
 
 					if (completionResult == LfnIc::CompletionSucceeded)
 					{
+                        for (int c = 0; c < LfnIc::Image::Pixel::NUM_CHANNELS; c++)
+                        {
+#if USE_ITK
+                            std::cout << "Setting output image weights..." << std::endl;
+                            outputImage.m_channelWeights[c] = inputImage.m_channelWeights[c];
+#endif
+                        }
 						outputImage.Save();
 						wxMessageOutput::Get()->Printf("Completed image and wrote %s.\n", outputImage.GetFilePath().c_str());
 					}

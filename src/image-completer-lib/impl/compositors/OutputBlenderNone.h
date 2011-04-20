@@ -26,6 +26,10 @@
 
 namespace LfnIc
 {
+    ///
+    /// This class implements a Blender which copies the patches into the unknown region
+    /// without performing any blending.
+    ///
     class OutputBlenderNone : public CompositorRoot::OutputBlender
     {
     public:

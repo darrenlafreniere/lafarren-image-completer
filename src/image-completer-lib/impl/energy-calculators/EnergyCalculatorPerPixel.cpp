@@ -251,7 +251,15 @@ namespace LfnIc
 			energy64Bit += energyBunch;
 		}
 
-		wxASSERT(energy64Bit >= ENERGY_MIN && energy64Bit <= ENERGY_MAX);
+		//wxASSERT(energy64Bit >= ENERGY_MIN && energy64Bit <= ENERGY_MAX);
+		if(energy64Bit < ENERGY_MIN || energy64Bit > ENERGY_MAX)
+        {
+            std::cout << "energy64Bit: " << energy64Bit << std::endl;
+            std::cout << "ENERGY_MIN: " << ENERGY_MIN << std::endl;
+            std::cout << "ENERGY_MAX: " << ENERGY_MAX<< std::endl;
+            std::cout << Energy(1.1) << std::endl;
+            std::cout << "Energy typeid: " << typeid(Energy).name() << std::endl;
+        }
 		return energy64Bit;
 	}
 }

@@ -30,8 +30,8 @@ namespace LfnIc
 	class ImageConst;
 	class MaskLod;
 
-	// Calculates the energy between two regions of the input image by doing
-	// straight per-pixel calculations on the CPU.
+	/// Calculates the energy between two regions of the input image by doing
+	/// straight per-pixel calculations on the CPU.
 	class EnergyCalculatorPerPixel : public EnergyCalculator
 	{
 	public:

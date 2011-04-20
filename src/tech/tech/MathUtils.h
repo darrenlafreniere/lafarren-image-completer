@@ -1,19 +1,19 @@
 //
 // Copyright 2010, Darren Lafreniere
 // <http://www.lafarren.com/image-completer/>
-// 
+//
 // This file is part of lafarren.com's Image Completer.
-// 
+//
 // Image Completer is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Image Completer is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with Image Completer, named License.txt. If not, see
 // <http://www.gnu.org/licenses/>.
@@ -29,38 +29,38 @@ namespace LfnTech
 {
 	const double PI = 3.1415926535897932384626433832795;
 
-	//
-	// If f is < min, returns min. If f is > max, returns max. Otherwise, returns f.
-	//
+	///
+	/// If f is < min, returns min. If f is > max, returns max. Otherwise, returns f.
+	///
 	inline float Clamp(float f, float min, float max);
 
-	//
-	// Clamp(f, 0.0f, 1.0f)
-	//
+	///
+	/// Clamp(f, 0.0f, 1.0f)
+	///
 	inline float Clamp0To1(float f);
 
-	//
-	// Returns the row-major index of a 2d location.
-	//
+	///
+	/// Returns the row-major index of a 2d location.
+	///
 	inline int GetRowMajorIndex(int width, int x, int y);
 
-	//
-	// Returns the row-major index of a 2d, multi-channel location.
-	//
+	///
+	/// Returns the row-major index of a 2d, multi-channel location.
+	///
 	inline int GetRowMajorIndex(int width, int channels, int x, int y);
 
-	// Linear interpolation
+	/// Linear interpolation
 	template<typename T>
 	inline T Lerp(T from, T to, float alpha);
 
-	// Inverse linear interpolation to get an alpha value
+	/// Inverse linear interpolation to get an alpha value
 	template<typename T>
 	inline float InverseLerp(T value, T min, T max);
 
-	// Returns the log base 2 of n.
+	/// Returns the log base 2 of n.
 	inline unsigned int LogBase2(unsigned int n);
 
-	// Not a math function, move this someday.
+	/// Not a math function, move this someday.
 	template<typename T>
 	inline void Swap(T& a, T& b);
 }

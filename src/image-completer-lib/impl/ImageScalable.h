@@ -31,10 +31,10 @@ namespace LfnIc
 	class ImageConstInternal;
 	class MaskScalable;
 
-	//
-	// Implements both the Image and Scalable interfaces and provides an in
-	// place scalable image. Initializes the image from the input Image.
-	//
+	///
+	/// Implements both the Image and Scalable interfaces and provides an in
+	/// place scalable image. Initializes the image from the input Image.
+	///
 	class ImageScalable : public ImageConst, public Scalable
 	{
 	public:

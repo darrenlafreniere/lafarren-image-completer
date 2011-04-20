@@ -227,19 +227,19 @@ void LfnIc::Node::SendMessages(Node& neighbor) const
 		ScopedNodeEnergyBatchQueued energyBatch(*this, m_context->energyCalculatorContainer.Get(energyBatchParams, pLabelNum), energyBatchParams);
 
 		// Queue energy calculations
-		for (int pi = 0; pi < pLabelNum; ++pi)
+		for (int pIndex = 0; pIndex < pLabelNum; ++pIndex)
 		{
-			const Label& label = m_labelInfoSet[pi].label;
+			const Label& label = m_labelInfoSet[pIndex].label;
 			const EnergyCalculator::BatchQueued::Handle handle = energyBatch.QueueCalculation(label.left, label.top);
-			ASSERT_NODE_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, pi);
+			ASSERT_NODE_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, pIndex);
 		}
 
 		energyBatch.ProcessCalculations();
 
 		// Get and use energy calculation results
-		for (int pi = 0; pi < pLabelNum; ++pi)
+		for (int pIndex = 0; pIndex < pLabelNum; ++pIndex)
 		{
-			pLabelEnergies[pi] = energyBatch.GetResult(EnergyCalculator::BatchQueued::Handle(pi));
+			pLabelEnergies[pIndex] = energyBatch.GetResult(EnergyCalculator::BatchQueued::Handle(pIndex));
 		}
 	}
 
@@ -260,9 +260,9 @@ void LfnIc::Node::SendMessages(Node& neighbor) const
 	// Iterate over this node's labels to determine which should supply
 	// the message for each q, which will be the one that produces the
 	// lowest energy.
-	for (int pi = 0, pn = pLabelNum; pi < pn; ++pi)
+	for (int pIndex = 0, pn = pLabelNum; pIndex < pn; ++pIndex)
 	{
-		const LabelInfo& pLabelInfo = m_labelInfoSet[pi];
+		const LabelInfo& pLabelInfo = m_labelInfoSet[pIndex];
 		const int pOverlapLeft = pLabelInfo.label.left + pOverlapLeftOffset;
 		const int pOverlapTop = pLabelInfo.label.top + pOverlapTopOffset;
 
@@ -270,22 +270,22 @@ void LfnIc::Node::SendMessages(Node& neighbor) const
 		EnergyCalculator::BatchQueued energyBatch(m_context->energyCalculatorContainer.Get(energyBatchParams, qLabelNum), energyBatchParams);
 
 		// Queue energy calculations
-		for (int qi = 0; qi < qLabelNum; ++qi)
+		for (int qIndex = 0; qIndex < qLabelNum; ++qIndex)
 		{
-			const Label& qLabel = neighbor.m_labelInfoSet[qi].label;
+			const Label& qLabel = neighbor.m_labelInfoSet[qIndex].label;
 			const int qOverlapLeft = qLabel.left + qOverlapLeftOffset;
 			const int qOverlapTop = qLabel.top + qOverlapTopOffset;
 
 			const EnergyCalculator::BatchQueued::Handle handle = energyBatch.QueueCalculation(qOverlapLeft, qOverlapTop);
-			ASSERT_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, qi);
+			ASSERT_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, qIndex);
 		}
 
 		energyBatch.ProcessCalculations();
 
 		// Get and use energy calculation results
-		for (int qi = 0; qi < qLabelNum; ++qi)
+		for (int qIndex = 0; qIndex < qLabelNum; ++qIndex)
 		{
-			Energy messageCandidate = pLabelEnergies[pi] + energyBatch.GetResult(EnergyCalculator::BatchQueued::Handle(qi));
+			Energy messageCandidate = pLabelEnergies[pIndex] + energyBatch.GetResult(EnergyCalculator::BatchQueued::Handle(qIndex));
 
 			for (int r = 0; r < NumNeighborEdges; ++r)
 			{
@@ -295,9 +295,9 @@ void LfnIc::Node::SendMessages(Node& neighbor) const
 				}
 			}
 
-			if (messageCandidate < messages[qi])
+			if (messageCandidate < messages[qIndex])
 			{
-				messages[qi] = messageCandidate;
+				messages[qIndex] = messageCandidate;
 
 				if (messageCandidate < messagesMin)
 				{
@@ -308,12 +308,12 @@ void LfnIc::Node::SendMessages(Node& neighbor) const
 	}
 
 	// Normalize p->q messages and assign them.
-	for (int qi = 0, qn = neighbor.m_labelInfoSet.size(); qi < qn; ++qi)
+	for (int qIndex = 0, qn = neighbor.m_labelInfoSet.size(); qIndex < qn; ++qIndex)
 	{
-		Energy& message = messages[qi];
+		Energy& message = messages[qIndex];
 		wxASSERT(message >= ENERGY_MIN && message < ENERGY_MAX);
 		message -= messagesMin;
-		neighbor.m_labelInfoSet[qi].messages[pEdgeInQ] = message;
+		neighbor.m_labelInfoSet[qIndex].messages[pEdgeInQ] = message;
 	}
 }
 
