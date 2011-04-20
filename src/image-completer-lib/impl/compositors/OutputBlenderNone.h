@@ -26,15 +26,15 @@
 
 namespace LfnIc
 {
-    ///
-    /// This class implements a Blender which copies the patches into the unknown region
-    /// without performing any blending.
-    ///
-    class OutputBlenderNone : public CompositorRoot::OutputBlender
-    {
-    public:
-        virtual void Blend(const Compositor::Input& input, const ImageFloat& patchesBlended, ImageFloat& outputImageFloat) const;
-    };
+	///
+	/// This class implements a Blender which copies the patches into the unknown region
+	/// without performing any blending.
+	///
+	class OutputBlenderNone : public CompositorRoot::OutputBlender
+	{
+	public:
+		virtual void Blend(const Compositor::Input& input, const ImageFloat& patchesBlended, ImageFloat& outputImageFloat) const;
+	};
 }
 
 #endif // OUTPUT_BLENDER_NONE_H

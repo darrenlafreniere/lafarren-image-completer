@@ -36,7 +36,7 @@ namespace LfnIc
 	class MaskLod;
 	struct Settings;
 
-    /// This class contains implementors of the EnergyCalculator interface,
+	/// This class contains implementors of the EnergyCalculator interface,
 	/// and provides access to the faster implementor for a given batch size.
 	class EnergyCalculatorContainer : public Scalable
 	{

@@ -26,10 +26,10 @@
 
 namespace LfnIc
 {
-    ///
-    /// This class implements a Blender to show the soft mask used in blending rather than
-    /// actually performing the blending.
-    ///
+	///
+	/// This class implements a Blender to show the soft mask used in blending rather than
+	/// actually performing the blending.
+	///
 	class OutputBlenderDebugSoftMaskIntensity : public CompositorRoot::OutputBlender
 	{
 	public:

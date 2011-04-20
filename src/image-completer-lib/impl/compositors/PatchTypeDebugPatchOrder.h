@@ -29,9 +29,11 @@ namespace LfnIc
 {
 	struct Settings;
 
-    ///
-    /// This class ?
-    ///
+	///
+	/// Serves color-coded patches based on their prioritized order:
+	/// red patches are applied to the output first, violet patches are applied
+	/// last, and patches in the middle take the middle colors of the spectrum.
+	///
 	class PatchTypeDebugPatchOrder : public CompositorRoot::PatchType
 	{
 	public:

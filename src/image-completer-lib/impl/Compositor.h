@@ -39,7 +39,7 @@ namespace LfnIc
 	public:
 		struct Input
 		{
-            /// Set the inputs.
+			/// Set the inputs.
 			Input(const Settings& settings, const ImageConst& inputImage, const Mask& mask);
 
 			/// Public properties:

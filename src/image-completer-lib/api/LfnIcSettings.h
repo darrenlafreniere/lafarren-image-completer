@@ -142,7 +142,7 @@ namespace LfnIc
 		virtual void OnInvalidMemberDetected(const Settings& settings, int memberOffset, const char* message) = 0;
 	};
 
-    /// Determine if settings are valid.
+	/// Determine if settings are valid.
 	EXPORT bool AreSettingsValid(const Settings& settings, SettingsInvalidMemberHandler* handlerPtr = NULL);
 }
 

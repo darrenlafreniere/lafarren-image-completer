@@ -42,9 +42,9 @@ namespace LfnIc
 		static const bool IS_24_BIT_RGB = false;
 	};
 
-    ///
-    /// Specialization for RGB unsigned char pixels
-    ///
+	///
+	/// Specialization for RGB unsigned char pixels
+	///
 	template<>
 	struct ImagePixelInfoBase<unsigned char, 3>
 	{
@@ -52,10 +52,10 @@ namespace LfnIc
 	};
 
 
-    ///
+	///
 	/// Image interface. Used for both reading the input image and
 	/// writing the output image.
-    ///
+	///
 	class Image
 	{
 	public:

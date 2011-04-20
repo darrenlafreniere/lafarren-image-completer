@@ -35,9 +35,10 @@ namespace LfnIc
 		class Cloner;
 	}
 
-    ///
-    /// This is a Poisson patch (what is this?).
-    ///
+	///
+	/// Serves patches whose pixels are pulled straight from the source image,
+	/// then color-blended with their destination area using Poisson cloning.
+	///
 	class PatchTypePoisson : public PatchTypeNormal
 	{
 	public:

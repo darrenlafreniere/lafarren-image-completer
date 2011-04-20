@@ -36,13 +36,12 @@ namespace LfnIc
 	class ConstNodeLabels
 	{
 	public:
-        /// Constructor.
 		ConstNodeLabels(const Node& node);
 
-        /// Get the size of?
+		/// Returns the number of labels at the node.
 		int size() const;
 
-        /// Get a particular label?
+		/// Label accessor.
 		const Label& GetLabel(int index) const;
 
 		/// Returns a Energy buffer of NumNeighborEdges length.
