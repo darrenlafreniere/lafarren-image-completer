@@ -431,11 +431,11 @@ void LfnIc::EnergyCalculatorFft::BatchClose()
 	const int queuedEnergyResultsPreClearCapacity = m_queuedEnergyResults.capacity();
 #endif
 	m_queuedEnergyResults.clear();
-#ifdef _DEBUG
+
 	wxASSERT_MSG(
 		m_queuedEnergyResults.capacity() == queuedEnergyResultsPreClearCapacity,
 		"m_queuedEnergyResults is unexpectedly deallocating! Could have performance impacts.");
-#endif
+
 }
 
 LfnIc::Energy LfnIc::EnergyCalculatorFft::Calculate(int bLeft, int bTop) const

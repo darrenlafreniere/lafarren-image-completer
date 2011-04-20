@@ -16,6 +16,12 @@ include_directories(${UMFPACK_INCLUDES})
 list(APPEND CORE_DEFINITIONS "EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET")
 # must link to umfpack
 
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+  message("Compiled in Release mode")
+else(CMAKE_BUILD_TYPE STREQUAL "Release")
+  list(APPEND MAIN_BUILD_DEFINITIONS "_DEBUG")
+  message("Compiled in Debug mode")
+endif(CMAKE_BUILD_TYPE STREQUAL "Release")
 ################################
 
 find_package(wxWidgets COMPONENTS core base REQUIRED)

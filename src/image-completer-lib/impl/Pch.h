@@ -33,7 +33,7 @@ namespace LfnIc {}
 #define TECH_PROFILE 1
 #define TECH_PROFILE_MACROS 1
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && defined(_MSC_VER)
 	#include <crtdbg.h>
 	#define DEBUG_NEW new(_NORMAL_BLOCK ,__FILE__, __LINE__)
 #else
