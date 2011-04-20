@@ -431,9 +431,11 @@ void LfnIc::EnergyCalculatorFft::BatchClose()
 	const int queuedEnergyResultsPreClearCapacity = m_queuedEnergyResults.capacity();
 #endif
 	m_queuedEnergyResults.clear();
+#ifdef _DEBUG
 	wxASSERT_MSG(
 		m_queuedEnergyResults.capacity() == queuedEnergyResultsPreClearCapacity,
 		"m_queuedEnergyResults is unexpectedly deallocating! Could have performance impacts.");
+#endif
 }
 
 LfnIc::Energy LfnIc::EnergyCalculatorFft::Calculate(int bLeft, int bTop) const
@@ -502,7 +504,8 @@ LfnIc::EnergyCalculatorFft::FftwInPlaceBuffer LfnIc::EnergyCalculatorFft::FftwIn
 template<typename T>
 T* LfnIc::EnergyCalculatorFft::GetRow(T* real, int y) const
 {
-	return (T*)((BYTE *)real + (m_fftInPlaceBufferStride * y));
+	//return (T*)((BYTE *)real + (m_fftInPlaceBufferStride * y));
+	return (T*)((unsigned char*)real + (m_fftInPlaceBufferStride * y));
 }
 
 template<typename POLICY>

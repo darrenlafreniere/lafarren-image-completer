@@ -9,6 +9,7 @@ set(CMAKE_MODULE_PATH /media/portable/src/Eigen/cmake)
 
 FIND_PACKAGE(Umfpack REQUIRED)
 FIND_PACKAGE(BLAS REQUIRED)
+find_package(FFTW REQUIRED)
 
 include_directories(${UMFPACK_INCLUDES})
 
@@ -101,10 +102,12 @@ ${ImageCompleterDir}/compositors/PatchTypeNormal.cpp
 ${ImageCompleterDir}/energy-calculators/EnergyCalculatorFft.cpp
 ${ImageCompleterDir}/energy-calculators/EnergyCalculatorFftUtils.cpp
 ${ImageCompleterDir}/energy-calculators/EnergyCalculatorPerPixel.cpp
+${ImageCompleterDir}/energy-calculators/EnergyWsst.cpp
 
 )
 
 add_library(ImageCompleterLib ${ImageCompleterSources})
+target_link_libraries(ImageCompleterLib Tech fftw3f)
 set_target_properties(ImageCompleterLib PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${MAIN_BUILD_DEFINITIONS}")
 
 add_library(Tech
