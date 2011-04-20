@@ -122,6 +122,7 @@
     <ClCompile Include="ImageScalable.cpp" />
     <ClCompile Include="Label.cpp" />
     <ClCompile Include="LfnIc.cpp" />
+    <ClCompile Include="LfnIcSettings.cpp" />
     <ClCompile Include="MaskScalable.cpp" />
     <ClCompile Include="MaskWritable.cpp" />
     <ClCompile Include="NeighborEdge.cpp" />
@@ -135,7 +136,7 @@
     </ClCompile>
     <ClCompile Include="PriorityBpRunner.cpp" />
     <ClCompile Include="ScalableDebugging.cpp" />
-    <ClCompile Include="Settings.cpp" />
+    <ClCompile Include="SettingsScalable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\api\LfnIc.h" />
@@ -180,7 +181,7 @@
     <ClInclude Include="Scalable.h" />
     <ClInclude Include="ScalableDebugging.h" />
     <ClInclude Include="ScopedNodeEnergyBatch.h" />
-    <ClInclude Include="Settings.h" />
+    <ClInclude Include="SettingsScalable.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="compositors\ImageFloat.inl" />

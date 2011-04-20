@@ -34,9 +34,10 @@ namespace LfnIc
 	//
 	// EnergyCalculator
 	//
-	inline EnergyCalculator::BatchImmediate::BatchImmediate(EnergyCalculator& energyCalculator) :
-	m_energyCalculator(energyCalculator)
+	inline EnergyCalculator::BatchImmediate::BatchImmediate(EnergyCalculator& energyCalculator, const BatchParams& params)
+		: m_energyCalculator(energyCalculator)
 	{
+		m_energyCalculator.BatchOpenImmediate(params);
 	}
 
 	inline EnergyCalculator::BatchImmediate::~BatchImmediate()
@@ -49,9 +50,10 @@ namespace LfnIc
 		return m_energyCalculator.Calculate(bLeft, bTop);
 	}
 
-	inline EnergyCalculator::BatchQueued::BatchQueued(EnergyCalculator& energyCalculator) :
-	m_energyCalculator(energyCalculator)
+	inline EnergyCalculator::BatchQueued::BatchQueued(EnergyCalculator& energyCalculator, const BatchParams& params)
+		: m_energyCalculator(energyCalculator)
 	{
+		m_energyCalculator.BatchOpenQueued(params);
 	}
 
 	inline EnergyCalculator::BatchQueued::~BatchQueued()
@@ -72,16 +74,6 @@ namespace LfnIc
 	inline Energy EnergyCalculator::BatchQueued::GetResult(Handle handle) const
 	{
 		return m_energyCalculator.GetResult(handle);
-	}
-
-	inline EnergyCalculator::BatchImmediate EnergyCalculator::GetBatchImmediate(EnergyCalculator& energyCalculator)
-	{
-		return BatchImmediate(energyCalculator);
-	}
-
-	inline EnergyCalculator::BatchQueued EnergyCalculator::GetBatchQueued(EnergyCalculator& energyCalculator)
-	{
-		return BatchQueued(energyCalculator);
 	}
 }
 

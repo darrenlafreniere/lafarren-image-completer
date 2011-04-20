@@ -29,6 +29,7 @@
 #include "itkImage.h"
 #include "itkVectorImage.h"
 
+///
 /// \brief An implementation of LfnIc::Image using itkVectorImage.
 ///
 /// Implements LfnIc::Image, using a itk::Image to load, store, and save the data.
@@ -36,14 +37,8 @@
 class AppITKImage : public AppData::Image
 {
 public:
-	///
-	/// AppITKImage interface (constructor).
-	///
 	AppITKImage();
 
-    ///
-    /// A description of MyClass2::Function1()
-    ///
 	typedef itk::VectorImage<LfnIc::Image::Pixel::ChannelType, 2> AppImageITKType;
 
 	// LfnIc::Image interface
@@ -57,10 +52,8 @@ public:
 	virtual int GetWidth() const;
 	virtual int GetHeight() const;
 
-    ///
-    /// A array of the channel weights.
-    ///
-    float m_channelWeights[LfnIc::Image::Pixel::NUM_CHANNELS];
+	/// A array of the channel weights.
+	float m_channelWeights[LfnIc::Image::Pixel::NUM_CHANNELS];
 private:
 	// Internal data
 	AppImageITKType::Pointer m_image;

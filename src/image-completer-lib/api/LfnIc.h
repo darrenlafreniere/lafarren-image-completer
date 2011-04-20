@@ -36,9 +36,9 @@ namespace LfnIc
 	class Mask;
 	struct Settings;
 
-    ///
-    /// A list of possible results of the completion.
-    ///
+	///
+	/// A list of possible results of the completion.
+	///
 	enum CompletionResult
 	{
 

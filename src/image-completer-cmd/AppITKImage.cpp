@@ -78,21 +78,21 @@ bool AppITKImage::LoadAndValidate(const std::string& imagePath)
 	std::cout << "Weights: ";
 	for (int c = 0; c < LfnIc::Image::Pixel::NUM_CHANNELS; c++)
 	{
-	    typedef itk::Image<LfnIc::Image::Pixel::ChannelType, 2> ScalarImageType;
+		typedef itk::Image<LfnIc::Image::Pixel::ChannelType, 2> ScalarImageType;
 
-	    typedef itk::VectorIndexSelectionCastImageFilter<AppImageITKType, ScalarImageType> IndexSelectionType;
-	    IndexSelectionType::Pointer indexSelectionFilter = IndexSelectionType::New();
-	    indexSelectionFilter->SetIndex(c);
-	    indexSelectionFilter->SetInput(m_image);
-	    indexSelectionFilter->Update();
+		typedef itk::VectorIndexSelectionCastImageFilter<AppImageITKType, ScalarImageType> IndexSelectionType;
+		IndexSelectionType::Pointer indexSelectionFilter = IndexSelectionType::New();
+		indexSelectionFilter->SetIndex(c);
+		indexSelectionFilter->SetInput(m_image);
+		indexSelectionFilter->Update();
 
-	    typedef itk::MinimumMaximumImageCalculator <ScalarImageType> ImageCalculatorFilterType;
-	    ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New();
-	    imageCalculatorFilter->SetImage(indexSelectionFilter->GetOutput());
-	    imageCalculatorFilter->Compute();
+		typedef itk::MinimumMaximumImageCalculator <ScalarImageType> ImageCalculatorFilterType;
+		ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New();
+		imageCalculatorFilter->SetImage(indexSelectionFilter->GetOutput());
+		imageCalculatorFilter->Compute();
 
-	    m_channelWeights[c] = 255. / (imageCalculatorFilter->GetMaximum() - imageCalculatorFilter->GetMinimum());
-	    std::cout << m_channelWeights[c] << " ";
+		m_channelWeights[c] = 255. / (imageCalculatorFilter->GetMaximum() - imageCalculatorFilter->GetMinimum());
+		std::cout << m_channelWeights[c] << " ";
 	}
 	std::cout << std::endl;
 
@@ -113,24 +113,24 @@ bool AppITKImage::LoadAndValidate(const std::string& imagePath)
 
 void AppITKImage::Save()
 {
-  std::cout << "Save()" << std::endl;
+	std::cout << "Save()" << std::endl;
 #if USE_CHANNEL_WEIGHTING
-std::cout << "Output weights: ";
-    for (int c = 0; c < LfnIc::Image::Pixel::NUM_CHANNELS; c++)
-    {
-        std::cout << m_channelWeights[c] << " ";
-    }
-    std::cout << std::endl;
+	std::cout << "Output weights: ";
+	for (int c = 0; c < LfnIc::Image::Pixel::NUM_CHANNELS; c++)
+	{
+		std::cout << m_channelWeights[c] << " ";
+	}
+	std::cout << std::endl;
 
-    LfnIc::Image::Pixel* pixelPtr = AppITKImage::GetData();
-    for (int i = 0, n = GetWidth() * GetHeight(); i < n; ++i, ++pixelPtr)
-    {
-        LfnIc::Image::Pixel& pixel = *pixelPtr;
-        for (int c = 0; c < LfnIc::Image::Pixel::NUM_CHANNELS; ++c)
-        {
-            pixel.channel[c] /= m_channelWeights[c];
-        }
-    }
+	LfnIc::Image::Pixel* pixelPtr = AppITKImage::GetData();
+	for (int i = 0, n = GetWidth() * GetHeight(); i < n; ++i, ++pixelPtr)
+	{
+		LfnIc::Image::Pixel& pixel = *pixelPtr;
+		for (int c = 0; c < LfnIc::Image::Pixel::NUM_CHANNELS; ++c)
+		{
+			pixel.channel[c] /= m_channelWeights[c];
+		}
+	}
 #endif
 
 	// If the image is RGB and unsigned char, write it to the specified output file (likely png)
@@ -150,10 +150,10 @@ std::cout << "Output weights: ";
 		ss << m_filePath << ".mhd";
 		writer->SetFileName(ss.str());
 		*/
-        wxFileName filename(m_filePath);
-        filename.SetExt("mhd");
-        writer->SetFileName(filename.GetFullName().ToAscii());
-        std::cout << "Writing " << filename.GetFullName().ToAscii() << std::endl;
+		wxFileName filename(m_filePath);
+		filename.SetExt("mhd");
+		writer->SetFileName(filename.GetFullName().ToAscii());
+		std::cout << "Writing " << filename.GetFullName().ToAscii() << std::endl;
 	}
 
 	writer->Update();
@@ -186,9 +186,9 @@ bool AppITKImage::Init(int width, int height)
 	}
 
 	m_image->SetRegions(region);
-    m_image->SetNumberOfComponentsPerPixel(LfnIc::Image::Pixel::NUM_CHANNELS);
+	m_image->SetNumberOfComponentsPerPixel(LfnIc::Image::Pixel::NUM_CHANNELS);
 	m_image->Allocate();
-//	m_image->FillBuffer(itk::NumericTraits<ITKPixelType>::Zero);
+	//	m_image->FillBuffer(itk::NumericTraits<ITKPixelType>::Zero);
 
 	return true;
 }

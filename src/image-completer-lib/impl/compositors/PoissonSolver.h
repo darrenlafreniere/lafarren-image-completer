@@ -32,9 +32,9 @@ namespace LfnIc
 	class Image;
 	class Mask;
 
-    ///
-    /// This class uses Poisson blending to blend two patches together.
-    ///
+	///
+	/// This class uses Poisson blending to blend two patches together.
+	///
 	namespace Poisson
 	{
 		// Approximates the input image's missing regions according to the mask,

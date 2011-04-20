@@ -25,7 +25,7 @@
 #include "tech/MathUtils.h"
 
 #include "ImageFloat.h"
-#include "Settings.h"
+#include "LfnIcSettings.h"
 
 #include "tech/DbgMem.h"
 

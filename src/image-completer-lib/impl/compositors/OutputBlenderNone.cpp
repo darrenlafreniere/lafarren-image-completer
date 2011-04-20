@@ -29,21 +29,21 @@
 
 void LfnIc::OutputBlenderNone::Blend(const Compositor::Input& input, const ImageFloat& patchesBlended, ImageFloat& outputImageFloat) const
 {
-    const PixelFloat* srcPixelPtr = patchesBlended.GetData();
-    PixelFloat* destPixelPtr = outputImageFloat.GetData();
+	const PixelFloat* srcPixelPtr = patchesBlended.GetData();
+	PixelFloat* destPixelPtr = outputImageFloat.GetData();
 
-    wxASSERT(patchesBlended.GetWidth() == outputImageFloat.GetWidth());
-    wxASSERT(patchesBlended.GetHeight() == outputImageFloat.GetHeight());
+	wxASSERT(patchesBlended.GetWidth() == outputImageFloat.GetWidth());
+	wxASSERT(patchesBlended.GetHeight() == outputImageFloat.GetHeight());
 
-    const Mask& mask = input.mask;
+	const Mask& mask = input.mask;
 
-    for (int y = 0; y < patchesBlended.GetHeight(); ++y)
-    {
-        for (int x = 0; x < patchesBlended.GetWidth(); ++x)
-        {
-            LfnTech::BlendInto(destPixelPtr->channel, srcPixelPtr->channel, 1.0 - MaskValueToAlpha(mask.GetValue(x,y)), Image::Pixel::NUM_CHANNELS);
-            ++destPixelPtr;
-            ++srcPixelPtr;
-        }
-    }
+	for (int y = 0; y < patchesBlended.GetHeight(); ++y)
+	{
+		for (int x = 0; x < patchesBlended.GetWidth(); ++x)
+		{
+			LfnTech::BlendInto(destPixelPtr->channel, srcPixelPtr->channel, 1.0 - MaskValueToAlpha(mask.GetValue(x,y)), Image::Pixel::NUM_CHANNELS);
+			++destPixelPtr;
+			++srcPixelPtr;
+		}
+	}
 }

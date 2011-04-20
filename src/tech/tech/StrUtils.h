@@ -31,10 +31,10 @@ namespace LfnTech
 {
 	namespace Str
 	{
-        /// Format a string to make it ?
+		/// Provides printf-style formatting into a std::string.
 		std::string Format(const char* format, ...);
 
-        /// Replace 'replace' with 'with'.
+		/// Replace 'replace' with 'with'.
 		std::string Replace(const std::string& s, char replace, const char* with);
 	}
 }

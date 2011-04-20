@@ -87,7 +87,7 @@ void LfnIc::LabelSet::ScaleDown()
 {
 	wxASSERT(m_depth >= 0);
 
-	// If there's no mask for the next lower depth, create one from the current resolution.
+	// If there's no label set for the next lower depth, create one from the current resolution.
 	if (static_cast<unsigned int>(m_depth) == m_resolutions.size() - 1)
 	{
 		const Resolution& resolutionToScaleDown = GetCurrentResolution();
@@ -182,8 +182,8 @@ bool LfnIc::LabelSet::LabelBitArray::IsSet(int x, int y) const
 void LfnIc::LabelSet::LabelBitArray::GetIndexAndShift(int x, int y, int& outIndex, int& outShift) const
 {
 	const int rowMajorIndex = LfnTech::GetRowMajorIndex(m_width, x, y);
-	outIndex = rowMajorIndex / 8;
-	outShift = rowMajorIndex & 7;
+	outIndex = rowMajorIndex / 8; // Determines which byte the bit we are looking for is in.
+	outShift = rowMajorIndex & 7; // Keeps the lower 3 bits, as there are only 8 bits in a byte so the shift output will be from 0 to 7.
 	wxASSERT(outIndex < m_dataNumUints);
 }
 

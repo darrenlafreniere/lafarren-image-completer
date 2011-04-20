@@ -57,8 +57,8 @@ namespace LfnIc
 		return m_delegate->Calculate(bLeft, bTop);
 	}
 
-	inline ScopedNodeEnergyBatchImmediate::DelegateOverlap::DelegateOverlap(EnergyCalculator& energyCalculator, const EnergyCalculator::BatchParams& params) :
-	m_batchImmediate(energyCalculator.BatchOpenImmediate(params))
+	inline ScopedNodeEnergyBatchImmediate::DelegateOverlap::DelegateOverlap(EnergyCalculator& energyCalculator, const EnergyCalculator::BatchParams& params)
+		: m_batchImmediate(energyCalculator, params)
 	{
 	}
 
@@ -106,8 +106,8 @@ namespace LfnIc
 		return m_delegate->GetResult(handle);
 	}
 
-	inline ScopedNodeEnergyBatchQueued::DelegateOverlap::DelegateOverlap(EnergyCalculator& energyCalculator, const EnergyCalculator::BatchParams& params) :
-	m_batchQueued(energyCalculator.BatchOpenQueued(params))
+	inline ScopedNodeEnergyBatchQueued::DelegateOverlap::DelegateOverlap(EnergyCalculator& energyCalculator, const EnergyCalculator::BatchParams& params)
+		: m_batchQueued(energyCalculator, params)
 	{
 	}
 

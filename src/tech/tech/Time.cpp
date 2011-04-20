@@ -23,11 +23,27 @@
 #include "tech/Time.h"
 
 #ifdef _MSC_VER
+#define USE_A_WINDOWS_TIMER 1
+#else
+#define USE_A_WINDOWS_TIMER 0
+#endif
+
+#define USE_WINDOWS_QUERY_PERFORMANCE_TIMER     (0 && USE_A_WINDOWS_TIMER)
+#define USE_WINDOWS_MULTIMEDIA_TIMER            (1 && USE_A_WINDOWS_TIMER)
+#define USE_ANSI_TIMER                          (1 && !USE_A_WINDOWS_TIMER)
+
+#define NUM_TIMERS_DEFINED              (USE_WINDOWS_QUERY_PERFORMANCE_TIMER + USE_WINDOWS_MULTIMEDIA_TIMER + USE_ANSI_TIMER)
+wxCOMPILE_TIME_ASSERT(NUM_TIMERS_DEFINED >= 1, NoTimersAreDefined);
+wxCOMPILE_TIME_ASSERT(NUM_TIMERS_DEFINED <= 1, MultipleTimersAreDefined);
+
+#if USE_A_WINDOWS_TIMER
 // Favor std::min and std::max over the min max macros defined by Windows
 #define NOMINMAX
 #include <windows.h>
-#include <mmsystem.h>
+#endif
 
+#if USE_WINDOWS_MULTIMEDIA_TIMER
+#include <mmsystem.h>
 #include "tech/Atomic.h"
 #endif
 
@@ -37,21 +53,9 @@
 #pragma warning(disable: 4073)
 #pragma init_seg(lib)
 
-#ifdef _MSC_VER
-#define USE_A_WINDOWS_TIMER 1
-#else
-#define USE_A_WINDOWS_TIMER 0
-#endif
-
-#define USE_QUERY_PERFORMANCE_TIMER     (0 && USE_A_WINDOWS_TIMER)
-#define USE_MULTIMEDIA_TIMER            (1 && USE_A_WINDOWS_TIMER)
-
-#define NUM_TIMERS_DEFINED              (USE_QUERY_PERFORMANCE_TIMER + USE_MULTIMEDIA_TIMER)
-#define IS_ANY_TIMER_DEFINED            (NUM_TIMERS_DEFINED > 0)
-wxCOMPILE_TIME_ASSERT(NUM_TIMERS_DEFINED <= 1, MultipleTimersAreDefined);
-
-#if USE_QUERY_PERFORMANCE_TIMER
-// Implements a Time class based on QueryPerformanceFrequency and
+#if USE_WINDOWS_QUERY_PERFORMANCE_TIMER
+#pragma message("Time.cpp using Windows' Query Performance Timer")
+// Implements a Time class based on Windows' QueryPerformanceFrequency and
 // QueryPerformanceCounter.
 static const double LARGE_MULTIPLIER = 4294967296.0;
 class Time
@@ -82,14 +86,16 @@ public:
 private:
 	double m_timerRate;
 };
-#endif
+#endif // USE_WINDOWS_QUERY_PERFORMANCE_TIMER
 
-#if USE_MULTIMEDIA_TIMER
-// Implements a Time class based on a multimedia timer
-static const UINT RESOLUTION_MS = 1;
-static const UINT INTERVAL_MS = 1;
+#if USE_WINDOWS_MULTIMEDIA_TIMER
+#pragma message("Time.cpp using Windows' Multimedia Timer")
+// Implements a Time class based on a Windows multimedia timer.
 class Time
 {
+	static const UINT RESOLUTION_MS = 1;
+	static const UINT INTERVAL_MS = 1;
+
 	Time() :
 	  m_resolution(0),
 	  m_timerId(0),
@@ -147,21 +153,35 @@ private:
 	MMRESULT m_timerId;
 	LONG volatile m_timeMs;
 };
-#endif
+#endif // USE_WINDOWS_MULTIMEDIA_TIMER
 
-#if IS_ANY_TIMER_DEFINED
+#if USE_ANSI_TIMER
+#pragma message("Time.cpp using ANSI clock() Timer")
+// Implements a Time class based on ANSI C's clock().
+class Time
+{
+	static Time instance;
+
+public:
+	static const Time& GetInstance()
+	{
+		return instance;
+	}
+
+	double CurrentTime() const
+	{
+		const double t = static_cast<double>(clock()) / static_cast<double>(CLOCKS_PER_SEC);
+		return t;
+	}
+};
+#endif // USE_ANSI_TIMER
+
 Time Time::instance;
-#endif
 
 namespace LfnTech
 {
 	double CurrentTime()
 	{
-#if IS_ANY_TIMER_DEFINED
 		return Time::GetInstance().CurrentTime();
-#else
-#pragma message("Time.cpp hasn't been implemented for this platform. Profiling will not work.")
-		return 0.0;
-#endif
 	}
 }

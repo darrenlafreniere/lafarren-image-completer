@@ -76,6 +76,7 @@ ${ImageCompleterDir}/ImageConst.cpp
 ${ImageCompleterDir}/ImageScalable.cpp
 ${ImageCompleterDir}/Label.cpp
 ${ImageCompleterDir}/LfnIc.cpp
+${ImageCompleterDir}/LfnIcSettings.cpp
 ${ImageCompleterDir}/MaskScalable.cpp
 ${ImageCompleterDir}/MaskWritable.cpp
 ${ImageCompleterDir}/NeighborEdge.cpp
@@ -84,7 +85,7 @@ ${ImageCompleterDir}/NodeSet.cpp
 ${ImageCompleterDir}/Pch.cpp
 ${ImageCompleterDir}/PriorityBpRunner.cpp
 ${ImageCompleterDir}/ScalableDebugging.cpp
-${ImageCompleterDir}/Settings.cpp
+${ImageCompleterDir}/SettingsScalable.cpp
 
 ${ImageCompleterDir}/compositors/CompositorRoot.cpp
 ${ImageCompleterDir}/compositors/CompositorUtils.cpp
@@ -185,6 +186,7 @@ set_target_properties(ImageCompleter PROPERTIES COMPILE_DEFINITIONS "${MAIN_BUIL
 
 ##############################
 # wx build
+
 #
 # set(definitionsWX "PIXEL_DIMENSION=3")
 # message("ImageCompleterWX definitions: ${CORE_DEFINITIONS};${definitionsWX}")

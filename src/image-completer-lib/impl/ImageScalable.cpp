@@ -285,7 +285,7 @@ void LfnIc::ImageScalable::ScaleDown()
 {
 	wxASSERT(m_depth >= 0);
 
-	// If there's no mask for the next lower depth, create one from the current resolution.
+	// If there's no image for the next lower depth, create one from the current resolution.
 	if (static_cast<unsigned int>(m_depth) == m_resolutions.size() - 1)
 	{
 		// ImageScaledDown requires the mask to be at the same depth as the

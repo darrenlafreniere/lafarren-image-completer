@@ -37,9 +37,9 @@ namespace LfnTech
 #error "Implement tech/Atomic.h for this platform!"
 #endif
 
-    ///
-    /// This class is a thread implementation.
-    ///
+	///
+	/// Wraps platform-specific logic for thread-safe atomic operations.
+	///
 	template<typename T = AtomicNativeType>
 	class Atomic
 	{

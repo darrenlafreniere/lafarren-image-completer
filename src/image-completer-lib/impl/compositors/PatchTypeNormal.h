@@ -29,9 +29,9 @@ namespace LfnIc
 {
 	struct Settings;
 
-    ///
-    /// I still don't understand what patch types are?
-    ///
+	///
+	/// Serves patches whose pixels are pulled straight from the source image.
+	///
 	class PatchTypeNormal : public CompositorRoot::PatchType
 	{
 	public:

@@ -223,25 +223,23 @@ void LfnIc::Node::SendMessages(Node& neighbor) const
 	const int pLabelNum = m_labelInfoSet.size();
 	std::vector<Energy> pLabelEnergies(pLabelNum);
 	{
-		ScopedNodeEnergyBatchQueued energyBatch(
-			*this,
-			m_context->energyCalculatorContainer.Get(pLabelNum),
-			EnergyCalculator::BatchParams(pLabelNum, m_context->settings.patchWidth, m_context->settings.patchHeight, GetLeft(), GetTop(), true));
+		const EnergyCalculator::BatchParams energyBatchParams(pLabelNum, m_context->settings.patchWidth, m_context->settings.patchHeight, GetLeft(), GetTop(), true);
+		ScopedNodeEnergyBatchQueued energyBatch(*this, m_context->energyCalculatorContainer.Get(energyBatchParams, pLabelNum), energyBatchParams);
 
 		// Queue energy calculations
-		for (int pi = 0; pi < pLabelNum; ++pi)
+		for (int pIndex = 0; pIndex < pLabelNum; ++pIndex)
 		{
-			const Label& label = m_labelInfoSet[pi].label;
+			const Label& label = m_labelInfoSet[pIndex].label;
 			const EnergyCalculator::BatchQueued::Handle handle = energyBatch.QueueCalculation(label.left, label.top);
-			ASSERT_NODE_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, pi);
+			ASSERT_NODE_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, pIndex);
 		}
 
 		energyBatch.ProcessCalculations();
 
 		// Get and use energy calculation results
-		for (int pi = 0; pi < pLabelNum; ++pi)
+		for (int pIndex = 0; pIndex < pLabelNum; ++pIndex)
 		{
-			pLabelEnergies[pi] = energyBatch.GetResult(EnergyCalculator::BatchQueued::Handle(pi));
+			pLabelEnergies[pIndex] = energyBatch.GetResult(EnergyCalculator::BatchQueued::Handle(pIndex));
 		}
 	}
 
@@ -262,32 +260,32 @@ void LfnIc::Node::SendMessages(Node& neighbor) const
 	// Iterate over this node's labels to determine which should supply
 	// the message for each q, which will be the one that produces the
 	// lowest energy.
-	for (int pi = 0, pn = pLabelNum; pi < pn; ++pi)
+	for (int pIndex = 0, pn = pLabelNum; pIndex < pn; ++pIndex)
 	{
-		const LabelInfo& pLabelInfo = m_labelInfoSet[pi];
+		const LabelInfo& pLabelInfo = m_labelInfoSet[pIndex];
 		const int pOverlapLeft = pLabelInfo.label.left + pOverlapLeftOffset;
 		const int pOverlapTop = pLabelInfo.label.top + pOverlapTopOffset;
 
 		const EnergyCalculator::BatchParams energyBatchParams(qLabelNum, overlapWidth, overlapHeight, pOverlapLeft, pOverlapTop, false);
-		EnergyCalculator::BatchQueued energyBatch(m_context->energyCalculatorContainer.Get(qLabelNum).BatchOpenQueued(energyBatchParams));
+		EnergyCalculator::BatchQueued energyBatch(m_context->energyCalculatorContainer.Get(energyBatchParams, qLabelNum), energyBatchParams);
 
 		// Queue energy calculations
-		for (int qi = 0; qi < qLabelNum; ++qi)
+		for (int qIndex = 0; qIndex < qLabelNum; ++qIndex)
 		{
-			const Label& qLabel = neighbor.m_labelInfoSet[qi].label;
+			const Label& qLabel = neighbor.m_labelInfoSet[qIndex].label;
 			const int qOverlapLeft = qLabel.left + qOverlapLeftOffset;
 			const int qOverlapTop = qLabel.top + qOverlapTopOffset;
 
 			const EnergyCalculator::BatchQueued::Handle handle = energyBatch.QueueCalculation(qOverlapLeft, qOverlapTop);
-			ASSERT_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, qi);
+			ASSERT_ENERGY_BATCH_QUEUED_HANDLE_IS_INDEX(handle, qIndex);
 		}
 
 		energyBatch.ProcessCalculations();
 
 		// Get and use energy calculation results
-		for (int qi = 0; qi < qLabelNum; ++qi)
+		for (int qIndex = 0; qIndex < qLabelNum; ++qIndex)
 		{
-			Energy messageCandidate = pLabelEnergies[pi] + energyBatch.GetResult(EnergyCalculator::BatchQueued::Handle(qi));
+			Energy messageCandidate = pLabelEnergies[pIndex] + energyBatch.GetResult(EnergyCalculator::BatchQueued::Handle(qIndex));
 
 			for (int r = 0; r < NumNeighborEdges; ++r)
 			{
@@ -297,9 +295,9 @@ void LfnIc::Node::SendMessages(Node& neighbor) const
 				}
 			}
 
-			if (messageCandidate < messages[qi])
+			if (messageCandidate < messages[qIndex])
 			{
-				messages[qi] = messageCandidate;
+				messages[qIndex] = messageCandidate;
 
 				if (messageCandidate < messagesMin)
 				{
@@ -310,12 +308,12 @@ void LfnIc::Node::SendMessages(Node& neighbor) const
 	}
 
 	// Normalize p->q messages and assign them.
-	for (int qi = 0, qn = neighbor.m_labelInfoSet.size(); qi < qn; ++qi)
+	for (int qIndex = 0, qn = neighbor.m_labelInfoSet.size(); qIndex < qn; ++qIndex)
 	{
-		Energy& message = messages[qi];
+		Energy& message = messages[qIndex];
 		wxASSERT(message >= ENERGY_MIN && message < ENERGY_MAX);
 		message -= messagesMin;
-		neighbor.m_labelInfoSet[qi].messages[pEdgeInQ] = message;
+		neighbor.m_labelInfoSet[qIndex].messages[pEdgeInQ] = message;
 	}
 }
 
@@ -346,9 +344,8 @@ void LfnIc::Node::PruneLabels()
 	std::vector<PruneInfo> pruneInfos(labelNum);
 
 	{
-		ScopedNodeEnergyBatchQueued energyBatch(
-			*this, m_context->energyCalculatorContainer.Get(labelNum),
-			EnergyCalculator::BatchParams(labelNum, m_context->settings.patchWidth, m_context->settings.patchHeight, GetLeft(), GetTop(), true));
+		const EnergyCalculator::BatchParams energyBatchParams(labelNum, m_context->settings.patchWidth, m_context->settings.patchHeight, GetLeft(), GetTop(), true);
+		ScopedNodeEnergyBatchQueued energyBatch(*this, m_context->energyCalculatorContainer.Get(energyBatchParams, labelNum), energyBatchParams);
 
 		// Queue energy calculations
 		for (int i = 0; i < labelNum; ++i)
@@ -405,14 +402,15 @@ void LfnIc::Node::PruneLabels()
 					// dissimilar enough from the labels that have been kept
 					// so far.
 					bool isSimilarToAlreadyKeptLabel = false;
-					{
-						const int keptNum = labelInfoSetKept.size();
 
+					const int keptNum = labelInfoSetKept.size();
+					if (keptNum > 0)
+					{
 						// Use an immediate batch - there shouldn't be too
 						// many calculations, and the upper bound is unknown.
 						// TODO: run some tests to verify this assumption.
 						const EnergyCalculator::BatchParams energyBatchParams(keptNum, patchWidth, patchHeight, label.left, label.top, false);
-						EnergyCalculator::BatchImmediate energyBatch(m_context->energyCalculatorContainer.Get(keptNum).BatchOpenImmediate(energyBatchParams));
+						EnergyCalculator::BatchImmediate energyBatch(m_context->energyCalculatorContainer.Get(energyBatchParams, keptNum), energyBatchParams);
 
 						for (int keptIdx = 0; !isSimilarToAlreadyKeptLabel && keptIdx < keptNum; ++keptIdx)
 						{
@@ -461,9 +459,8 @@ LfnIc::Priority LfnIc::Node::CalculatePriority() const
 	std::vector<Belief> beliefs(labelNum);
 	Belief beliefMax = BELIEF_MIN;
 
-	ScopedNodeEnergyBatchQueued energyBatch(
-		*this, m_context->energyCalculatorContainer.Get(labelNum),
-		EnergyCalculator::BatchParams(labelNum, m_context->settings.patchWidth, m_context->settings.patchHeight, GetLeft(), GetTop(), true));
+	const EnergyCalculator::BatchParams energyBatchParams(labelNum, m_context->settings.patchWidth, m_context->settings.patchHeight, GetLeft(), GetTop(), true);
+	ScopedNodeEnergyBatchQueued energyBatch(*this, m_context->energyCalculatorContainer.Get(energyBatchParams, labelNum), energyBatchParams);
 
 	// Queue energy calculations
 	for (int i = 0; i < labelNum; ++i)
@@ -523,9 +520,8 @@ LfnIc::Belief LfnIc::Node::CalculateBelief(const Label& label, const Energy mess
 	if (OverlapsKnownRegion())
 	{
 		// Single energy calculation; use an immediate batch.
-		ScopedNodeEnergyBatchImmediate energyBatch(
-			*this, m_context->energyCalculatorContainer.Get(1),
-			EnergyCalculator::BatchParams(1, m_context->settings.patchWidth, m_context->settings.patchHeight, GetLeft(), GetTop(), true));
+		const EnergyCalculator::BatchParams energyBatchParams(1, m_context->settings.patchWidth, m_context->settings.patchHeight, GetLeft(), GetTop(), true);
+		ScopedNodeEnergyBatchImmediate energyBatch(*this, m_context->energyCalculatorContainer.Get(energyBatchParams, 1), energyBatchParams);
 
 		e = energyBatch.Calculate(label.left, label.top);
 	}

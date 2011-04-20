@@ -251,15 +251,7 @@ namespace LfnIc
 			energy64Bit += energyBunch;
 		}
 
-		//wxASSERT(energy64Bit >= ENERGY_MIN && energy64Bit <= ENERGY_MAX);
-		if(energy64Bit < ENERGY_MIN || energy64Bit > ENERGY_MAX)
-        {
-            std::cout << "energy64Bit: " << energy64Bit << std::endl;
-            std::cout << "ENERGY_MIN: " << ENERGY_MIN << std::endl;
-            std::cout << "ENERGY_MAX: " << ENERGY_MAX<< std::endl;
-            std::cout << Energy(1.1) << std::endl;
-            std::cout << "Energy typeid: " << typeid(Energy).name() << std::endl;
-        }
+		wxASSERT(energy64Bit >= ENERGY_MIN && energy64Bit <= ENERGY_MAX);
 		return energy64Bit;
 	}
 }
@@ -301,16 +293,14 @@ LfnIc::EnergyCalculatorPerPixel::~EnergyCalculatorPerPixel()
 	}
 }
 
-LfnIc::EnergyCalculator::BatchImmediate LfnIc::EnergyCalculatorPerPixel::BatchOpenImmediate(const BatchParams& params)
+void LfnIc::EnergyCalculatorPerPixel::BatchOpenImmediate(const BatchParams& params)
 {
 	wxASSERT(m_batchState == BatchStateClosed);
 	m_batchState = BatchStateOpenImmediate;
 	m_batchParams = params;
-
-	return GetBatchImmediate(*this);
 }
 
-LfnIc::EnergyCalculator::BatchQueued LfnIc::EnergyCalculatorPerPixel::BatchOpenQueued(const BatchParams& params)
+void LfnIc::EnergyCalculatorPerPixel::BatchOpenQueued(const BatchParams& params)
 {
 	wxASSERT(m_batchState == BatchStateClosed);
 	m_batchState = BatchStateOpenQueued;
@@ -325,8 +315,6 @@ LfnIc::EnergyCalculator::BatchQueued LfnIc::EnergyCalculatorPerPixel::BatchOpenQ
 	{
 		m_isAsyncBatch = (m_workerThreads.size() > 0 && m_batchParams.maxCalculations >= MIN_CALCULATIONS_FOR_ASYNC_BATCH);
 	}
-
-	return GetBatchQueued(*this);
 }
 
 void LfnIc::EnergyCalculatorPerPixel::BatchClose()

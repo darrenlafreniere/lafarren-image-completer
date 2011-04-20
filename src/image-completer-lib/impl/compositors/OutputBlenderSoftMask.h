@@ -26,10 +26,10 @@
 
 namespace LfnIc
 {
-    ///
-    /// This class implements a Blender which blends the patches into their destinations
-    /// using a soft mask of the masked region.
-    ///
+	///
+	/// This class implements a Blender which blends the patches into their destinations
+	/// using a soft mask of the masked region.
+	///
 	class OutputBlenderSoftMask : public CompositorRoot::OutputBlender
 	{
 	public:

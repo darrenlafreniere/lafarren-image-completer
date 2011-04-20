@@ -34,7 +34,7 @@
 #include "LfnIcImage.h"
 #include "PriorityBpRunner.h"
 #include "ScalableDebugging.h"
-#include "Settings.h"
+#include "SettingsScalable.h"
 
 #include "tech/DbgMem.h"
 
@@ -88,7 +88,7 @@ namespace LfnIc
 		SettingsScalable& settingsScalable,
 		ImageScalable& imageScalable,
 		MaskScalable& maskScalable,
-		const EnergyCalculatorContainer& energyCalculatorContainer,
+		EnergyCalculatorContainer& energyCalculatorContainer,
 		LabelSet& labelSet,
 		NodeSet& nodeSet,
 		PriorityBpRunner& priorityBpRunner,
@@ -135,6 +135,7 @@ namespace LfnIc
 			scopedScaleDownAndUpInOrder.Add(maskScalable);
 			scopedScaleDownAndUpInOrder.Add(labelSet);
 			scopedScaleDownAndUpInOrder.Add(nodeSet);
+			scopedScaleDownAndUpInOrder.Add(energyCalculatorContainer);
 
 			// Recurse to the next lower resolution.
 			RecurivelyRunFromLowestToNextHighestResolution(
@@ -235,9 +236,10 @@ namespace LfnIc
 					// Construct priority-bp related data, passing in the required dependencies.
 					EnergyCalculatorContainer energyCalculatorContainer(settingsScalable, imageScalable, maskScalable);
 					LabelSet labelSet(settingsScalable, imageScalable, maskScalable);
-                    std::cout << "There are " << labelSet.size() << " labels." << std::endl;
 					NodeSet nodeSet(settingsScalable, imageScalable, maskScalable, labelSet, energyCalculatorContainer);
 					PriorityBpRunner priorityBpRunner(settingsScalable, nodeSet);
+
+					std::cout << "There are " << labelSet.size() << " labels." << std::endl;
 
 					// Recurse and scale down to a quickly solvable resolution, then
 					// scale back up, using each lower resolution data to help solve

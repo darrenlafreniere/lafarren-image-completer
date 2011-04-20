@@ -221,6 +221,15 @@ m_settings(settings),
 	m_isBatchOpen(false),
 	m_isBatchProcessed(false)
 {
+#ifdef USE_THREADS
+	const int fftwInitThreadsResult = FFTW_PREFIX(init_threads)();
+	wxASSERT(fftwInitThreadsResult != 0);
+
+	const int cpuCount = wxThread::GetCPUCount();
+	wxASSERT(cpuCount >= 1);
+	FFTW_PREFIX(plan_with_nthreads)(cpuCount);
+#endif
+
 	m_fftPlanBuffer = FftwInPlaceBufferAlloc();
 
 	// Dimensions must be in row-major order, so swap width and height
@@ -279,21 +288,13 @@ LfnIc::EnergyCalculatorFft::~EnergyCalculatorFft()
 	FFTW_PREFIX(free)(m_fftPlanBuffer.generic);
 
 	delete [] m_batchEnergy2ndAnd3rdTerm;
+
+#ifdef USE_THREADS
+	FFTW_PREFIX(cleanup_threads)();
+#endif
 }
 
-LfnIc::EnergyCalculator::BatchImmediate LfnIc::EnergyCalculatorFft::BatchOpenImmediate(const BatchParams& params)
-{
-	BatchOpen(params);
-	return GetBatchImmediate(*this);
-}
-
-LfnIc::EnergyCalculator::BatchQueued LfnIc::EnergyCalculatorFft::BatchOpenQueued(const BatchParams& params)
-{
-	BatchOpen(params);
-	return GetBatchQueued(*this);
-}
-
-LfnIc::EnergyCalculatorFft& LfnIc::EnergyCalculatorFft::BatchOpen(const BatchParams& params)
+void LfnIc::EnergyCalculatorFft::BatchOpen(const BatchParams& params)
 {
 	wxASSERT(!m_isBatchOpen);
 	wxASSERT(!m_isBatchProcessed);
@@ -408,8 +409,16 @@ LfnIc::EnergyCalculatorFft& LfnIc::EnergyCalculatorFft::BatchOpen(const BatchPar
 			ApplyFftRealTo2ndAnd3rdTerm(energyOperator);
 		}
 	}
+}
 
-	return *this;
+void LfnIc::EnergyCalculatorFft::BatchOpenImmediate(const BatchParams& params)
+{
+	BatchOpen(params);
+}
+
+void LfnIc::EnergyCalculatorFft::BatchOpenQueued(const BatchParams& params)
+{
+	BatchOpen(params);
 }
 
 void LfnIc::EnergyCalculatorFft::BatchClose()
@@ -485,7 +494,7 @@ LfnIc::Energy LfnIc::EnergyCalculatorFft::GetResult(BatchQueued::Handle handle) 
 
 LfnIc::EnergyCalculatorFft::FftwInPlaceBuffer LfnIc::EnergyCalculatorFft::FftwInPlaceBufferAlloc() const
 {
-	wxASSERT(m_isBatchProcessed);
+	wxASSERT(!m_isBatchProcessed);
 	FftwInPlaceBuffer result = { FFTW_PREFIX(malloc)(m_fftInPlaceBufferNumBytes) };
 	return result;
 }
