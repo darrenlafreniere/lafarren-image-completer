@@ -22,8 +22,6 @@
 #ifndef SCALABLE_H
 #define SCALABLE_H
 
-#include <vector>
-
 namespace LfnIc
 {
 	//

@@ -25,8 +25,6 @@
 #include "tech/Core.h"
 #include "LfnIcTypes.h"
 
-#include <cstddef> // for NULL
-
 namespace LfnIc
 {
 	// Forward declarations
