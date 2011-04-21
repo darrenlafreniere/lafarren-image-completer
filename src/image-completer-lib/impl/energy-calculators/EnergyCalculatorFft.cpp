@@ -216,8 +216,8 @@ m_settings(settings),
 	m_fftInPlaceBufferNumBytes(m_fftInPlaceBufferStride * m_fftHeight),
 	m_wsst(inputImage, settings.latticeGapX, settings.latticeGapY),
 	m_wsstMasked(inputImage, mask, settings.latticeGapX, settings.latticeGapY),
-	m_batchEnergy2ndAnd3rdTerm(new Energy[m_inputWidth * m_inputHeight]),
 	m_batchEnergy1stTerm(ENERGY_MIN),
+	m_batchEnergy2ndAnd3rdTerm(new Energy[m_inputWidth * m_inputHeight]),
 	m_isBatchOpen(false),
 	m_isBatchProcessed(false)
 {
