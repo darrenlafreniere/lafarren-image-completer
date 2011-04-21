@@ -2,23 +2,34 @@ cmake_minimum_required(VERSION 2.6)
 
 project(ImageCompleter)
 
-########### Eigen ##############
+#Eigen
 include_directories(/media/portable/src/Eigen /media/portable/src/Eigen/unsupported)
-
 set(CMAKE_MODULE_PATH /media/portable/src/Eigen/cmake)
 
+#UMFPACK (required for Eigen)
 FIND_PACKAGE(Umfpack REQUIRED)
+include_directories(${UMFPACK_INCLUDES})
+
+#BLAS (required for Eigen)
 FIND_PACKAGE(BLAS REQUIRED)
+
+#FFTW
 find_package(FFTW REQUIRED)
 
-include_directories(${UMFPACK_INCLUDES})
+#ITK
+find_package(ITK REQUIRED)
+if(ITK_FOUND)
+  include(${ITK_USE_FILE})
+endif(ITK_FOUND)
 
 list(APPEND CORE_DEFINITIONS "EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET")
 # must link to umfpack
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
   message("Compiled in Release mode")
+  SET(DEBUGMODE OFF)
 else(CMAKE_BUILD_TYPE STREQUAL "Release")
+  SET(DEBUGMODE ON)
   list(APPEND MAIN_BUILD_DEFINITIONS "_DEBUG")
   message("Compiled in Debug mode")
 endif(CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -38,7 +49,7 @@ set(USE_POISSON OFF CACHE BOOL "Use Poisson blending?")
 if(USE_POISSON)
   #set(MAIN_BUILD_FLAGS "${MAIN_BUILD_FLAGS} -DUSE_POISSON")
   set(MAIN_BUILD_DEFINITIONS "${MAIN_BUILD_DEFINITIONS} USE_POISSON;")
-  set(LibrariesToLink ${LibrariesToLink} umfpack)
+  set(CustomBuildLibraries ${CustomBuildLibraries} umfpack)
 endif(USE_POISSON)
 
 #If you want to enable the per-pixel energy calculator to use multiple hardware threads, set this flag to ON.
@@ -135,18 +146,16 @@ set(AppSources
     ${cmdsrc}/SettingsText.cpp
 )
 
-set(LibrariesToLink ${wxWidgets_LIBRARIES} Tech ImageCompleterLib)
+set(LibrariesAlwaysUsed ${wxWidgets_LIBRARIES} Tech ImageCompleterLib)
 
 IF(USE_ITK)
   message("using ITK")
-  find_package(ITK REQUIRED)
-  include(${ITK_USE_FILE})
 
   set(MainAppSources ${AppSources}
     ${cmdsrc}/AppITKImage.cpp
     ${cmdsrc}/AppITKMask.cpp
     )
-  set(LibrariesToLink ${LibrariesToLink} ${ITK_LIBRARIES})
+  set(CustomBuildLibraries ${CustomBuildLibraries} ${ITK_LIBRARIES})
 else(USE_ITK)
   message("using wx")
   set(MainAppSources ${AppSources}
@@ -156,7 +165,7 @@ else(USE_ITK)
 ENDIF(USE_ITK)
 
 add_executable(ImageCompleter ${MainAppSources})
-target_link_libraries(ImageCompleter ${LibrariesToLink})
+target_link_libraries(ImageCompleter ${CustomBuildLibraries} ${LibrariesAlwaysUsed})
 message("Main build definitions: ${MAIN_BUILD_DEFINITIONS}")
 message("Core definitions: ${CORE_DEFINITIONS}")
 set_target_properties(ImageCompleter PROPERTIES COMPILE_DEFINITIONS "${MAIN_BUILD_DEFINITIONS};${CORE_DEFINITIONS}")
@@ -166,32 +175,44 @@ set_target_properties(ImageCompleter PROPERTIES COMPILE_DEFINITIONS "${MAIN_BUIL
 #####################################
 
 # 1 channel float images
-# find_package(ITK REQUIRED)
-# include(${ITK_USE_FILE})
-#
-# set(definitions1f "USE_ITK;USE_FLOAT_PIXELS;PIXEL_DIMENSION=1")
-# message("ImageCompleter1f definitions: ${CORE_DEFINITIONS};${definitions1f}")
-#
-# add_library(ImageCompleterLib1f ${ImageCompleterSources})
-# set_target_properties(ImageCompleterLib1f PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${definitions1f}")
-#
-# add_executable(ImageCompleter1f ${AppSources} ${cmdsrc}/AppITKImage.cpp ${cmdsrc}/AppITKMask.cpp)
-# target_link_libraries(ImageCompleter1f ${LibrariesToLink} ${ImageCompleterLib1f} ${ITK_LIBRARIES})
-# set_target_properties(ImageCompleter1f PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${definitions1f}")
 
+if(ITK_FOUND)
+  list(APPEND definitions1f "USE_ITK;USE_FLOAT_PIXELS;PIXEL_DIMENSION=1")
+  if(DEBUGMODE)
+    list(APPEND definitions1f "_DEBUG")
+  endif(DEBUGMODE)
+  message("ImageCompleter1f CORE_DEFINITIONS: ${CORE_DEFINITIONS}")
+  message("ImageCompleter1f definitions1f: ${definitions1f}")
+  message("ImageCompleter1f LibrariesAlwaysUsed: ${LibrariesAlwaysUsed}")
+  message("ImageCompleter1f ImageCompleterSources: ${ImageCompleterSources}")
+  message("ImageCompleter1f AppSources: ${AppSources}")
+
+  add_library(ImageCompleterLib1f ${ImageCompleterSources})
+  set_target_properties(ImageCompleterLib1f PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${definitions1f}")
+
+  add_executable(ImageCompleter1f ${AppSources} ${cmdsrc}/AppITKImage.cpp ${cmdsrc}/AppITKMask.cpp)
+  target_link_libraries(ImageCompleter1f ${LibrariesAlwaysUsed} ${ImageCompleterLib1f} ${ITK_LIBRARIES})
+  set_target_properties(ImageCompleter1f PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${definitions1f}")
+endif(ITK_FOUND)
 
 ############################
 # 3 channel unsigned char images
 #Careful, if weights are used the pixel type must be float! (because multiplying a weight of say 2 to a pixel value of 150 will produce 300 which is > 255)
-#
-# set(definitions3uc "EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET;UNIX;USE_ITK;PIXEL_DIMENSION=3")
-#
-# add_library(ImageCompleterLib3uc ${ImageCompleterSources})
-# set_target_properties(ImageCompleterLib3uc PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${definitions3uc}")
-#
-# add_executable(ImageCompleter3uc ${AppSources} ${cmdsrc}/AppITKImage.cpp ${cmdsrc}/AppITKMask.cpp)
-# target_link_libraries(ImageCompleter3uc ${LibrariesToLink} ${ImageCompleterLib3uc})
-# set_target_properties(ImageCompleter3uc PROPERTIES COMPILE_DEFINITIONS "${definitions3uc}")
+
+if(ITK_FOUND)
+  #set(definitions3uc "EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET;UNIX;USE_ITK;PIXEL_DIMENSION=3")
+  list(APPEND definitions3uc "UNIX;USE_ITK;PIXEL_DIMENSION=3")
+  if(DEBUGMODE)
+    list(APPEND definitions3uc "_DEBUG")
+  endif(DEBUGMODE)
+
+  add_library(ImageCompleterLib3uc ${ImageCompleterSources})
+  set_target_properties(ImageCompleterLib3uc PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${definitions3uc}")
+
+  add_executable(ImageCompleter3uc ${AppSources} ${cmdsrc}/AppITKImage.cpp ${cmdsrc}/AppITKMask.cpp)
+  target_link_libraries(ImageCompleter3uc ${LibrariesAlwaysUsed} ${ImageCompleterLib3uc} ${ITK_LIBRARIES})
+  set_target_properties(ImageCompleter3uc PROPERTIES COMPILE_DEFINITIONS "${definitions3uc}")
+endif(ITK_FOUND)
 
 ##############################
 # wx build
