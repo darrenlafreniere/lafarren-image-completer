@@ -2,16 +2,26 @@ cmake_minimum_required(VERSION 2.6)
 
 project(ImageCompleter)
 
+# Tell CMake to also look in the ImageCompleter source directory to find some .cmake files (Eigen3, Umfpack, and FFTW)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR})
+
 #Eigen
-include_directories(/media/portable/src/Eigen /media/portable/src/Eigen/unsupported)
-set(CMAKE_MODULE_PATH /media/portable/src/Eigen/cmake)
+# If you used a prefix so that 'make install' didn't go to a standard location (like /usr/local, etc)
+# then you must set EIGEN3_INCLUDE_DIR to [prefix]/include/eigen3
+FIND_PACKAGE(Eigen3 REQUIRED) #requires FindEigen3.cmake to be in the source directory
+include_directories(${EIGEN3_INCLUDE_DIR} ${EIGEN3_INCLUDE_DIR}/unsupported/)
 
 #UMFPACK (required for Eigen)
-FIND_PACKAGE(Umfpack REQUIRED)
-include_directories(${UMFPACK_INCLUDES})
+if(EIGEN_FOUND)
+  FIND_PACKAGE(Umfpack REQUIRED)
+  include_directories(${UMFPACK_INCLUDES})
+  include_directories(${EIGEN3_INCLUDE_DIR}/unsupported/)
+endif(EIGEN_FOUND)
 
 #BLAS (required for Eigen)
-FIND_PACKAGE(BLAS REQUIRED)
+if(EIGEN_FOUND)
+  FIND_PACKAGE(BLAS REQUIRED)
+endif(EIGEN_FOUND)
 
 #FFTW
 find_package(FFTW REQUIRED)
@@ -34,6 +44,10 @@ else(CMAKE_BUILD_TYPE STREQUAL "Release")
   message("Compiled in Debug mode")
 endif(CMAKE_BUILD_TYPE STREQUAL "Release")
 ################################
+
+# If you don't have wx2.9 installed to a system location, you must set
+#wxWidgets_CONFIG_EXECUTABLE=/home/doriad/bin/wx2.9/wx-config
+#wxWidgets_wxrc_EXECUTABLE=/home/doriad/bin/wx2.9/utils/wxrc/wxrc
 
 find_package(wxWidgets COMPONENTS core base REQUIRED)
 include( ${wxWidgets_USE_FILE} )
