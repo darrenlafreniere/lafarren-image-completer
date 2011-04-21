@@ -70,7 +70,7 @@
 //
 
 #include "Pch.h"
-#ifdef USE_POISSON
+#ifdef POISSON_COMPOSITING
 #include "PoissonSolver.h"
 
 #include <Eigen/Sparse>

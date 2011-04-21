@@ -20,7 +20,7 @@
 //
 
 #include "Pch.h"
-#ifdef USE_POISSON
+#ifdef POISSON_COMPOSITING
 #include "PatchTypePoisson.h"
 
 #include "tech/MathUtils.h"
@@ -60,4 +60,4 @@ const LfnIc::ImageFloat& LfnIc::PatchTypePoisson::Get(const Patch& patch) const
 	return patchImagePoisson;
 }
 
-#endif // USE_POISSON
+#endif // POISSON_COMPOSITING

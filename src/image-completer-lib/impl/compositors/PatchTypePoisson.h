@@ -22,7 +22,7 @@
 #ifndef PATCH_IMAGE_SOURCE_POISSON_H
 #define PATCH_IMAGE_SOURCE_POISSON_H
 
-#ifdef USE_POISSON
+#ifdef POISSON_COMPOSITING
 
 #include "PatchTypeNormal.h"
 
@@ -57,6 +57,6 @@ namespace LfnIc
 	};
 }
 
-#endif // end USE_POISSON
+#endif // end POISSON_COMPOSITING
 
 #endif // PATCH_IMAGE_SOURCE_POISSON_H

@@ -22,7 +22,7 @@
 #ifndef POISSON_SOLVER_H
 #define POISSON_SOLVER_H
 
-#ifdef USE_POISSON
+#ifdef POISSON_COMPOSITING
 
 #include "ImageFloat.h"
 #include "MaskWritable.h"
@@ -80,5 +80,5 @@ namespace LfnIc
 	}
 }
 
-#endif // USE_POISSON
+#endif // POISSON_COMPOSITING
 #endif // POISSON_SOLVER_H

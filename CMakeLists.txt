@@ -86,7 +86,7 @@ endif(USE_ITK)
 
 ################ Configure Main Build Based On User Options #################
 if(POISSON_COMPOSITING)
-  set(MAIN_BUILD_DEFINITIONS "${MAIN_BUILD_DEFINITIONS} USE_POISSON;")
+  set(MAIN_BUILD_DEFINITIONS "${MAIN_BUILD_DEFINITIONS} POISSON_COMPOSITING;")
   set(CustomBuildLibraries ${CustomBuildLibraries} umfpack)
 endif(POISSON_COMPOSITING)
 
@@ -161,11 +161,11 @@ ${ImageCompleterDir}/energy-calculators/EnergyWsst.cpp
 
 )
 
-IF(USE_POISSON)
+IF(POISSON_COMPOSITING)
   set(ImageCompleterSources ${ImageCompleterSources}
   ${ImageCompleterDir}/compositors/PatchTypePoisson.cpp
   ${ImageCompleterDir}/compositors/PoissonSolver.cpp)
-ENDIF(USE_POISSON)
+ENDIF(POISSON_COMPOSITING)
 
 add_library(ImageCompleterLib ${ImageCompleterSources})
 target_link_libraries(ImageCompleterLib Tech fftw3f)

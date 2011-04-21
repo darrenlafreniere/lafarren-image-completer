@@ -63,12 +63,12 @@ LfnIc::Compositor* LfnIc::CompositorFactory::Create(CompositorPatchType patchTyp
 	case CompositorPatchTypeNormal:
 		patchimageSourceFactory = new PatchTypeNormal::Factory;
 		break;
-#ifdef USE_POISSON
+#ifdef POISSON_COMPOSITING
 	case CompositorPatchTypePoisson:
 		patchimageSourceFactory = new PatchTypePoisson::Factory;
 		break;
 #else
-		#pragma message("Not built with Poisson blending enabled (USE_POISSON is undefined)!")
+		#pragma message("Not built with Poisson blending enabled (POISSON_COMPOSITING is undefined)!")
 #endif
 	case CompositorPatchTypeDebugOrder:
 		patchimageSourceFactory = new PatchTypeDebugPatchOrder::Factory;

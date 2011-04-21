@@ -102,7 +102,7 @@ std::string SettingsText::GetEnumDescription(LfnIc::CompositorPatchType e)
 	switch (e)
 	{
 	case LfnIc::CompositorPatchTypeNormal:        desc = "normal"; break;
-#ifdef USE_POISSON
+#ifdef POISSON_COMPOSITING
 	case LfnIc::CompositorPatchTypePoisson:       desc = "poisson"; break;
 #endif
 	case LfnIc::CompositorPatchTypeDebugOrder:    desc = "debug-patch-order"; break;

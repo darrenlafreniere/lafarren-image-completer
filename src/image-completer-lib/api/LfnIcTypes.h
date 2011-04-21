@@ -52,7 +52,7 @@ namespace LfnIc
 		// directly from the input image.
 		CompositorPatchTypeNormal,
 
-#ifdef USE_POISSON
+#ifdef POISSON_COMPOSITING
 		/// Given a patch rectangle, this patch type copies the pixels directly
 		/// from the input image, then perform a Poisson blend on them according
 		/// to the patch's destination in the output image.
