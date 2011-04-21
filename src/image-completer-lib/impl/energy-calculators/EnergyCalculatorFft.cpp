@@ -611,7 +611,7 @@ void LfnIc::EnergyCalculatorFft::PadRealBuffer(FftReal* real, int leftPad, int t
 	if (leftPad > 0)
 	{
 		const int leftPadHeight = bottomPadY;
-		const int leftPadNumBytes = sizeof(FftReal) * leftPad;
+		//const int leftPadNumBytes = sizeof(FftReal) * leftPad;
 		for (int y = topPad; y < leftPadHeight; ++y)
 		{
 			FftReal* dest = GetRow(real, y);
