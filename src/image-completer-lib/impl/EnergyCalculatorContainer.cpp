@@ -110,8 +110,8 @@ namespace LfnIc
 			EnergyCalculatorContainer& energyCalculatorContainer,
 			EnergyCalculatorPerPixel& energyCalculatorPerPixel,
 			EnergyCalculatorFft& energyCalculatorFft)
-			: m_batchSize(batchSize)
-			, m_energyCalculatorContainer(energyCalculatorContainer)
+			: m_energyCalculatorContainer(energyCalculatorContainer)
+			, m_batchSize(batchSize)
 			, m_measurePerPixel(energyCalculatorPerPixel)
 			, m_measureFft(energyCalculatorFft)
 			, m_measureCurrent(&m_measureFft) // Measure fft first; if batch size is only calculated once, the fft's worst case with large images is better than per-pixel's worst case

@@ -33,7 +33,8 @@
 // Options
 //
 
-CommandLineOptions::Option::Option(wxString shortFlag, wxString longFlag, wxString description, bool hasDefault, int id, wxCmdLineParamType wxArgumentType, wxCmdLineEntryFlags wxMandatory = wxCMD_LINE_PARAM_OPTIONAL, wxString strValue = "") : m_shortFlag(shortFlag), m_longFlag(longFlag), m_id(id), m_OptionType(COMPLETER_OPTION_TYPE), m_wxMandatory(wxMandatory), m_wxArgumentType(wxArgumentType)
+CommandLineOptions::Option::Option(wxString shortFlag, wxString longFlag, wxString description, bool hasDefault, int id, wxCmdLineParamType wxArgumentType, wxCmdLineEntryFlags wxMandatory = wxCMD_LINE_PARAM_OPTIONAL, wxString strValue = "") 
+  : m_shortFlag(shortFlag), m_longFlag(longFlag), m_id(id), m_wxArgumentType(wxArgumentType), m_wxMandatory(wxMandatory), m_OptionType(COMPLETER_OPTION_TYPE)
 {
   m_description = wxString::Format("\n%s%s\n", Indent(), description.c_str());
 }
