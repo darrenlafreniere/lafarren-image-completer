@@ -51,14 +51,14 @@ For a full list of options, run the executable without any additional arguments.
 // NOTES
 
 Requires:
-- wxWidgets 2.9
+- wxWidgets 2.9 (should this now be under "developed using"?)
 
 Developed using:
 
 - Visual C++ Express 2008 and 2010.
 - wxWidgets (wxMSW-2.8.10, static C runtime (/MT))
 - FFTW (3.2.2, static C runtime (/MT), single precision enabled)
-- Eigen and UMFPACK
+- Eigen2/3 and UMFPACK
 
 Tested on:
 - Fedora 13
