@@ -12,9 +12,10 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR})
 # then you must set EIGEN3_INCLUDE_DIR to [prefix]/include/eigen3
 FIND_PACKAGE(Eigen3) #requires FindEigen3.cmake to be in the source directory
 include_directories(${EIGEN3_INCLUDE_DIR} ${EIGEN3_INCLUDE_DIR}/unsupported/)
+message("EIGEN3_FOUND? ${EIGEN3_FOUND}")
 
 #if we will be using Eigen, it will be with Umfpack and BLAS
-if(EIGEN_FOUND)
+if(EIGEN3_FOUND)
   #UMFPACK
   FIND_PACKAGE(Umfpack REQUIRED)
   include_directories(${UMFPACK_INCLUDES})
@@ -22,7 +23,7 @@ if(EIGEN_FOUND)
 
   #BLAS
   FIND_PACKAGE(BLAS REQUIRED)
-endif(EIGEN_FOUND)
+endif(EIGEN3_FOUND)
 
 #FFTW
 find_package(FFTW REQUIRED)
@@ -64,9 +65,9 @@ src/tech/tech src/tech)
 
 ################ Setup User Options #################
 #If Eigen was found, the user can choose to composite patches using Poisson blending
-if(EIGEN_FOUND)
+if(EIGEN3_FOUND)
   set(POISSON_COMPOSITING OFF CACHE BOOL "Use Poisson compositing?")
-endif(EIGEN_FOUND)
+endif(EIGEN3_FOUND)
 
 #If you want to enable the per-pixel energy calculator to use multiple hardware threads, set this flag to ON.
 set(USE_THREADS OFF CACHE BOOL "Use threads?" FORCE)
