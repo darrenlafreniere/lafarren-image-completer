@@ -2,24 +2,25 @@ cmake_minimum_required(VERSION 2.6)
 
 project(ImageCompleter)
 
+################ Setup Libraries #################
+
 # Tell CMake to also look in the ImageCompleter source directory to find some .cmake files (Eigen3, Umfpack, and FFTW)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR})
 
 #Eigen
 # If you used a prefix so that 'make install' didn't go to a standard location (like /usr/local, etc)
 # then you must set EIGEN3_INCLUDE_DIR to [prefix]/include/eigen3
-FIND_PACKAGE(Eigen3 REQUIRED) #requires FindEigen3.cmake to be in the source directory
+FIND_PACKAGE(Eigen3) #requires FindEigen3.cmake to be in the source directory
 include_directories(${EIGEN3_INCLUDE_DIR} ${EIGEN3_INCLUDE_DIR}/unsupported/)
 
-#UMFPACK (required for Eigen)
+#if we will be using Eigen, it will be with Umfpack and BLAS
 if(EIGEN_FOUND)
+  #UMFPACK
   FIND_PACKAGE(Umfpack REQUIRED)
   include_directories(${UMFPACK_INCLUDES})
   include_directories(${EIGEN3_INCLUDE_DIR}/unsupported/)
-endif(EIGEN_FOUND)
 
-#BLAS (required for Eigen)
-if(EIGEN_FOUND)
+  #BLAS
   FIND_PACKAGE(BLAS REQUIRED)
 endif(EIGEN_FOUND)
 
@@ -27,7 +28,7 @@ endif(EIGEN_FOUND)
 find_package(FFTW REQUIRED)
 
 #ITK
-find_package(ITK REQUIRED)
+find_package(ITK)
 if(ITK_FOUND)
   include(${ITK_USE_FILE})
 endif(ITK_FOUND)
@@ -52,22 +53,43 @@ endif(CMAKE_BUILD_TYPE STREQUAL "Release")
 find_package(wxWidgets COMPONENTS core base REQUIRED)
 include( ${wxWidgets_USE_FILE} )
 
+################ Setup ImageCompleter #################
+# Set include paths for ImageCompleter
 set(cmdsrc src/image-completer-cmd)
 set(ImageCompleterDir src/image-completer-lib/impl)
 set(tech src/tech)
+include_directories(src/image-completer-cmd src/image-completer-lib src/image-completer-lib/api 
+src/image-completer-lib/impl src/image-completer-lib/impl/compositors src/image-completer-lib/impl/energy-calculators 
+src/tech/tech src/tech)
 
-include_directories(src/image-completer-cmd src/image-completer-lib src/image-completer-lib/api src/image-completer-lib/impl src/image-completer-lib/impl/compositors src/image-completer-lib/impl/energy-calculators src/tech/tech src/tech)
-
-#If you want to enable the patches to be composited using Poisson blending, set this flag to ON (requires TAUCS to be installed).
-set(USE_POISSON OFF CACHE BOOL "Use Poisson blending?")
-if(USE_POISSON)
-  #set(MAIN_BUILD_FLAGS "${MAIN_BUILD_FLAGS} -DUSE_POISSON")
-  set(MAIN_BUILD_DEFINITIONS "${MAIN_BUILD_DEFINITIONS} USE_POISSON;")
-  set(CustomBuildLibraries ${CustomBuildLibraries} umfpack)
-endif(USE_POISSON)
+################ Setup User Options #################
+#If Eigen was found, the user can choose to composite patches using Poisson blending
+if(EIGEN_FOUND)
+  set(POISSON_COMPOSITING OFF CACHE BOOL "Use Poisson compositing?")
+endif(EIGEN_FOUND)
 
 #If you want to enable the per-pixel energy calculator to use multiple hardware threads, set this flag to ON.
 set(USE_THREADS OFF CACHE BOOL "Use threads?" FORCE)
+
+#If this flag is true, the MainBuild will be built with ITK instead of WX
+set(USE_ITK OFF CACHE BOOL "Use ITK?")
+
+
+#Some things only become options if using ITK.
+if(USE_ITK)
+  #If this flag is true, pixels will be read as floats instead of the default of unsigned char.
+  set(USE_FLOAT_PIXELS OFF CACHE BOOL "Use float pixels?")
+
+  #ITK can support ND pixels
+  set(PIXEL_DIMENSION 3 CACHE STRING "Dimensionality of pixels?") #cmake doesn't have an "INT" variable type, so treat it as a string
+endif(USE_ITK)
+
+################ Configure Main Build Based On User Options #################
+if(POISSON_COMPOSITING)
+  set(MAIN_BUILD_DEFINITIONS "${MAIN_BUILD_DEFINITIONS} USE_POISSON;")
+  set(CustomBuildLibraries ${CustomBuildLibraries} umfpack)
+endif(POISSON_COMPOSITING)
+
 if(USE_THREADS)
   list(APPEND MAIN_BUILD_DEFINITIONS "USE_THREADS")
 endif(USE_THREADS)
@@ -76,27 +98,29 @@ IF(UNIX)
   list(APPEND CORE_DEFINITIONS "UNIX")
 ENDIF(UNIX)
 
-set(USE_ITK OFF CACHE BOOL "Use ITK?")
 IF(USE_ITK)
   list(APPEND MAIN_BUILD_DEFINITIONS "USE_ITK")
 ENDIF(USE_ITK)
 
-set(USE_FLOAT_PIXELS OFF CACHE BOOL "Use float pixels?")
 IF(USE_FLOAT_PIXELS)
   list(APPEND MAIN_BUILD_DEFINITIONS "USE_FLOAT_PIXELS")
 ENDIF(USE_FLOAT_PIXELS)
 
-set(PIXEL_DIMENSION 3 CACHE STRING "Dimensionality of pixels?") #cmake doesn't have an "INT" variable type, so treat it as a string
 list(APPEND MAIN_BUILD_DEFINITIONS "PIXEL_DIMENSION=${PIXEL_DIMENSION}")
 
-###############
-#if Eigen is setup correctly, we would want to enable Poisson blending
-IF(USE_POISSON)
-  set(ImageCompleterSources ${ImageCompleterSources}
-  ${ImageCompleterDir}/compositors/PatchTypePoisson.cpp
-  ${ImageCompleterDir}/compositors/PoissonSolver.cpp)
-ENDIF(USE_POISSON)
+################ Create a static library out of the Tech sources #################
+add_library(Tech
+${tech}/Pch.cpp
+${tech}/tech/Atomic.cpp
+${tech}/tech/Core.cpp
+${tech}/tech/ImageUtils.cpp
+${tech}/tech/Profile.cpp
+${tech}/tech/StrUtils.cpp
+${tech}/tech/Time.cpp
+)
+set_target_properties(Tech PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS}")
 
+################ Create a static library out of the ImageCompleter sources #################
 set(ImageCompleterSources ${ImageCompleterSources}
 
 ${cmdsrc}/AppData.cpp
@@ -137,22 +161,17 @@ ${ImageCompleterDir}/energy-calculators/EnergyWsst.cpp
 
 )
 
+IF(USE_POISSON)
+  set(ImageCompleterSources ${ImageCompleterSources}
+  ${ImageCompleterDir}/compositors/PatchTypePoisson.cpp
+  ${ImageCompleterDir}/compositors/PoissonSolver.cpp)
+ENDIF(USE_POISSON)
+
 add_library(ImageCompleterLib ${ImageCompleterSources})
 target_link_libraries(ImageCompleterLib Tech fftw3f)
 set_target_properties(ImageCompleterLib PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${MAIN_BUILD_DEFINITIONS}")
 
-add_library(Tech
-${tech}/Pch.cpp
-${tech}/tech/Atomic.cpp
-${tech}/tech/Core.cpp
-${tech}/tech/ImageUtils.cpp
-${tech}/tech/Profile.cpp
-${tech}/tech/StrUtils.cpp
-${tech}/tech/Time.cpp
-)
-set_target_properties(Tech PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS}")
-
-#####################################
+################ Build the demonstration executable with the user selected options #################
 set(AppSources
     ${cmdsrc}/Main.cpp
     ${cmdsrc}/CommandLineOptions.cpp
@@ -184,11 +203,12 @@ message("Main build definitions: ${MAIN_BUILD_DEFINITIONS}")
 message("Core definitions: ${CORE_DEFINITIONS}")
 set_target_properties(ImageCompleter PROPERTIES COMPILE_DEFINITIONS "${MAIN_BUILD_DEFINITIONS};${CORE_DEFINITIONS}")
 
-#####################################
-# # Special builds
-#####################################
+######################
+# # Special builds # #
+######################
+# 1D float images and 3D unsigned char images are the most common images to be completed. Build these executables regardless of the user settings.
 
-# 1 channel float images
+# 1D/channel float images
 
 if(ITK_FOUND)
   list(APPEND definitions1f "USE_ITK;USE_FLOAT_PIXELS;PIXEL_DIMENSION=1")
@@ -210,7 +230,7 @@ if(ITK_FOUND)
 endif(ITK_FOUND)
 
 ############################
-# 3 channel unsigned char images
+# 3D/channel unsigned char images
 #Careful, if weights are used the pixel type must be float! (because multiplying a weight of say 2 to a pixel value of 150 will produce 300 which is > 255)
 
 if(ITK_FOUND)
