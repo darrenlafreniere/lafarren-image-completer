@@ -90,8 +90,18 @@ bool AppITKImage::LoadAndValidate(const std::string& imagePath)
 		ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New();
 		imageCalculatorFilter->SetImage(indexSelectionFilter->GetOutput());
 		imageCalculatorFilter->Compute();
+                
+                // If there is no variation in a channel (take an image with only red (255,0,0) and blue (0,0,255) pixels for example)
+                // Then computing the weight doesn't make sense (and causes a divide by zero).
+                if( (imageCalculatorFilter->GetMaximum() - imageCalculatorFilter->GetMinimum()) <= 0)
+                {
+                  m_channelWeights[c] = 1.0;
+                }
+                else
+                {
+                  m_channelWeights[c] = 255. / (imageCalculatorFilter->GetMaximum() - imageCalculatorFilter->GetMinimum());
+                }
 
-		m_channelWeights[c] = 255. / (imageCalculatorFilter->GetMaximum() - imageCalculatorFilter->GetMinimum());
 		std::cout << m_channelWeights[c] << " ";
 	}
 	std::cout << std::endl;
