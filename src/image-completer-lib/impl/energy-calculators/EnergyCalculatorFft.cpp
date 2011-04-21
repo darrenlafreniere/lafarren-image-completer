@@ -433,7 +433,7 @@ void LfnIc::EnergyCalculatorFft::BatchClose()
 	m_queuedEnergyResults.clear();
 
 	wxASSERT_MSG(
-		m_queuedEnergyResults.capacity() == queuedEnergyResultsPreClearCapacity,
+		m_queuedEnergyResults.capacity() == static_cast<unsigned int>(queuedEnergyResultsPreClearCapacity),
 		"m_queuedEnergyResults is unexpectedly deallocating! Could have performance impacts.");
 
 }
