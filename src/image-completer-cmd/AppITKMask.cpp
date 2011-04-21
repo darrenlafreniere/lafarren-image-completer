@@ -81,10 +81,12 @@ LfnIc::Mask::Value AppITKMask::GetValue(int x, int y) const
 
 LfnIc::Mask::Value AppITKMask::ByteToMaskValue(unsigned char byte) const
 {
+        // Declare the ideal values of the different types of mask pixels.
 	const int byteUnknown = 0;
 	const int byteIgnored = 128;
 	const int byteKnown   = 255;
 
+        // Determine which one of the ideal values the input is closest to.
 	const int byteIgnoredDiff = abs(byte - byteIgnored);
 	if ((byte - byteUnknown) <= byteIgnoredDiff)
 	{
