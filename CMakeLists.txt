@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 2.6)
 
 project(ImageCompleter)
 
+# Where to copy executables when 'make install' is run
+SET( INSTALL_DIR ${CMAKE_INSTALL_PREFIX} )
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE) #fix the dynamic linking error (RPATH) that would occur without this
+
 ################ Setup Libraries #################
 
 # Tell CMake to also look in the ImageCompleter source directory to find some .cmake files (Eigen3, Umfpack, and FFTW)
@@ -11,11 +15,11 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR})
 # If you used a prefix so that 'make install' didn't go to a standard location (like /usr/local, etc)
 # then you must set EIGEN3_INCLUDE_DIR to [prefix]/include/eigen3
 FIND_PACKAGE(Eigen3) #requires FindEigen3.cmake to be in the source directory
-include_directories(${EIGEN3_INCLUDE_DIR} ${EIGEN3_INCLUDE_DIR}/unsupported/)
 message("EIGEN3_FOUND? ${EIGEN3_FOUND}")
 
 #if we will be using Eigen, it will be with Umfpack and BLAS
 if(EIGEN3_FOUND)
+  include_directories(${EIGEN3_INCLUDE_DIR} ${EIGEN3_INCLUDE_DIR}/unsupported/)
   #UMFPACK
   FIND_PACKAGE(Umfpack REQUIRED)
   include_directories(${UMFPACK_INCLUDES})
@@ -203,6 +207,8 @@ target_link_libraries(ImageCompleter ${CustomBuildLibraries} ${LibrariesAlwaysUs
 message("Main build definitions: ${MAIN_BUILD_DEFINITIONS}")
 message("Core definitions: ${CORE_DEFINITIONS}")
 set_target_properties(ImageCompleter PROPERTIES COMPILE_DEFINITIONS "${MAIN_BUILD_DEFINITIONS};${CORE_DEFINITIONS}")
+INSTALL( TARGETS ImageCompleter
+  RUNTIME DESTINATION ${INSTALL_DIR} )
 
 ######################
 # # Special builds # #
@@ -228,6 +234,10 @@ if(ITK_FOUND)
   add_executable(ImageCompleter1f ${AppSources} ${cmdsrc}/AppITKImage.cpp ${cmdsrc}/AppITKMask.cpp)
   target_link_libraries(ImageCompleter1f ${LibrariesAlwaysUsed} ${ImageCompleterLib1f} ${ITK_LIBRARIES})
   set_target_properties(ImageCompleter1f PROPERTIES COMPILE_DEFINITIONS "${CORE_DEFINITIONS};${definitions1f}")
+  
+  INSTALL( TARGETS ImageCompleter1f
+    RUNTIME DESTINATION ${INSTALL_DIR} )
+
 endif(ITK_FOUND)
 
 ############################
@@ -247,6 +257,10 @@ if(ITK_FOUND)
   add_executable(ImageCompleter3uc ${AppSources} ${cmdsrc}/AppITKImage.cpp ${cmdsrc}/AppITKMask.cpp)
   target_link_libraries(ImageCompleter3uc ${LibrariesAlwaysUsed} ${ImageCompleterLib3uc} ${ITK_LIBRARIES})
   set_target_properties(ImageCompleter3uc PROPERTIES COMPILE_DEFINITIONS "${definitions3uc}")
+  
+  INSTALL( TARGETS ImageCompleter3uc
+    RUNTIME DESTINATION ${INSTALL_DIR} )
+
 endif(ITK_FOUND)
 
 ##############################
