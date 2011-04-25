@@ -428,12 +428,12 @@ void LfnIc::EnergyCalculatorFft::BatchClose()
 	m_isBatchProcessed = false;
 
 #ifdef _DEBUG
-	const int queuedEnergyResultsPreClearCapacity = m_queuedEnergyResults.capacity();
+	const unsigned int queuedEnergyResultsPreClearCapacity = m_queuedEnergyResults.capacity();
 #endif
 	m_queuedEnergyResults.clear();
 #ifdef _DEBUG // for the moment - this should be removed when wxASSERT_MSG is replaced
 	wxASSERT_MSG(
-		m_queuedEnergyResults.capacity() == static_cast<unsigned int>(queuedEnergyResultsPreClearCapacity),
+		m_queuedEnergyResults.capacity() == queuedEnergyResultsPreClearCapacity,
 		"m_queuedEnergyResults is unexpectedly deallocating! Could have performance impacts.");
 #endif
 }
@@ -504,7 +504,6 @@ LfnIc::EnergyCalculatorFft::FftwInPlaceBuffer LfnIc::EnergyCalculatorFft::FftwIn
 template<typename T>
 T* LfnIc::EnergyCalculatorFft::GetRow(T* real, int y) const
 {
-	//return (T*)((BYTE *)real + (m_fftInPlaceBufferStride * y));
 	return (T*)((unsigned char*)real + (m_fftInPlaceBufferStride * y));
 }
 
@@ -611,7 +610,9 @@ void LfnIc::EnergyCalculatorFft::PadRealBuffer(FftReal* real, int leftPad, int t
 	if (leftPad > 0)
 	{
 		const int leftPadHeight = bottomPadY;
-		//const int leftPadNumBytes = sizeof(FftReal) * leftPad;
+#if FFT_ASSERT_BOUNDS_ENABLED
+		const int leftPadNumBytes = sizeof(FftReal) * leftPad;
+#endif
 		for (int y = topPad; y < leftPadHeight; ++y)
 		{
 			FftReal* dest = GetRow(real, y);
