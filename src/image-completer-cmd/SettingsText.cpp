@@ -61,33 +61,33 @@ void SettingsText::Print(const LfnIc::Settings& settings, CommandLineOptions com
 
 	// Determine the description column width.
 	int descWidth = 0;
-    for (int optionIndex = 0; optionIndex < commandLineOptions.GetNumberOfOptions(); ++optionIndex)
-    {
-        const int len = commandLineOptions.GetOption(optionIndex)->m_description.length();
-        if (descWidth < len)
-        {
-            descWidth = len;
-        }
-    }
+	for (int optionIndex = 0; optionIndex < commandLineOptions.GetNumberOfOptions(); ++optionIndex)
+	{
+		const int len = commandLineOptions.GetOption(optionIndex)->m_description.length();
+		if (descWidth < len)
+		{
+			descWidth = len;
+		}
+	}
 
 
 	// Display the members
 	std::vector<CommandLineOptions::Option*> completerOptions =
-        commandLineOptions.GetOptionsByType(CommandLineOptions::Option::COMPLETER_OPTION_TYPE);
+		commandLineOptions.GetOptionsByType(CommandLineOptions::Option::COMPLETER_OPTION_TYPE);
 
-    msgOut.Printf("\nImage completer settings\n");
-    for (int i = 0, n = completerOptions.size(); i < n; ++i)
-    {
-        completerOptions[i]->Print(msgOut, descWidth);
-    }
+	msgOut.Printf("\nImage completer settings\n");
+	for (int i = 0, n = completerOptions.size(); i < n; ++i)
+	{
+		completerOptions[i]->Print(msgOut, descWidth);
+	}
 
-    std::vector<CommandLineOptions::Option*> compositorOptions =
-        commandLineOptions.GetOptionsByType(CommandLineOptions::Option::COMPOSITOR_OPTION_TYPE);
-    msgOut.Printf("Compositor settings\n");
-    for (int i = 0, n = compositorOptions.size(); i < n; ++i)
-    {
-        compositorOptions[i]->Print(msgOut, descWidth);
-    }
+	std::vector<CommandLineOptions::Option*> compositorOptions =
+		commandLineOptions.GetOptionsByType(CommandLineOptions::Option::COMPOSITOR_OPTION_TYPE);
+	msgOut.Printf("Compositor settings\n");
+	for (int i = 0, n = compositorOptions.size(); i < n; ++i)
+	{
+		compositorOptions[i]->Print(msgOut, descWidth);
+	}
 
 }
 

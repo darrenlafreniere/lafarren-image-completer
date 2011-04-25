@@ -44,50 +44,50 @@ class CommandLineOptions
 public:
 	CommandLineOptions(int argc, char** argv);
 
-    struct Option
-    {
-    public:
-      Option(){} // to allow these to be stored as members of CommandLineOptions
-      Option(wxString shortFlag, wxString longFlag, wxString description, bool hasDefault, int id, wxCmdLineParamType wxArgumentType, wxCmdLineEntryFlags wxMandatory, wxString strValue);
-      wxString m_shortFlag;
-      wxString m_longFlag;
-      wxString m_description;
+	struct Option
+	{
+	public:
+		Option(){} // to allow these to be stored as members of CommandLineOptions
+		Option(wxString shortFlag, wxString longFlag, wxString description, bool hasDefault, int id, wxCmdLineParamType wxArgumentType, wxCmdLineEntryFlags wxMandatory, wxString strValue);
+		wxString m_shortFlag;
+		wxString m_longFlag;
+		wxString m_description;
 
-      size_t m_id;
+		size_t m_id;
 
-      wxString m_strValue; // A string of the value
+		wxString m_strValue; // A string of the value
 
-      bool wasFound;
+		bool wasFound;
 
-      wxCmdLineParamType m_wxArgumentType;
-      wxCmdLineEntryFlags m_wxMandatory;
+		wxCmdLineParamType m_wxArgumentType;
+		wxCmdLineEntryFlags m_wxMandatory;
 
-      inline static const char* Indent() { return "   "; }
+		inline static const char* Indent() { return "   "; }
 
-      void Print(wxMessageOutput& msgOut, int descWidth) const
-      {
-        const std::string descSpacing(' ', descWidth - m_description.length());
-        msgOut.Printf("\t%s:%s %s\n", m_description.c_str(), descSpacing.c_str(), m_strValue.c_str());
-      }
+		void Print(wxMessageOutput& msgOut, int descWidth) const
+		{
+			const std::string descSpacing(' ', descWidth - m_description.length());
+			msgOut.Printf("\t%s:%s %s\n", m_description.c_str(), descSpacing.c_str(), m_strValue.c_str());
+		}
 
-      enum OptionTypeEnum {COMPLETER_OPTION_TYPE, COMPOSITOR_OPTION_TYPE};
+		enum OptionTypeEnum {COMPLETER_OPTION_TYPE, COMPOSITOR_OPTION_TYPE};
 
-      OptionTypeEnum m_OptionType;
-    };
+		OptionTypeEnum m_OptionType;
+	};
 
-    template<typename T>
-    struct TypedOption : public Option
-    {
-        T value;
+	template<typename T>
+	struct TypedOption : public Option
+	{
+		T value;
 
-        TypedOption()// : wasFound(false)
-        {}
+		TypedOption()// : wasFound(false)
+		{}
 
-        // Why wasn't this inherited?
-        TypedOption(wxString shortFlag, wxString longFlag, wxString description, bool hasDefault, int id, wxCmdLineParamType wxArgumentType, wxCmdLineEntryFlags wxMandatory = wxCMD_LINE_PARAM_OPTIONAL, wxString strValue = "") : Option(shortFlag, longFlag, description, hasDefault, id, wxArgumentType, wxMandatory, strValue) {}
+		// Why wasn't this inherited?
+		TypedOption(wxString shortFlag, wxString longFlag, wxString description, bool hasDefault, int id, wxCmdLineParamType wxArgumentType, wxCmdLineEntryFlags wxMandatory = wxCMD_LINE_PARAM_OPTIONAL, wxString strValue = "") : Option(shortFlag, longFlag, description, hasDefault, id, wxArgumentType, wxMandatory, strValue) {}
 
-        void Find(const wxCmdLineParser& parser);
-    };
+		void Find(const wxCmdLineParser& parser);
+	};
 
 	inline bool IsValid() const { return m_isValid; }
 
@@ -136,32 +136,32 @@ public:
 	inline bool HasCompositorPatchBlender() const { return m_optCompositorPatchBlender.wasFound; }
 	inline LfnIc::CompositorPatchBlender GetCompositorPatchBlender() const { return m_optCompositorPatchBlender.value; }
 
-    Option* FindOptionById(size_t id) const;
-    Option* FindOptionByShortFlag(wxString shortFlag) const;
-    Option* GetOption(unsigned int i) const;
+	Option* FindOptionById(size_t id) const;
+	Option* FindOptionByShortFlag(wxString shortFlag) const;
+	Option* GetOption(unsigned int i) const;
 
-    std::vector<Option*> GetOptionsByType(Option::OptionTypeEnum) const;
+	std::vector<Option*> GetOptionsByType(Option::OptionTypeEnum) const;
 
-    TypedOption<std::string> m_optImageInput;
-    TypedOption<std::string> m_optImageMask;
-    TypedOption<std::string> m_optImageOutput;
-    TypedOption<bool> m_optSettingsShow;
-    TypedOption<bool> m_optDebugLowResolutionPasses;
-    TypedOption<int> m_optLowResolutionPassesMax;
-    TypedOption<long> m_optNumIterations;
-    TypedOption<long> m_optLatticeWidth; // Should these be X/Y or Width/Height?
-    TypedOption<long> m_optLatticeHeight;
-    TypedOption<long> m_optPatchesMin; // These should be called Labels instead of Patches to match SettingsText.cpp
-    TypedOption<long> m_optPatchesMax;
-    TypedOption<LfnIc::CompositorPatchType> m_optCompositorPatchType;
-    TypedOption<LfnIc::CompositorPatchBlender> m_optCompositorPatchBlender;
+	TypedOption<std::string> m_optImageInput;
+	TypedOption<std::string> m_optImageMask;
+	TypedOption<std::string> m_optImageOutput;
+	TypedOption<bool> m_optSettingsShow;
+	TypedOption<bool> m_optDebugLowResolutionPasses;
+	TypedOption<int> m_optLowResolutionPassesMax;
+	TypedOption<long> m_optNumIterations;
+	TypedOption<long> m_optLatticeWidth; // Should these be X/Y or Width/Height?
+	TypedOption<long> m_optLatticeHeight;
+	TypedOption<long> m_optPatchesMin; // These should be called Labels instead of Patches to match SettingsText.cpp
+	TypedOption<long> m_optPatchesMax;
+	TypedOption<LfnIc::CompositorPatchType> m_optCompositorPatchType;
+	TypedOption<LfnIc::CompositorPatchBlender> m_optCompositorPatchBlender;
 
-    #if ENABLE_PATCHES_INPUT_OUTPUT
-    TypedOption<std::string> m_optPatchesInput;
-    TypedOption<std::string> m_optPatchesOutput;
-    #endif // ENABLE_PATCHES_INPUT_OUTPUT
+#if ENABLE_PATCHES_INPUT_OUTPUT
+	TypedOption<std::string> m_optPatchesInput;
+	TypedOption<std::string> m_optPatchesOutput;
+#endif // ENABLE_PATCHES_INPUT_OUTPUT
 
-    inline int GetNumberOfOptions() { return m_Options.size();}
+	inline int GetNumberOfOptions() { return m_Options.size();}
 
 private:
 
@@ -169,7 +169,7 @@ private:
 	bool m_shouldRunImageCompletion;
 	bool m_isValid;
 
-    std::vector<Option*> m_Options;
+	std::vector<Option*> m_Options;
 };
 
 #endif // COMMAND_LINE_OPTIONS_H
