@@ -37,8 +37,7 @@ AppData::AppData(const CommandLineOptions& options, Image& inputImage, Mask& mas
 	LfnIc::SettingsConstruct(m_settings, m_inputImage);
 
 	ApplyCommandLineOptionsToSettings(options);
-	SettingsText::PrintInvalidMembers settingsTextPrintInvalidMembers;
-	settingsTextPrintInvalidMembers.m_commandLineOptions = &options;
+	SettingsText::PrintInvalidMembers settingsTextPrintInvalidMembers(options);
 
 	if (LfnIc::AreSettingsValid(m_settings, &settingsTextPrintInvalidMembers))
 	{

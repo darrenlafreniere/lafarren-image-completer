@@ -84,7 +84,7 @@ int main(int argc, char** argv)
 			{
 				if (options.ShouldShowSettings())
 				{
-					SettingsText::Print(appData.GetSettings(), options);
+					options.PrintSettingsThatHaveCommandLineOptions(appData.GetSettings());
 				}
 
 				if (options.ShouldRunImageCompletion())

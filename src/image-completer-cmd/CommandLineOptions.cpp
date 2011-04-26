@@ -26,80 +26,70 @@
 
 #include <wx/cmdline.h>
 #include "SettingsText.h"
+#include "tech/StrUtils.h"
 
 #include "tech/DbgMem.h"
 
 //
-// Options
+// CommandLineOptions::Option
 //
-
-CommandLineOptions::Option::Option(wxString shortFlag, wxString longFlag, wxString description, bool hasDefault, int id, wxCmdLineParamType wxArgumentType, wxCmdLineEntryFlags wxMandatory = wxCMD_LINE_PARAM_OPTIONAL, wxString strValue = "") 
-	: m_shortFlag(shortFlag), m_longFlag(longFlag), m_id(id), m_wxArgumentType(wxArgumentType), m_wxMandatory(wxMandatory), m_OptionType(COMPLETER_OPTION_TYPE)
+CommandLineOptions::Option::Option(
+	OptionType optionType,
+	const wxString& shortName,
+	const wxString& longName,
+	const wxString& description,
+	int id,
+	wxCmdLineParamType argumentType,
+	wxCmdLineEntryFlags flags,
+	const wxString& strValue)
+	: optionType(optionType)
+	, shortName(shortName)
+	, longName(longName)
+	, description(description)
+	, id(id)
+	, argumentType(argumentType)
+	, flags(flags)
+	, wasFound(false)
 {
-	m_description = wxString::Format("\n%s%s\n", Indent(), description.c_str());
-}
-
-
-
-CommandLineOptions::Option* CommandLineOptions::FindOptionById(size_t id) const
-{
-	for(unsigned int i = 0; i < m_Options.size(); i++)
-	{
-		if(m_Options[i]->m_id == id)
-		{
-			return m_Options[i];
-		}
-	}
-	std::cerr << "Option " << id << " not found!" << std::endl;
-	return NULL;
-}
-
-CommandLineOptions::Option* CommandLineOptions::FindOptionByShortFlag(wxString shortFlag) const
-{
-	for(unsigned int i = 0; i < m_Options.size(); i++)
-	{
-		if(m_Options[i]->m_shortFlag == shortFlag)
-		{
-			return m_Options[i];
-		}
-	}
-	std::cerr << "Option " << shortFlag << " not found!" << std::endl;
-	return NULL;
-}
-
-CommandLineOptions::Option* CommandLineOptions::GetOption(unsigned int i) const
-{
-	return m_Options[i];
-}
-
-std::vector<CommandLineOptions::Option*> CommandLineOptions::GetOptionsByType(Option::OptionTypeEnum optionType) const
-{
-	std::vector<CommandLineOptions::Option*> options;
-
-	for(unsigned int i = 0; i < m_Options.size(); i++)
-	{
-		if(m_Options[i]->m_OptionType == optionType)
-		{
-			options.push_back(m_Options[i]);
-		}
-	}
-	return options;
 }
 
 //
-// CommandLineOptions::ValueFinder and partial specializations.
+// CommandLineOptions::TypedOption and partial specializations.
 //
+template<typename T>
+CommandLineOptions::TypedOption<T>::TypedOption(
+	const T& value,
+	OptionType optionType,
+	const wxString& shortName,
+	const wxString& longName,
+	const wxString& description,
+	int id,
+	wxCmdLineParamType argumentType,
+	wxCmdLineEntryFlags flags,
+	const wxString& strValue)
+	: Option(optionType, shortName, longName, description, id, argumentType, flags, strValue)
+	, value(value)
+{
+}
+
 template<typename T>
 void CommandLineOptions::TypedOption<T>::Find(const wxCmdLineParser& parser)
 {
-	this->wasFound = parser.Found(m_shortFlag, &this->value);
+	this->wasFound = parser.Found(this->shortName, &this->value);
+}
+
+template<>
+void CommandLineOptions::TypedOption<bool>::Find(const wxCmdLineParser& parser)
+{
+	this->wasFound = parser.Found(this->shortName);
+	this->value = this->wasFound;
 }
 
 template<>
 void CommandLineOptions::TypedOption<std::string>::Find(const wxCmdLineParser& parser)
 {
 	wxString stringValue;
-	this->wasFound = parser.Found(m_shortFlag, &stringValue);
+	this->wasFound = parser.Found(this->shortName, &stringValue);
 	if (this->wasFound)
 	{
 		this->value = stringValue.c_str();
@@ -111,7 +101,7 @@ template<>
 void CommandLineOptions::TypedOption<int>::Find(const wxCmdLineParser& parser)
 {
 	wxString stringValue;
-	if (parser.Found(m_shortFlag, &stringValue))
+	if (parser.Found(this->shortName, &stringValue))
 	{
 		if (stringValue.CmpNoCase(SettingsText::GetLowResolutionPassesAutoDescription()) == 0)
 		{
@@ -133,7 +123,7 @@ template<>
 void CommandLineOptions::TypedOption<LfnIc::CompositorPatchType>::Find(const wxCmdLineParser& parser)
 {
 	wxString stringValue;
-	if (parser.Found(m_shortFlag, &stringValue))
+	if (parser.Found(this->shortName, &stringValue))
 	{
 		for (int e = LfnIc::CompositorPatchTypeInvalid + 1; e < LfnIc::CompositorPatchTypeNum; ++e)
 		{
@@ -153,7 +143,7 @@ template<>
 void CommandLineOptions::TypedOption<LfnIc::CompositorPatchBlender>::Find(const wxCmdLineParser& parser)
 {
 	wxString stringValue;
-	if (parser.Found(m_shortFlag, &stringValue))
+	if (parser.Found(this->shortName, &stringValue))
 	{
 		for (int e = LfnIc::CompositorPatchBlenderInvalid + 1; e < LfnIc::CompositorPatchBlenderNum; ++e)
 		{
@@ -173,89 +163,60 @@ void CommandLineOptions::TypedOption<LfnIc::CompositorPatchBlender>::Find(const 
 // CommandLineOptions
 //
 CommandLineOptions::CommandLineOptions(int argc, char** argv)
-	: m_shouldShowSettings(false)
+	: m_optImageInput("", Option::COMPLETER_OPTION_TYPE, "ii", "image-input", "The input image file path.", -1, wxCMD_LINE_VAL_STRING, wxCMD_LINE_OPTION_MANDATORY)
+	, m_optImageMask("", Option::COMPLETER_OPTION_TYPE, "im", "image-mask", "The mask image file path.", -1, wxCMD_LINE_VAL_STRING)
+	, m_optImageOutput("", Option::COMPLETER_OPTION_TYPE, "io", "image-output", "The mask image file path.", -1, wxCMD_LINE_VAL_STRING)
+	, m_optSettingsShow(false, Option::COMPLETER_OPTION_TYPE, "ss", "settings-show", "Show the settings and exit.", -1, wxCMD_LINE_VAL_NONE)
+	, m_optDebugLowResolutionPasses(false, Option::COMPLETER_OPTION_TYPE, "sd", "settings-debug-low-res-passes", "Output separate images for each low resolution pass.", -1, wxCMD_LINE_VAL_NONE)
+	, m_optLowResolutionPassesMax(0, Option::COMPLETER_OPTION_TYPE, "sp", "settings-low-res-passes", std::string("Max low resolution passes to perform.\n") + Option::Indent() + std::string("(") + SettingsText::GetLowResolutionPassesAutoDescription() + std::string(", or any integer value greater than 0)"), offsetof(LfnIc::Settings, lowResolutionPassesMax), wxCMD_LINE_VAL_STRING)
+	, m_optNumIterations(LfnIc::Settings::NUM_ITERATIONS_DEFAULT, Option::COMPLETER_OPTION_TYPE, "si", "settings-num-iterations", "Number of Priority-BP iterations per pass.", offsetof(LfnIc::Settings, numIterations), wxCMD_LINE_VAL_NUMBER)
+	, m_optLatticeWidth(0, Option::COMPLETER_OPTION_TYPE, "sw", "settings-lattice-width", "Width of each gap in the lattice.", offsetof(LfnIc::Settings, latticeGapX), wxCMD_LINE_VAL_NUMBER)
+	, m_optLatticeHeight(0, Option::COMPLETER_OPTION_TYPE, "sh", "settings-lattice-height", "Height of each gap in the lattice.", offsetof(LfnIc::Settings, latticeGapY), wxCMD_LINE_VAL_NUMBER)
+	, m_optPatchesMin(0, Option::COMPLETER_OPTION_TYPE, "smn", "settings-patches-min", "Min patches after pruning.", offsetof(LfnIc::Settings, postPruneLabelsMin), wxCMD_LINE_VAL_NUMBER) // These should be called Labels instead of Patches to match SettingsText.cpp
+	, m_optPatchesMax(0, Option::COMPLETER_OPTION_TYPE, "smx", "settings-patches-max", "Max patches after pruning.", offsetof(LfnIc::Settings, postPruneLabelsMax), wxCMD_LINE_VAL_NUMBER)
+#if ENABLE_PATCHES_INPUT_OUTPUT
+	, m_optPatchesInput("", Option::COMPLETER_OPTION_TYPE, "pi", "patches-input", "The input patches file path.", -1, wxCMD_LINE_VAL_STRING)
+	, m_optPatchesOutput("", Option::COMPLETER_OPTION_TYPE, "po", "patches-output", "The output patches file path.", -1, wxCMD_LINE_VAL_STRING)
+#endif
+	, m_optCompositorPatchType(LfnIc::CompositorPatchTypeDefault, Option::COMPOSITOR_OPTION_TYPE, "sct", "settings-compositor-patch-type", "Compositor patch source type.", -1, wxCMD_LINE_VAL_STRING)
+	, m_optCompositorPatchBlender(LfnIc::CompositorPatchBlenderDefault, Option::COMPOSITOR_OPTION_TYPE, "scb", "settings-compositor-patch-blender", "Compositor patch blender style.", -1, wxCMD_LINE_VAL_STRING)
 	, m_shouldRunImageCompletion(false)
 	, m_isValid(false)
 {
-	// Create options and set defaults.
-
-	// General options
-	m_optSettingsShow = TypedOption<bool>("ss", "settings-show", "Show the settings and exit.", true, -1, wxCMD_LINE_VAL_NONE);
-	m_optSettingsShow.value = false;
-	m_Options.push_back(&m_optSettingsShow);
-
-	m_optDebugLowResolutionPasses = TypedOption<bool>("sd", "settings-debug-low-res-passes", "Output separate images for each low resolution pass.", true, -1, wxCMD_LINE_VAL_NONE);
-	m_optDebugLowResolutionPasses.value = false;
-	m_Options.push_back(&m_optDebugLowResolutionPasses);
-
-	// Completer options with hard default values
-	m_optImageInput = TypedOption<std::string>("ii", "image-input", "The input image file path.", false, -1, wxCMD_LINE_VAL_STRING, wxCMD_LINE_OPTION_MANDATORY);
-	m_optImageInput.value = "";
-	m_Options.push_back(&m_optImageInput);
-
-	m_optImageMask = TypedOption<std::string>("im", "image-mask", "The mask image file path.", false, -1, wxCMD_LINE_VAL_STRING);
-	m_optImageMask.value = "";
-	m_Options.push_back(&m_optImageMask);
-
-	m_optImageOutput = TypedOption<std::string>("io", "image-output", "The mask image file path.", false, -1, wxCMD_LINE_VAL_STRING);
-	m_optImageOutput.value = "";
-	m_Options.push_back(&m_optImageOutput);
-
-	m_optLowResolutionPassesMax = TypedOption<int>("sp", "settings-low-res-passes", std::string("Max low resolution passes to perform.\n") + CommandLineOptions::Option::Indent() + std::string("(") + SettingsText::GetLowResolutionPassesAutoDescription() + std::string(", or any integer value greater than 0)"), true, offsetof(LfnIc::Settings, lowResolutionPassesMax), wxCMD_LINE_VAL_STRING);
-	m_optLowResolutionPassesMax.value = 6; // what should this be?
-	m_Options.push_back(&m_optLowResolutionPassesMax);
-
-	m_optNumIterations = TypedOption<long>("si", "settings-num-iterations", "Number of Priority-BP iterations per pass.", true, offsetof(LfnIc::Settings, numIterations), wxCMD_LINE_VAL_NUMBER);
-	m_optNumIterations.value = LfnIc::Settings::NUM_ITERATIONS_DEFAULT;
-	m_Options.push_back(&m_optNumIterations);
-
-	m_optLatticeWidth = TypedOption<long>("sw", "settings-lattice-width", "Width of each gap in the lattice.", false, offsetof(LfnIc::Settings, latticeGapX), wxCMD_LINE_VAL_NUMBER); // Should these be X/Y or Width/Height?
-	m_optLatticeWidth.value = 5; // what should this be?
-	m_Options.push_back(&m_optLatticeWidth);
-
-	m_optLatticeHeight = TypedOption<long>("sh", "settings-lattice-height", "Height of each gap in the lattice.", false, offsetof(LfnIc::Settings, latticeGapY), wxCMD_LINE_VAL_NUMBER);
-	m_optLatticeHeight.value = 5; // what should this be?
-	m_Options.push_back(&m_optLatticeHeight);
-
-	m_optPatchesMin = TypedOption<long>("smn", "settings-patches-min", "Min patches after pruning.", false, offsetof(LfnIc::Settings, postPruneLabelsMin), wxCMD_LINE_VAL_NUMBER); // These should be called Labels instead of Patches to match SettingsText.cpp
-	m_optPatchesMin.value = 5; // what should this be?
-	m_Options.push_back(&m_optPatchesMin);
-
-	m_optPatchesMax = TypedOption<long>("smx", "settings-patches-max", "Max patches after pruning.", false, offsetof(LfnIc::Settings, postPruneLabelsMax), wxCMD_LINE_VAL_NUMBER);
-	m_optPatchesMax.value = 5; // what should this be?
-	m_Options.push_back(&m_optPatchesMax);
-
+	m_options.push_back(&m_optImageInput);
+	m_options.push_back(&m_optImageMask);
+	m_options.push_back(&m_optImageOutput);
+	m_options.push_back(&m_optSettingsShow);
+	m_options.push_back(&m_optDebugLowResolutionPasses);
+	m_options.push_back(&m_optLowResolutionPassesMax);
+	m_options.push_back(&m_optNumIterations);
+	m_options.push_back(&m_optLatticeWidth);
+	m_options.push_back(&m_optLatticeHeight);
+	m_options.push_back(&m_optPatchesMin);
+	m_options.push_back(&m_optPatchesMax);
 #if ENABLE_PATCHES_INPUT_OUTPUT
-	m_optPatchesInput = TypedOption<std::string>("pi", "patches-input", "The input patches file path.", false, -1, wxCMD_LINE_VAL_STRING);
-	m_Options.push_back(&m_optPatchesInput);
+	m_options.push_back(&m_optPatchesInput);
+	m_options.push_back(&m_optPatchesOutput);
+#endif
+	m_options.push_back(&m_optCompositorPatchType);
+	m_options.push_back(&m_optCompositorPatchBlender);
 
-	m_optPatchesOutput = TypedOption<std::string>("po", "patches-output", "The output patches file path.", false, -1, wxCMD_LINE_VAL_STRING);
-	m_Options.push_back(&m_optPatchesOutput);
-#endif // ENABLE_PATCHES_INPUT_OUTPUT
-
-
-	// Compositor options
-	m_optCompositorPatchType = TypedOption<LfnIc::CompositorPatchType>("sct", "settings-compositor-patch-type", "Compositor patch source type.", false, -1, wxCMD_LINE_VAL_STRING);
-	m_optCompositorPatchType.m_OptionType = CommandLineOptions::Option::COMPOSITOR_OPTION_TYPE;
-	m_optCompositorPatchType.value = LfnIc::CompositorPatchTypeDefault;
-	m_Options.push_back(&m_optCompositorPatchType);
-
-	m_optCompositorPatchBlender = TypedOption<LfnIc::CompositorPatchBlender>("scb", "settings-compositor-patch-blender", "Compositor patch blender style.", false, -1, wxCMD_LINE_VAL_STRING);
-	m_optCompositorPatchBlender.m_OptionType = CommandLineOptions::Option::COMPOSITOR_OPTION_TYPE;
-	m_optCompositorPatchBlender.value = LfnIc::CompositorPatchBlenderDefault;
-	m_Options.push_back(&m_optCompositorPatchBlender);
-
-	// Completer options which depend on the input image (are there any?)
-
+	// Completer options which depend on the input image
 	// http://arnout.engelen.eu/~wxwindows/xmldocs/applications/docbook/output/html/x13114.html
 	wxCmdLineParser parser(argc, argv);
-	for(unsigned int i = 0; i < m_Options.size(); i++)
+	for (int i = 0, n = m_options.size(); i < n; ++i)
 	{
-		Option* option = m_Options[i];
-		parser.AddOption(option->m_shortFlag, option->m_longFlag, option->m_description, option->m_wxArgumentType, option->m_wxMandatory);
+		const Option& option = *m_options[i];
+		const std::string& descriptionForUsageText = LfnTech::Str::Format("\n%s%s\n", Option::Indent(), option.description.c_str());
+		if (option.argumentType == wxCMD_LINE_VAL_NONE)
+		{
+			parser.AddSwitch(option.shortName, option.longName, descriptionForUsageText, option.flags);
+		}
+		else
+		{
+			parser.AddOption(option.shortName, option.longName, descriptionForUsageText, option.argumentType, option.flags);
+		}
 	}
-
-
 
 	parser.SetLogo("\nlafarren.com\nImage Completion Using Efficient Belief Propagation\n");
 	parser.SetSwitchChars("-");
@@ -271,11 +232,11 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 		m_optPatchesOutput.Find(parser);
 #endif // ENABLE_PATCHES_INPUT_OUTPUT
 
-		m_shouldShowSettings = parser.Found(m_optSettingsShow.m_shortFlag);
+		m_optSettingsShow.Find(parser);
 
 		// As of now, don't run image completion if the user wanted the
 		// settings displayed. Maybe change this later.
-		m_shouldRunImageCompletion = !m_shouldShowSettings;
+		m_shouldRunImageCompletion = !m_optSettingsShow.value;
 
 		m_isValid = true;
 
@@ -287,7 +248,7 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 			// wasn't present, since it's set to wxCMD_LINE_OPTION_MANDATORY.
 			wxASSERT(HasInputImagePath());
 
-			if (m_shouldShowSettings)
+			if (m_optSettingsShow.value)
 			{
 				// Nothing besides the input image is needed to display the settings.
 			}
@@ -297,17 +258,17 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 				// Running image completion requires mask and output images.
 				if (!HasMaskImagePath() && !HasOutputImagePath())
 				{
-					errorMessage = wxString::Format("\nMissing mask and output image paths. Please specify:\n\n\t-%s path/to/maskimage.ext -%s path/to/outputimage.ext\n", m_optImageMask.m_shortFlag, m_optImageOutput.m_shortFlag);
+					errorMessage = wxString::Format("\nMissing mask and output image paths. Please specify:\n\n\t-%s path/to/maskimage.ext -%s path/to/outputimage.ext\n", m_optImageMask.shortName, m_optImageOutput.shortName);
 					m_isValid = false;
 				}
 				else if (!HasMaskImagePath())
 				{
-					errorMessage = wxString::Format("\nMissing mask image path. Please specify:\n\n\t-%s path/to/maskimage.ext\n", m_optImageMask.m_shortFlag);
+					errorMessage = wxString::Format("\nMissing mask image path. Please specify:\n\n\t-%s path/to/maskimage.ext\n", m_optImageMask.shortName);
 					m_isValid = false;
 				}
 				else if (!HasOutputImagePath())
 				{
-					errorMessage = wxString::Format("\nMissing output image path. Please specify:\n\n\t-%s path/to/outputimage.ext\n", m_optImageOutput.m_shortFlag);
+					errorMessage = wxString::Format("\nMissing output image path. Please specify:\n\n\t-%s path/to/outputimage.ext\n", m_optImageOutput.shortName);
 					m_isValid = false;
 				}
 			}
@@ -321,7 +282,7 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 			{
 				// These options are optional. If anything is invalid,
 				// Priority::Settings::IsValid() will catch it later.
-				//m_debugLowResolutionPasses = parser.Found(m_optDebugLowResolutionPasses.m_shortFlag);
+				m_optDebugLowResolutionPasses.Find(parser);
 				m_optLowResolutionPassesMax.Find(parser);
 				m_optNumIterations.Find(parser);
 				m_optLatticeWidth.Find(parser);
@@ -330,8 +291,126 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 				m_optPatchesMax.Find(parser);
 				m_optCompositorPatchType.Find(parser);
 				m_optCompositorPatchBlender.Find(parser);
-
 			}
 		}
 	}
+}
+
+const CommandLineOptions::Option* CommandLineOptions::FindOptionById(size_t id) const
+{
+	for (int i = 0, n = m_options.size(); i < n; ++i)
+	{
+		if (m_options[i]->id == id)
+		{
+			return m_options[i];
+		}
+	}
+
+	std::cerr << "Option " << id << " not found!" << std::endl;
+	return NULL;
+}
+
+const CommandLineOptions::Option* CommandLineOptions::FindOptionByShortName(const wxString& shortName) const
+{
+	for (int i = 0, n = m_options.size(); i < n; ++i)
+	{
+		if (m_options[i]->shortName == shortName)
+		{
+			return m_options[i];
+		}
+	}
+
+	std::cerr << "Option " << shortName << " not found!" << std::endl;
+	return NULL;
+}
+
+const CommandLineOptions::Option* CommandLineOptions::GetOption(unsigned int i) const
+{
+	return m_options[i];
+}
+
+std::vector<const CommandLineOptions::Option*> CommandLineOptions::GetOptionsByType(Option::OptionType optionType) const
+{
+	std::vector<const Option*> options;
+
+	for (int i = 0, n = m_options.size(); i < n; ++i)
+	{
+		if (m_options[i]->optionType == optionType)
+		{
+			options.push_back(m_options[i]);
+		}
+	}
+
+	return options;
+}
+
+void CommandLineOptions::PrintSettingsThatHaveCommandLineOptions(const LfnIc::Settings& settings) const
+{
+	wxASSERT(LfnIc::AreSettingsValid(settings));
+	wxMessageOutput& msgOut = *wxMessageOutput::Get();
+
+	std::string lowResolutionPassesMaxString;
+	if (settings.lowResolutionPassesMax == LfnIc::Settings::LOW_RESOLUTION_PASSES_AUTO)
+	{
+		lowResolutionPassesMaxString = SettingsText::GetLowResolutionPassesAutoDescription();
+	}
+	else
+	{
+		lowResolutionPassesMaxString = LfnTech::Str::Format("%d", settings.lowResolutionPassesMax);
+	}
+
+#define VAL_W "17" /* TODO: auto-size this as well? */
+#define VAL_X(fmt, x) LfnTech::Str::Format("%" VAL_W fmt, x)
+#define VAL_S(s) VAL_X("s", s)
+#define VAL_I(i) VAL_X("d", i)
+
+	typedef std::map<const Option*, std::string> OptionStrValueMap;
+	OptionStrValueMap optionStrValues;
+	optionStrValues[&m_optLowResolutionPassesMax] = VAL_S(lowResolutionPassesMaxString.c_str());
+	optionStrValues[&m_optNumIterations] = VAL_I(settings.numIterations);
+	optionStrValues[&m_optLatticeWidth] = VAL_I(settings.latticeGapX);
+	optionStrValues[&m_optLatticeHeight] = VAL_I(settings.latticeGapY);
+	optionStrValues[&m_optPatchesMin] = VAL_I(settings.postPruneLabelsMin);
+	optionStrValues[&m_optPatchesMax] = VAL_I(settings.postPruneLabelsMax);
+
+	optionStrValues[&m_optCompositorPatchType] = VAL_S(SettingsText::GetEnumDescription(settings.compositorPatchType).c_str());
+	optionStrValues[&m_optCompositorPatchBlender] = VAL_S(SettingsText::GetEnumDescription(settings.compositorPatchBlender).c_str());
+
+	// Determine the name column width.
+	int nameWidth = 0;
+	for (int optionIndex = 0; optionIndex < GetNumberOfOptions(); ++optionIndex)
+	{
+		const int len = GetOption(optionIndex)->longName.Len();
+		if (nameWidth < len)
+		{
+			nameWidth = len;
+		}
+	}
+
+	// Display the members
+	const std::vector<const Option*>& completerOptions = GetOptionsByType(Option::COMPLETER_OPTION_TYPE);
+	msgOut.Printf("\nImage completer settings\n");
+	for (int i = 0, n = completerOptions.size(); i < n; ++i)
+	{
+		const Option& option = *completerOptions[i];
+		const OptionStrValueMap::const_iterator iter = optionStrValues.find(&option);
+		if (iter != optionStrValues.end())
+		{
+			option.Print(msgOut, nameWidth, iter->second);
+		}
+	}
+
+	const std::vector<const Option*>& compositorOptions = GetOptionsByType(Option::COMPOSITOR_OPTION_TYPE);
+	msgOut.Printf("\nCompositor settings\n");
+	for (int i = 0, n = compositorOptions.size(); i < n; ++i)
+	{
+		const Option& option = *compositorOptions[i];
+		const OptionStrValueMap::const_iterator iter = optionStrValues.find(&option);
+		if (iter != optionStrValues.end())
+		{
+			option.Print(msgOut, nameWidth, iter->second);
+		}
+	}
+
+	msgOut.Printf("\n");
 }

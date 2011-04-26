@@ -28,9 +28,6 @@
 class SettingsText
 {
 public:
-	// Prints the user-tweakable settings to wxMessageOutput.
-	static void Print(const LfnIc::Settings& settings, CommandLineOptions commandLineOptions);
-
 	// Returns the command line option used to indicate
 	// LfnIc::Settings::LOW_RESOLUTION_PASSES_AUTO.
 	static std::string GetLowResolutionPassesAutoDescription();
@@ -55,18 +52,18 @@ public:
 		return joined;
 	}
 
-	// An instance of this class can be passed to LfnIc::Settings::IsValid. // should this be AreSettingsValid?
+	// An instance of this class can be passed to LfnIc::Settings::IsValid.
 	// It'll display info for an invalid settings member(s).
 	class PrintInvalidMembers : public LfnIc::SettingsInvalidMemberHandler
 	{
 	public:
-		PrintInvalidMembers();
+		PrintInvalidMembers(const CommandLineOptions& commandLineOptions);
 		virtual void OnInvalidMemberDetected(const LfnIc::Settings& settings, int memberOffset, const char* message);
-        const CommandLineOptions* m_commandLineOptions;
+
 	private:
+        const CommandLineOptions& m_commandLineOptions;
 		wxMessageOutput& m_msgOut;
 		bool m_hasPrintedHeader;
-
 	};
 };
 
