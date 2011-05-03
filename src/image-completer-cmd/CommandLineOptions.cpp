@@ -207,7 +207,7 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 	for (int i = 0, n = m_options.size(); i < n; ++i)
 	{
 		const Option& option = *m_options[i];
-		const std::string& descriptionForUsageText = LfnTech::Str::Format("\n%s%s\n", Option::Indent(), option.description.c_str());
+		const std::string& descriptionForUsageText = LfnTech::Str::Format("\n%s%s\n", Option::Indent(), static_cast<const char*>(option.description));
 		if (option.argumentType == wxCMD_LINE_VAL_NONE)
 		{
 			parser.AddSwitch(option.shortName, option.longName, descriptionForUsageText, option.flags);
