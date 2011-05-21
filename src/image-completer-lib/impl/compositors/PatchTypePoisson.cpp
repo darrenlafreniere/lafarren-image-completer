@@ -26,9 +26,9 @@
 #include "tech/MathUtils.h"
 
 #include "ImageFloat.h"
+#include "LfnIcSettings.h"
 #include "MaskWritable.h"
 #include "PoissonSolver.h"
-#include "Settings.h"
 
 #include "tech/DbgMem.h"
 
