@@ -1,16 +1,16 @@
-Q) I get an error like "ScalableDebugging.cpp:46:34: error: no matching function for call to ‘wxImage::SaveFile(std::string&)’"
+﻿Q) I get an error like "ScalableDebugging.cpp:46:34: error: no matching function for call to ‘wxImage::SaveFile(std::string&)’"
 
 A) This means you are using wx < 2.9. Please install wx2.9 or greater. You can get the latest version here http://www.wxwidgets.org/
 
-If you build wx in a non-standard directory and don't 'make install' it, you will have to change:
+In *nix, if you build wx in a non-standard directory and don't 'make install' it, you will have to change:
 
 wxWidgets_CONFIG_EXECUTABLE /usr/bin/wx-config
 wxWidgets_wxrc_EXECUTABLE /usr/bin/wxrc
 
 to
 
-/home/doriad/bin/wx2.9/wx-config
-/home/doriad/bin/wx2.9/utils/wxrc/
+~/bin/wx2.9/wx-config
+~/bin/wx2.9/utils/wxrc/
 
 -------------
 
