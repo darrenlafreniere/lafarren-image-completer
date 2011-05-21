@@ -176,10 +176,10 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 	, m_optPatchesMax(0, Option::COMPLETER_OPTION_TYPE, "smx", "settings-patches-max", "Max patches after pruning.", offsetof(LfnIc::Settings, postPruneLabelsMax), wxCMD_LINE_VAL_NUMBER)
 	, m_optCompositorPatchType(LfnIc::CompositorPatchTypeDefault, Option::COMPOSITOR_OPTION_TYPE, "sct", "settings-compositor-patch-type", "Compositor patch source type.", -1, wxCMD_LINE_VAL_STRING)
 	, m_optCompositorPatchBlender(LfnIc::CompositorPatchBlenderDefault, Option::COMPOSITOR_OPTION_TYPE, "scb", "settings-compositor-patch-blender", "Compositor patch blender style.", -1, wxCMD_LINE_VAL_STRING)
-        #if ENABLE_PATCHES_INPUT_OUTPUT
-        , m_optPatchesInput("", Option::COMPLETER_OPTION_TYPE, "pi", "patches-input", "The input patches file path.", -1, wxCMD_LINE_VAL_STRING)
-        , m_optPatchesOutput("", Option::COMPLETER_OPTION_TYPE, "po", "patches-output", "The output patches file path.", -1, wxCMD_LINE_VAL_STRING)
-        #endif
+#if ENABLE_PATCHES_INPUT_OUTPUT
+	, m_optPatchesInput("", Option::COMPLETER_OPTION_TYPE, "pi", "patches-input", "The input patches file path.", -1, wxCMD_LINE_VAL_STRING)
+	, m_optPatchesOutput("", Option::COMPLETER_OPTION_TYPE, "po", "patches-output", "The output patches file path.", -1, wxCMD_LINE_VAL_STRING)
+#endif
 	, m_shouldRunImageCompletion(false)
 	, m_isValid(false)
 {
