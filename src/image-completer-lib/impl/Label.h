@@ -111,12 +111,15 @@ namespace LfnIc
 			bool IsSet(int x, int y) const;
 
 		private:
-			void GetIndexAndShift(int x, int y, int& outIndex, int& outShift) const;
+			void GetDataElementIndexAndBitIndex(int x, int y, int& outDataElementIndex, int& outBitIndex) const;
 
-			uint* m_data;
+			typedef uint DataType;
+			static const int NUM_DATA_TYPE_BITS = sizeof(DataType) * 8;
+
+			DataType* m_data;
 			const int m_width;
 			const int m_height;
-			const int m_dataNumUints;
+			const int m_dataNumElements;
 		};
 
 		struct Resolution

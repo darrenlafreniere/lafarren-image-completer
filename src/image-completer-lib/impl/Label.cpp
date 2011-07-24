@@ -149,10 +149,10 @@ LfnIc::LabelSet::LabelBitArray::LabelBitArray(int width, int height) :
 m_data(NULL),
 m_width(width),
 m_height(height),
-m_dataNumUints(((width * height) + 7) / 8)
+m_dataNumElements(((width * height) + (NUM_DATA_TYPE_BITS - 1)) / NUM_DATA_TYPE_BITS)
 {
-	m_data = new uint[m_dataNumUints];
-	memset(m_data, 0, sizeof(uint) * m_dataNumUints);
+	m_data = new uint[m_dataNumElements];
+	memset(m_data, 0, sizeof(uint) * m_dataNumElements);
 }
 
 LfnIc::LabelSet::LabelBitArray::~LabelBitArray()
@@ -162,29 +162,32 @@ LfnIc::LabelSet::LabelBitArray::~LabelBitArray()
 
 void LfnIc::LabelSet::LabelBitArray::Set(int x, int y)
 {
-	int index;
-	int shift;
-	GetIndexAndShift(x, y, index, shift);
+	int dataElementIndex;
+	int bitIndex;
+	GetDataElementIndexAndBitIndex(x, y, dataElementIndex, bitIndex);
 
-	m_data[index] |= (1 << shift);
+	m_data[dataElementIndex] |= (1 << bitIndex);
 	wxASSERT(IsSet(x, y));
 }
 
 bool LfnIc::LabelSet::LabelBitArray::IsSet(int x, int y) const
 {
-	int index;
-	int shift;
-	GetIndexAndShift(x, y, index, shift);
+	int dataElementIndex;
+	int bitIndex;
+	GetDataElementIndexAndBitIndex(x, y, dataElementIndex, bitIndex);
 
-	return (m_data[index] & (1 << shift)) != 0;
+	return (m_data[dataElementIndex] & (1 << bitIndex)) != 0;
 }
 
-void LfnIc::LabelSet::LabelBitArray::GetIndexAndShift(int x, int y, int& outIndex, int& outShift) const
+void LfnIc::LabelSet::LabelBitArray::GetDataElementIndexAndBitIndex(int x, int y, int& outDataElementIndex, int& outBitIndex) const
 {
 	const int rowMajorIndex = LfnTech::GetRowMajorIndex(m_width, x, y);
-	outIndex = rowMajorIndex / 8; // Determines which byte the bit we are looking for is in.
-	outShift = rowMajorIndex & 7; // Keeps the lower 3 bits, as there are only 8 bits in a byte so the shift output will be from 0 to 7.
-	wxASSERT(outIndex < m_dataNumUints);
+
+	// Find the m_data element index that contains the bit corresponding to rowMajorIndex, and the bit's index within
+	// that element.
+	outDataElementIndex = rowMajorIndex / NUM_DATA_TYPE_BITS;
+	outBitIndex = rowMajorIndex & (NUM_DATA_TYPE_BITS - 1);
+	wxASSERT(outDataElementIndex < m_dataNumElements);
 }
 
 LfnIc::LabelSet::Resolution::Resolution(const Settings& settings, const ImageConst& inputImage, const MaskLod& mask) :
