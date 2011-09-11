@@ -112,6 +112,16 @@ std::ostream* AppData::GetPatchesOstream()
 
 void AppData::ApplyCommandLineOptionsToSettings(const CommandLineOptions& options)
 {
+	// If the command line overrides either (or both) of the lattice gap
+	// parameters, then reconstruct the settings based on the new gap size.
+	if (options.HasLatticeGapX() || options.HasLatticeGapY())
+	{
+		SettingsConstruct(
+			m_settings,
+			options.HasLatticeGapX() ? options.GetLatticeGapX() : m_settings.latticeGapX,
+			options.HasLatticeGapY() ? options.GetLatticeGapY() : m_settings.latticeGapY);
+	}
+
 	if (options.DebugLowResolutionPasses())
 	{
 		m_settings.debugLowResolutionPasses = true;
@@ -123,14 +133,6 @@ void AppData::ApplyCommandLineOptionsToSettings(const CommandLineOptions& option
 	if (options.HasNumIterations())
 	{
 		m_settings.numIterations = options.GetNumIterations();
-	}
-	if (options.HasLatticeGapX())
-	{
-		m_settings.latticeGapX = options.GetLatticeGapX();
-	}
-	if (options.HasLatticeGapY())
-	{
-		m_settings.latticeGapY = options.GetLatticeGapY();
 	}
 	if (options.HasPostPruneLabelsMin())
 	{
